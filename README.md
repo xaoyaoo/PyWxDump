@@ -24,6 +24,9 @@
 
 ![image](https://user-images.githubusercontent.com/33925462/179410883-10deefb3-793d-4e15-8475-a74954fafe19.png)
 
+**参考地址**
+
+https://mp.weixin.qq.com/s/4DbXOS5jDjJzM2PN0Mp2JA
 
 ## 免责声明
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
