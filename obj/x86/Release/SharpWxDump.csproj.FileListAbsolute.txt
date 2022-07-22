@@ -1,6 +1,0 @@
-C:\Users\Admin\source\repos\SharpWxDump\bin\x86\Release\SharpWxDump.exe
-C:\Users\Admin\source\repos\SharpWxDump\bin\x86\Release\SharpWxDump.pdb
-C:\Users\Admin\source\repos\SharpWxDump\obj\x86\Release\SharpWxDump.csproj.AssemblyReference.cache
-C:\Users\Admin\source\repos\SharpWxDump\obj\x86\Release\SharpWxDump.csproj.CoreCompileInputs.cache
-C:\Users\Admin\source\repos\SharpWxDump\obj\x86\Release\SharpWxDump.exe
-C:\Users\Admin\source\repos\SharpWxDump\obj\x86\Release\SharpWxDump.pdb
