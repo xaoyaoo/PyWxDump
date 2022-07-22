@@ -8,7 +8,7 @@
 1. 支持微信多开场景，获取多用户信息等
 2. 微信需要登录状态才能获取数据库密钥
 3. 没有动态获取功能，已将偏移地址写入代码内，会不定期更新，如有需要的版本请Issues
-4. 编译请生成x86
+4. 请选择x86编译生成
 
 ![image](https://user-images.githubusercontent.com/33925462/179410099-c0f52c1c-b552-4a51-9822-7440b097bca4.png)
 
@@ -31,7 +31,7 @@
 
 **参考地址**
 
-数据库解密解密脚本：https://mp.weixin.qq.com/s/4DbXOS5jDjJzM2PN0Mp2JA
+数据库解密脚本：https://mp.weixin.qq.com/s/4DbXOS5jDjJzM2PN0Mp2JA
 
 ## 免责声明
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
