@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -25,17 +25,15 @@ namespace WeChatGetKey
 			Console.WriteLine("[+] Done.");
 		}
 		private static void ReadTest()
-		{;
+		{
 			Process WeChatProcess = null;
 			Process[] WeChatProcessName = Process.GetProcessesByName("WeChat");
-
 			List<int> list = null;
-
 			foreach (Process WeChatProcess2 in WeChatProcessName)
 			{
 				WeChatProcess = WeChatProcess2;
 				Console.WriteLine("[+] WeChatProcessPID: " + WeChatProcess2.Id.ToString());
-				foreach (object obj in WeChatProcess.Modules)
+				foreach (object obj in WeChatProcess2.Modules)
 				{
 					ProcessModule processModule = (ProcessModule)obj;
 					if (processModule.ModuleName == "WeChatWin.dll")
@@ -43,7 +41,6 @@ namespace WeChatGetKey
 						Program.WeChatWinBaseAddress = processModule.BaseAddress;
 						string fileVersion = processModule.FileVersionInfo.FileVersion;
 						Console.WriteLine("[+] WeChatVersion: " + fileVersion);
-
 						if (!Program.versionlist.TryGetValue(fileVersion, out list))
 						{
 							Console.WriteLine("[-] WeChat Current Version Is: " + fileVersion + " Not Support");
@@ -52,7 +49,6 @@ namespace WeChatGetKey
 						break;
 					}
 				}
-
 				if (list == null)
 				{
 					Console.WriteLine("[-] WeChat Base Address Get Faild");
@@ -65,7 +61,7 @@ namespace WeChatGetKey
 					string Account = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatAccount);
 					if (string.IsNullOrWhiteSpace(Account))
 					{
-						Console.WriteLine("[-] WeChatAccount: Can't Get User Account, Maybe No Login");
+						Console.WriteLine("[-] WeChatAccount: Can't Get User Account, Maybe No Login or User Is No Set Account");
 					}
 					else
 					{
@@ -75,7 +71,7 @@ namespace WeChatGetKey
 					string Mobile = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile);
 					if (string.IsNullOrWhiteSpace(Mobile))
 					{
-						Console.WriteLine("[-] WeChatMobile: Can't Get User Mobile, Maybe No Login or Maybe User Is No Binding Mobile");
+						Console.WriteLine("[-] WeChatMobile: Can't Get User Mobile, Maybe No Login or User Is No Binding Mobile");
 					}
 					else
 					{
@@ -85,7 +81,7 @@ namespace WeChatGetKey
 					string Mail = Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail);
 					if (string.IsNullOrWhiteSpace(Mail))
 					{
-						Console.WriteLine("[-] WeChatMail: Can't Get User Mail, Maybe User Is No Binding Email Address or The current is New Version");
+						Console.WriteLine("[-] WeChatMail: Can't Get User Mail, Maybe User Is No Binding Email or The current is New Version");
 					}
 					else
 					{
@@ -467,22 +463,22 @@ namespace WeChatGetKey
 				"3.7.0.26",
 				new List<int>
 				{
-					37105908,
-					37106288,
-					37105960,
-					37105936,
-					37106980
+					37118196,
+					37118576,
+					37118248,
+					37118224,
+					37119268
 				}
 			},
 			{
 				"3.7.0.29",
 				new List<int>
 				{
-					37105908,
-					37106288,
-					37105960,
-					37105936,
-					37106980
+					37118196,
+					37118576,
+					37118248,
+					37118224,
+					37119268
 				}
 			},
 			{
