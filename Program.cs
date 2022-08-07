@@ -79,10 +79,7 @@ namespace WeChatGetKey
 					}
 					int WeChatMail = (int)Program.WeChatWinBaseAddress + list[3];
 					string Mail = Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail);
-					if (string.IsNullOrWhiteSpace(Mail))
-					{
-						Console.WriteLine("[-] WeChatMail: Can't Get User Mail, Maybe User Is No Binding Email or The current is New Version");
-					}
+					if (string.IsNullOrWhiteSpace(Mail) != false){}
 					else
 					{
 						Console.WriteLine("[+] WeChatMail: " + Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail, 100));
@@ -512,6 +509,28 @@ namespace WeChatGetKey
 					37895592,
 					37883008,
 					37896508
+				}
+			},
+			{
+				"3.7.5.27",
+				new List<int>
+				{
+					37895736,
+					37896544,
+					37895592,
+					37895464,
+					37896508
+				}
+			},
+			{
+				"3.7.5.31",
+				new List<int>
+				{
+					37903928,
+					37904736,
+					37903784,
+					37903656,
+					37904700
 				}
 			}
 		};
