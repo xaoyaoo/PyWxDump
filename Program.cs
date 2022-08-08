@@ -22,77 +22,76 @@ namespace WeChatGetKey
 			{
 				//Console.ReadKey();
 			}
-			Console.WriteLine("[+] Done.");
+			Console.WriteLine("[+] Done");
 		}
 		private static void ReadTest()
 		{
+			List<int> SupportList = null;
 			Process WeChatProcess = null;
-			Process[] WeChatProcessName = Process.GetProcessesByName("WeChat");
-			List<int> list = null;
-			foreach (Process WeChatProcess2 in WeChatProcessName)
+			foreach (Process ProcessesName in Process.GetProcessesByName("WeChat"))
 			{
-				WeChatProcess = WeChatProcess2;
-				Console.WriteLine("[+] WeChatProcessPID: " + WeChatProcess2.Id.ToString());
-				foreach (object obj in WeChatProcess2.Modules)
+				WeChatProcess = ProcessesName;
+				Console.WriteLine("[+] WeChatProcessPID: " + WeChatProcess.Id.ToString());
+				foreach (object obj in WeChatProcess.Modules)
 				{
 					ProcessModule processModule = (ProcessModule)obj;
 					if (processModule.ModuleName == "WeChatWin.dll")
 					{
 						Program.WeChatWinBaseAddress = processModule.BaseAddress;
-						string fileVersion = processModule.FileVersionInfo.FileVersion;
-						Console.WriteLine("[+] WeChatVersion: " + fileVersion);
-						if (!Program.versionlist.TryGetValue(fileVersion, out list))
+						string FileVersion = processModule.FileVersionInfo.FileVersion;
+						Console.WriteLine("[+] WeChatVersion: " + FileVersion);
+						if (!Program.VersionList.TryGetValue(FileVersion, out SupportList))
 						{
-							Console.WriteLine("[-] WeChat Current Version Is: " + fileVersion + " Not Support");
+							Console.WriteLine("[-] WeChat Current Version Is: " + FileVersion + " Not Support");
 							return;
 						}
 						break;
 					}
 				}
-				if (list == null)
+				if (SupportList == null)
 				{
 					Console.WriteLine("[-] WeChat Base Address Get Faild");
 				}
 				else
 				{
-					int WeChatName = (int)Program.WeChatWinBaseAddress + list[0];
-					Console.WriteLine("[+] WeChatName: " + Program.GetName(WeChatProcess.Handle, (IntPtr)WeChatName, 100));
-					int WeChatAccount = (int)Program.WeChatWinBaseAddress + list[1];
-					string Account = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatAccount);
-					if (string.IsNullOrWhiteSpace(Account))
-					{
-						Console.WriteLine("[-] WeChatAccount: Can't Get User Account, Maybe No Login or User Is No Set Account");
-					}
-					else
-					{
-						Console.WriteLine("[+] WeChatAccount: " + Program.GetAccount(WeChatProcess.Handle, (IntPtr)WeChatAccount, 100));
-					}
-					int WeChatMobile = (int)Program.WeChatWinBaseAddress + list[2];
-					string Mobile = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile);
-					if (string.IsNullOrWhiteSpace(Mobile))
-					{
-						Console.WriteLine("[-] WeChatMobile: Can't Get User Mobile, Maybe No Login or User Is No Binding Mobile");
-					}
-					else
-					{
-						Console.WriteLine("[+] WeChatMobile: " + Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile, 100));
-					}
-					int WeChatMail = (int)Program.WeChatWinBaseAddress + list[3];
-					string Mail = Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail);
-					if (string.IsNullOrWhiteSpace(Mail) != false){}
-					else
-					{
-						Console.WriteLine("[+] WeChatMail: " + Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail, 100));
-					}
-					int WeChatKey = (int)Program.WeChatWinBaseAddress + list[4];
+					int WeChatKey = (int)Program.WeChatWinBaseAddress + SupportList[4];
 					string HexKey = Program.GetHex(WeChatProcess.Handle, (IntPtr)WeChatKey);
 					if (string.IsNullOrWhiteSpace(HexKey))
 					{
-						Console.WriteLine("[-] WeChatKey: WeChat Is Run, But Maybe No Login");
+						Console.WriteLine("[-] WeChat Is Run, But Maybe No Login");
 						return;
 					}
 					else
 					{
+						int WeChatName = (int)Program.WeChatWinBaseAddress + SupportList[0];
+						Console.WriteLine("[+] WeChatName: " + Program.GetName(WeChatProcess.Handle, (IntPtr)WeChatName, 100));
+						int WeChatAccount = (int)Program.WeChatWinBaseAddress + SupportList[1];
+						string Account = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatAccount);
+						if (string.IsNullOrWhiteSpace(Account))
+						{
+							Console.WriteLine("[-] WeChatAccount: Maybe User Is No Set Account");
+						}
+						else
+						{
+							Console.WriteLine("[+] WeChatAccount: " + Program.GetAccount(WeChatProcess.Handle, (IntPtr)WeChatAccount, 100));
+						}
+						int WeChatMobile = (int)Program.WeChatWinBaseAddress + SupportList[2];
+						string Mobile = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile);
+						if (string.IsNullOrWhiteSpace(Mobile))
+						{
+							Console.WriteLine("[-] WeChatMobile: Maybe User Is No Binding Mobile");
+						}
+						else
+						{
+							Console.WriteLine("[+] WeChatMobile: " + Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile, 100));
+						}
+						int WeChatMail = (int)Program.WeChatWinBaseAddress + SupportList[3];
+						string Mail = Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail);
+						if (string.IsNullOrWhiteSpace(Mail) != false) { }
+						else
+						{
+							Console.WriteLine("[+] WeChatMail: " + Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail, 100));
+						}
 						Console.WriteLine("[+] WeChatKey: " + HexKey);
 					}
 				}
@@ -201,7 +200,7 @@ namespace WeChatGetKey
 		public static extern int GetModuleHandleA(string moduleName);
 		[DllImport("kernel32.dll")]
 		public static extern int ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, int lpNumberOfBytesRead);
-		public static Dictionary<string, List<int>> versionlist = new Dictionary<string, List<int>>
+		public static Dictionary<string, List<int>> VersionList = new Dictionary<string, List<int>>
 		{
 			{
 				"3.2.1.154",
