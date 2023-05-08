@@ -1,5 +1,8 @@
 ## SharpWxDump
+如何获取指定版本基址：https://github.com/AdminTest0/SharpWxDump/blob/master/CE%E8%8E%B7%E5%8F%96%E5%9F%BA%E5%9D%80.md
 ## 请使用x86编译
+
+**2023/05/08 更新内容：新增支持3.9.2.26版本** 
 
 **2023/03/26 更新内容：新增支持3.9.2.23版本** 
 
