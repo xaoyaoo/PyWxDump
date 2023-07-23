@@ -1,6 +1,12 @@
 ## SharpWxDump
 如何获取指定版本基址：https://github.com/AdminTest0/SharpWxDump/blob/master/CE%E8%8E%B7%E5%8F%96%E5%9F%BA%E5%9D%80.md
-## 请使用x86编译
+
+## 3.9.2.26之后的版本请使用x64版本(已更新)
+感谢hallejuyahaha师傅更新x64版本：https://github.com/AdminTest0/SharpWxDump/issues/48
+
+## 3.9.2.26之前的版本请使用x86编译
+
+x86的最后版本代码：https://github.com/AdminTest0/SharpWxDump/commit/bddb843c08f3fc2225df486f81a2bbeed84557e3?diff=split
 
 **2023/05/08 更新内容：新增支持3.9.2.26版本** 
 
