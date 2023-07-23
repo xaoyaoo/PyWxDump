@@ -16,7 +16,7 @@ namespace WeChatGetKey
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("Error：" + ex.Message);
+				Console.WriteLine("Error："+ ex.Message);
 			}
 			finally
 			{
@@ -54,7 +54,7 @@ namespace WeChatGetKey
 				}
 				else
 				{
-					int WeChatKey = (int)Program.WeChatWinBaseAddress + SupportList[4];
+					Int64 WeChatKey = (Int64)Program.WeChatWinBaseAddress + SupportList[4];
 					string HexKey = Program.GetHex(WeChatProcess.Handle, (IntPtr)WeChatKey);
 					if (string.IsNullOrWhiteSpace(HexKey))
 					{
@@ -63,9 +63,9 @@ namespace WeChatGetKey
 					}
 					else
 					{
-						int WeChatName = (int)Program.WeChatWinBaseAddress + SupportList[0];
+						Int64 WeChatName = (Int64)Program.WeChatWinBaseAddress + SupportList[0];
 						Console.WriteLine("[+] WeChatName: " + Program.GetName(WeChatProcess.Handle, (IntPtr)WeChatName, 100));
-						int WeChatAccount = (int)Program.WeChatWinBaseAddress + SupportList[1];
+						Int64 WeChatAccount = (Int64)Program.WeChatWinBaseAddress + SupportList[1];
 						string Account = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatAccount);
 						if (string.IsNullOrWhiteSpace(Account))
 						{
@@ -75,7 +75,7 @@ namespace WeChatGetKey
 						{
 							Console.WriteLine("[+] WeChatAccount: " + Program.GetAccount(WeChatProcess.Handle, (IntPtr)WeChatAccount, 100));
 						}
-						int WeChatMobile = (int)Program.WeChatWinBaseAddress + SupportList[2];
+						Int64 WeChatMobile = (Int64)Program.WeChatWinBaseAddress + SupportList[2];
 						string Mobile = Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile);
 						if (string.IsNullOrWhiteSpace(Mobile))
 						{
@@ -85,7 +85,7 @@ namespace WeChatGetKey
 						{
 							Console.WriteLine("[+] WeChatMobile: " + Program.GetMobile(WeChatProcess.Handle, (IntPtr)WeChatMobile, 100));
 						}
-						int WeChatMail = (int)Program.WeChatWinBaseAddress + SupportList[3];
+						Int64 WeChatMail = (Int64)Program.WeChatWinBaseAddress + SupportList[3];
 						string Mail = Program.GetMail(WeChatProcess.Handle, (IntPtr)WeChatMail);
 						if (string.IsNullOrWhiteSpace(Mail) != false) { }
 						else
@@ -174,22 +174,39 @@ namespace WeChatGetKey
 			}
 			return text;
 		}
-		private static string GetHex(IntPtr hProcess, IntPtr lpBaseAddress)
-		{
-			byte[] array = new byte[4];
-			if (Program.ReadProcessMemory(hProcess, lpBaseAddress, array, 4, 0) == 0)
-			{
-				return "";
-			}
-			int num = 32;
-			byte[] array2 = new byte[num];
-			IntPtr lpBaseAddress2 = (IntPtr)(((int)array[3] << 24) + ((int)array[2] << 16) + ((int)array[1] << 8) + (int)array[0]);
-			if (Program.ReadProcessMemory(hProcess, lpBaseAddress2, array2, num, 0) == 0)
-			{
-				return "";
-			}
-			return Program.bytes2hex(array2);
-		}
+        //private static string GetHex(IntPtr hProcess, IntPtr lpBaseAddress)
+        //{
+        //    byte[] array = new byte[4];
+        //    if (Program.ReadProcessMemory(hProcess, lpBaseAddress, array, 4, 0) == 0)
+        //    {
+        //        return "";
+        //    }
+        //    int num = 32;
+        //    byte[] array2 = new byte[num];
+        //    IntPtr lpBaseAddress2 = (IntPtr)(((int)array[3] << 24) + ((int)array[2] << 16) + ((int)array[1] << 8) + (int)array[0]);
+        //    if (Program.ReadProcessMemory(hProcess, lpBaseAddress2, array2, num, 0) == 0)
+        //    {
+        //        return "";
+        //    }
+        //    return Program.bytes2hex(array2);
+        //}
+        private static string GetHex(IntPtr hProcess, IntPtr lpBaseAddress)
+        {
+            byte[] array = new byte[8];
+            if (Program.ReadProcessMemory(hProcess, lpBaseAddress, array, 8, 0) == 0)
+            {
+                return "";
+            }
+            int num = 32;
+            byte[] array2 = new byte[num];
+            IntPtr lpBaseAddress2 = (IntPtr)(((long)array[7] << 56) + ((long)array[6] << 48) + ((long)array[5] << 40) + ((long)array[4] << 32) + ((long)array[3] << 24) + ((long)array[2] << 16) + ((long)array[1] << 8) + (long)array[0]);
+            if (Program.ReadProcessMemory(hProcess, lpBaseAddress2, array2, num, 0) == 0)
+            {
+                return "";
+            }
+            return Program.bytes2hex(array2);
+        }
+
 		private static string bytes2hex(byte[] bytes)
 		{
 			return BitConverter.ToString(bytes, 0).Replace("-", string.Empty).ToLower().ToUpper();
@@ -641,7 +658,40 @@ namespace WeChatGetKey
 					38986104,
 					50329932
 				}
-			}
+			},
+            {
+                "3.9.5.91",
+                new List<int>
+                {
+                    61654904,
+                    61654680,
+                    61654712,
+                    38986104,
+                    61656176
+                }
+             },
+            {
+                "3.9.6.19",
+                new List<int>
+                {
+                    61997688,
+                    61997464,
+                    61997496,
+                    38986104,
+                    61998960
+                }
+            },
+            { "3.9.6.33",
+                new List<int>
+                {
+                    62030600,
+                    62031936,
+                    62030408,
+                    38986104,
+                    62031872
+                }
+            
+            }
 		};
 		private static IntPtr WeChatWinBaseAddress = IntPtr.Zero;
 	}
