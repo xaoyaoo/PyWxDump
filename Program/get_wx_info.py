@@ -187,7 +187,7 @@ def read_info(version_list):
     return rd
 
 if __name__ == "__main__":
-    version_list = json.load(open("version_list.json", "r", encoding="utf-8"))
+    version_list = json.load(open("../version_list.json", "r", encoding="utf-8"))
     rd = read_info(version_list)
     for i in rd:
         for k, v in i.items():
