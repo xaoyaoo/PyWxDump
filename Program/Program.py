@@ -114,7 +114,7 @@ def get_file_version(file_path):
     return file_version
 
 
-def read_test(version_list):
+def read_info(version_list):
     support_list = None
     wechat_process = None
 
@@ -188,7 +188,7 @@ def read_test(version_list):
 
 if __name__ == "__main__":
     version_list = json.load(open("version_list.json", "r", encoding="utf-8"))
-    rd = read_test(version_list)
+    rd = read_info(version_list)
     for i in rd:
         for k, v in i.items():
             print(f"[+] {k}: {v}")

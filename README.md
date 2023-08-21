@@ -12,7 +12,7 @@ python3 Program.py
 
 # 也可以import 调用
 import Program
-Program.read_test(version)
+Program.read_info(version)
 ```
 
 **支持功能**
