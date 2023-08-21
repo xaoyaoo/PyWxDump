@@ -1,58 +1,24 @@
 ## SharpWxDump
 如何获取指定版本基址：https://github.com/AdminTest0/SharpWxDump/blob/master/CE%E8%8E%B7%E5%8F%96%E5%9F%BA%E5%9D%80.md
 
-## 3.9.2.26之后的版本请使用x64版本(已更新)
-感谢hallejuyahaha师傅更新x64版本：https://github.com/AdminTest0/SharpWxDump/issues/48
+## 特别说明
+该分支是<a href="https://github.com/AdminTest0/SharpWxDump">SharpWxDump</a>的python语言版本。
+同时添加了一些新的功能。
 
-## 3.9.2.26之前的版本请使用x86编译
+**使用方法**
+```
+cd Program
+python3 Program.py
 
-x86的最后版本代码：https://github.com/AdminTest0/SharpWxDump/commit/bddb843c08f3fc2225df486f81a2bbeed84557e3?diff=split
-
-**2023/05/08 更新内容：新增支持3.9.2.26版本** 
-
-**2023/03/26 更新内容：新增支持3.9.2.23版本** 
-
-**2023/02/08 更新内容：新增支持3.9.0.28版本** 
-
-**2022/12/17 更新内容：新增支持3.8.1.26版本** 
-
-**2022/11/18 更新内容：新增支持3.8.0.41版本** 
-
-**2022/11/14 更新内容：新增支持3.8.0.33版本** 
-
-**2022/11/10 更新内容：新增支持3.8.0.31版本** 
-
-**2022/09/19 更新内容：新增支持3.7.6.44版本** 
-
-**2022/08/26 更新内容：新增支持3.7.6.29版本** 
-
-**2022/08/20 更新内容：新增支持3.7.6.24版本** 
-
-**2022/08/08 更新内容**
-
-1. 修改部分代码(未运行、运行未登录、已登录)，方便实战中判断情况
-
-![1](https://user-images.githubusercontent.com/33925462/183328570-af92417f-ffd0-479d-b320-74e64bc71171.png)
-
-
-**2022/08/07 更新内容**
-
-1. 新增支持3.7.5.27版本
-2. 新增支持3.7.5.31版本
-3. 修改获取邮箱功能：低于3.7.0.30版本会直接返回邮箱地址；大于3.7.0.30版本则不显示任何信息
-
-![1](https://user-images.githubusercontent.com/33925462/183289054-05321b52-67b3-4349-98eb-74584e579579.jpg)
-
-**2022/07/23 更新内容**
-
-1. 修复部分场景报错：登录微信后仍然提示：[-] WeChat Base Address Get Faild
-2. 如果还是报错，**请用x86编译**
+# 也可以import 调用
+import Program
+Program.read_test(version)
+```
 
 **支持功能**
 1. 支持微信多开场景，获取多用户信息等
 2. 微信需要登录状态才能获取数据库密钥
-3. 没有动态获取功能，已将偏移地址写入代码内，会不定期更新，**如有需要的版本请提交Issues**
-4. **请用x86编译生成**
+3. 没有动态获取功能，已将偏移地址写入version_list.josn内，会不定期更新，**如有需要的版本请提交Issues**
 
 ![image](https://user-images.githubusercontent.com/33925462/179410099-c0f52c1c-b552-4a51-9822-7440b097bca4.png)
 
@@ -76,6 +42,7 @@ x86的最后版本代码：https://github.com/AdminTest0/SharpWxDump/commit/bddb
 **参考地址**
 
 数据库解密脚本：https://mp.weixin.qq.com/s/4DbXOS5jDjJzM2PN0Mp2JA
+
 
 ## 免责声明
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
