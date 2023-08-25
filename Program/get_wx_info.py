@@ -8,7 +8,7 @@
 import binascii
 import json
 import ctypes
-
+import win32api
 import psutil
 
 
@@ -40,7 +40,6 @@ def get_account(pid, base_address, n_size=100):
             null_index = i
             break
     text = ctypes.string_at(ctypes.byref(array), null_index).decode('utf-8', errors='ignore')
-
     return text
 
 
@@ -85,6 +84,7 @@ def get_hex(h_process, lp_base_address):
 
     num = 32
     array2 = (ctypes.c_ubyte * num)()
+
     lp_base_address2 = (
             (int(binascii.hexlify(array[7]), 16) << 56) +
             (int(binascii.hexlify(array[6]), 16) << 48) +
@@ -95,23 +95,24 @@ def get_hex(h_process, lp_base_address):
             (int(binascii.hexlify(array[1]), 16) << 8) +
             int(binascii.hexlify(array[0]), 16)
     )
-
     if ctypes.windll.kernel32.ReadProcessMemory(h_process, ctypes.c_void_p(lp_base_address2), ctypes.byref(array2), num,
                                                 0) == 0:
         return ""
-
     hex_string = binascii.hexlify(bytes(array2))
     return hex_string.decode('utf-8')
 
 
 def get_file_version(file_path):
-    import win32api
+
     info = win32api.GetFileVersionInfo(file_path, "\\")
     ms = info['FileVersionMS']
     ls = info['FileVersionLS']
     file_version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
     # version = parse(file_version)
     return file_version
+
+# def get_wx_id(h_process, lp_base_address):
+
 
 
 def read_info(version_list):
@@ -121,7 +122,7 @@ def read_info(version_list):
     rd = []
 
     for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
-        if process.info['name'] == 'WeChat.exe':
+        if process.name() == 'WeChat.exe':
             tmp_rd = {}
             wechat_process = process
             tmp_rd['pid'] = wechat_process.pid
@@ -186,11 +187,12 @@ def read_info(version_list):
         return "[-] WeChat No Run"
     return rd
 
+
 if __name__ == "__main__":
-    version_list = json.load(open("../version_list.json", "r", encoding="utf-8"))
+    version_list = json.load(open("version_list.json", "r", encoding="utf-8"))
     rd = read_info(version_list)
+    # print(rd)
     for i in rd:
         for k, v in i.items():
             print(f"[+] {k}: {v}")
-
         print("=====================================")
