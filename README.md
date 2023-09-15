@@ -1,10 +1,18 @@
 # <center>PyWxDump</center>
 
+* 更新日志（如果有[version_list.json](./Program/version_list.json)缺少的版本，请帮忙添加。）
+
+  * 2023.09.15 增加了3.9.7.25版本的偏移地址
+
 ## 一、项目介绍
 
 本项目可以获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
 
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
+
+**如果觉得好用的话的话，帮忙点个[![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
+呗**
+
 
 ## 二、使用方法
 
