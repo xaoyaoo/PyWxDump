@@ -1,4 +1,4 @@
-# <center>SharpWxDump - Python</center>
+# <center>PyWxDump</center>
 
 ## 一、项目介绍
 
@@ -125,7 +125,7 @@ python get_base_addr.py  --mobile 152******** --name ****** --account ****** --k
 最简单的方法当然是运行
 
 ```shell
-git clone https://github.com/xaoyaoo/SharpWxDump.git
+git clone https://github.com/xaoyaoo/PyWxDump.git
 ```
 
 重新拉取一份新的啦~
