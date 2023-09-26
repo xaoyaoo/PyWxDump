@@ -221,8 +221,11 @@ class BaseAddr:
             mobile_offset = self.calculate_offset(self.mobile_addr[0])
         if len(self.name_addr) >= 1:
             name_offset = self.calculate_offset(self.name_addr[0])
-        if len(self.account_addr) >= 2:
-            account_offset = self.calculate_offset(self.account_addr[1])
+        if len(self.account_addr) >= 1:
+            if len(self.account_addr) >= 2:
+                account_offset = self.calculate_offset(self.account_addr[1])
+            else:
+                account_offset = self.calculate_offset(self.account_addr[0])
 
         key_offset = self.calculate_offset(self.key_addr)
 
