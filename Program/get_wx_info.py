@@ -191,8 +191,10 @@ def read_info(version_list):
 if __name__ == "__main__":
     version_list = json.load(open("version_list.json", "r", encoding="utf-8"))
     rd = read_info(version_list)
-    # print(rd)
-    for i in rd:
-        for k, v in i.items():
-            print(f"[+] {k}: {v}")
-        print("=====================================")
+    if isinstance(rd, str):
+        print(rd)
+    else:
+        for i in rd:
+            for k, v in i.items():
+                print(f"[+] {k}: {v}")
+            print("=====================================")
