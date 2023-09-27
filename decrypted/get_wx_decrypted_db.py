@@ -250,6 +250,9 @@ def merge_media_msg_db(db_path: list, save_path: str):
 def main(keys: list = None):
     decrypted_ROOT = os.path.join(os.getcwd(), "decrypted")
 
+    if keys is None:
+        print("keys is None")
+        return False
 
     user_dirs = get_wechat_db()
     for user, db_path in user_dirs.items():  # 遍历用户
@@ -286,7 +289,7 @@ def main(keys: list = None):
         merge_copy_msg_db(EmotionDecryptPaths, EmmotionDbPath)
 
         shutil.rmtree(decrypted_path_tmp)  # 删除临时文件
-
+    return True
 
 
 if __name__ == '__main__':
