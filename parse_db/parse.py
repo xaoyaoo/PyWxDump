@@ -113,6 +113,7 @@ def read_img_dat(input_data):
     md5 = get_md5(out_bytes)
     return fomt, md5, out_bytes
 
+
 def read_emoji(cdnurl, is_show=False):
     headers = {
         "User-Agent": "Mozilla/5.0 (Linux; Android 10; Redmi K30 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Mobile Safari/537.36"
@@ -229,11 +230,8 @@ def read_audio(MsgSvrID, is_play=False, is_wave=False, DB_PATH: str = "", rate=2
 
     if len(DBdata) == 0:
         return False
-
     data = DBdata[0][0]  # [1:] + b'\xFF\xFF'
-
     pcm_data = read_audio_buf(data, is_play, is_wave, rate)
-
     return pcm_data
 
 
