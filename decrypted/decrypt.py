@@ -1,3 +1,4 @@
+import argparse
 import hmac
 import hashlib
 
@@ -48,3 +49,26 @@ def decrypt(key, filePath, decryptedPath):
 
     return True
 
+
+if __name__ == '__main__':
+    # 创建命令行参数解析器
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--key", type=str, help="密钥")
+    parser.add_argument("--db_path", type=str, help="加密数据库路径")
+    parser.add_argument("--out_path", type=str, help="解密后的数据库路径")
+
+    # 解析命令行参数
+    args = parser.parse_args()
+
+    # 检查是否缺少必要参数，并抛出错误
+    if not args.key or not args.filepath or not args.decryptedpath:
+        raise ValueError("缺少必要的命令行参数！请提供密钥、加密数据库路径和解密后的数据库路径。")
+
+    # 从命令行参数获取值
+    key = args.key
+    db_path = args.db_path
+    out_path = args.out_path
+
+    # 调用 decrypt 函数，并传入参数
+    decrypt(key, db_path, out_path)
+    print("done!")
