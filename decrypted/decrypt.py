@@ -1,6 +1,7 @@
 import argparse
 import hmac
 import hashlib
+import os
 
 from Cryptodome.Cipher import AES
 
@@ -13,6 +14,13 @@ DEFAULT_ITER = 64000
 
 # 通过密钥解密数据库
 def decrypt(key, db_path, out_path):
+    if not os.path.exists(db_path):
+        print("[-] db_path File not found!")
+        return False
+    if not os.path.exists(os.path.dirname(out_path)):
+        print("[-] out_path File Path not found!")
+        return False
+
     password = bytes.fromhex(key.strip())
     with open(db_path, "rb") as file:
         blist = file.read()
@@ -49,6 +57,23 @@ def decrypt(key, db_path, out_path):
     return True
 
 
+def batch_decrypt(key, db_path, out_path):
+    if not os.path.exists(db_path):
+        print("[-] db_path File not found!")
+        return False
+    if not os.path.exists(os.path.dirname(out_path)):
+        print("[-] out_path File Path not found!")
+        return False
+
+    if os.path.isfile(db_path) and not os.path.isdir(out_path):
+        return decrypt(key, db_path, out_path)
+    if os.path.isdir(db_path) and not os.path.isfile(out_path):
+        for root, dirs, files in os.walk(db_path):
+            for file in files:
+                decrypt(key, os.path.join(root, file), os.path.join(out_path, "decrypted" + file))
+        return True
+
+
 if __name__ == '__main__':
     # 创建命令行参数解析器
     parser = argparse.ArgumentParser()
@@ -69,5 +94,5 @@ if __name__ == '__main__':
     out_path = args.out_path
 
     # 调用 decrypt 函数，并传入参数
-    result = decrypt(key, db_path, out_path)
+    result = batch_decrypt(key, db_path, out_path)
     print(f"{result} done!")

@@ -2,8 +2,8 @@
 
 * 更新日志（如果有[version_list.json](./Program/version_list.json)缺少的版本，请帮忙添加。）
 
-  * 2023.09.28 增加了数据库部分解析
-  * 2023.09.15 增加了3.9.7.25版本的偏移地址
+    * 2023.09.28 增加了数据库部分解析
+    * 2023.09.15 增加了3.9.7.25版本的偏移地址
 
 ## 一、项目介绍
 
@@ -11,9 +11,9 @@
 
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
-**如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
+*
+*如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
 呗**
-
 
 ## 二、使用方法
 
@@ -152,7 +152,7 @@ git clone https://github.com/xaoyaoo/PyWxDump.git
 
 * 解密后可拖入数据库工具查找敏感信息
 * 还有一份数据的说明文档，但是我累了，不想写了
-  
+
 **方法**
 
 进入目录[decrypted](./decrypted)
@@ -160,6 +160,8 @@ git clone https://github.com/xaoyaoo/PyWxDump.git
 ```shell
 python decrypt.py --key ******** --db_path ./decrypted/decrypted.db --out_path ./decrypted/decrypted.db
 ```
+
+[注]：--key为数据库密钥，--db_path为数据库路径，--out_path为解密后的数据库路径(解密后的路径目录必须存在)
 
 自动根据注册表读取本地微信聊天记录文件夹，解密后保存到当前目录下的decrypted文件夹中
 
