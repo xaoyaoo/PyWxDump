@@ -60,7 +60,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # 检查是否缺少必要参数，并抛出错误
-    if not args.key or not args.filepath or not args.decryptedpath:
+    if not args.key or not args.db_path or not args.out_path:
         raise ValueError("缺少必要的命令行参数！请提供密钥、加密数据库路径和解密后的数据库路径。")
 
     # 从命令行参数获取值
