@@ -12,9 +12,9 @@ DEFAULT_ITER = 64000
 
 
 # 通过密钥解密数据库
-def decrypt(key, filePath, decryptedPath):
-    password = bytes.fromhex(key.replace(" ", ""))
-    with open(filePath, "rb") as file:
+def decrypt(key, db_path, out_path):
+    password = bytes.fromhex(key.strip())
+    with open(db_path, "rb") as file:
         blist = file.read()
 
     salt = blist[:16]
@@ -27,14 +27,14 @@ def decrypt(key, filePath, decryptedPath):
     hash_mac.update(b'\x01\x00\x00\x00')
 
     if hash_mac.digest() == first[-32:-12]:
-        print("Decryption Success")
+        print("[+] Decryption Success")
     else:
-        print("Password Error")
+        print("[-] Password Error")
         return False
 
     newblist = [blist[i:i + DEFAULT_PAGESIZE] for i in range(DEFAULT_PAGESIZE, len(blist), DEFAULT_PAGESIZE)]
 
-    with open(decryptedPath, "wb") as deFile:
+    with open(out_path, "wb") as deFile:
         deFile.write(SQLITE_FILE_HEADER.encode())
         t = AES.new(byteKey, AES.MODE_CBC, first[-48:-32])
         decrypted = t.decrypt(first[:-48])
@@ -46,7 +46,6 @@ def decrypt(key, filePath, decryptedPath):
             decrypted = t.decrypt(i[:-48])
             deFile.write(decrypted)
             deFile.write(i[-48:])
-
     return True
 
 
@@ -70,5 +69,5 @@ if __name__ == '__main__':
     out_path = args.out_path
 
     # 调用 decrypt 函数，并传入参数
-    decrypt(key, db_path, out_path)
-    print("done!")
+    result = decrypt(key, db_path, out_path)
+    print(f"{result} done!")
