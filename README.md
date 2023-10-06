@@ -172,6 +172,8 @@ python get_wx_decrypted_db.py --key ********
 
 ## 四、解析数据库
 * [parse.py](./parse_db/parse.py) : 数据库解析脚本
+* 可以解析语音、图片、聊天记录等
+
 未完待续...
 
 ## 五、支持功能
