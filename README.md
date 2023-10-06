@@ -12,6 +12,7 @@
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
 *
+
 *如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
 呗**
 
@@ -169,7 +170,11 @@ python decrypt.py --key ******** --db_path ./decrypted/decrypted.db --out_path .
 python get_wx_decrypted_db.py --key ********
 ```
 
-## 四、支持功能
+## 四、解析数据库
+* [parse.py](./parse_db/parse.py) : 数据库解析脚本
+未完待续...
+
+## 五、支持功能
 
 1. 支持微信多开场景，获取多用户信息等
 2. 微信需要登录状态才能获取数据库密钥
