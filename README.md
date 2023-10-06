@@ -161,10 +161,10 @@ git clone https://github.com/xaoyaoo/PyWxDump.git
 python decrypt.py --key ******** --db_path ./decrypted/decrypted.db --out_path ./decrypted/decrypted.db
 ```
 
-自动读取本地微信聊天记录文件夹，解密后保存到当前目录下的decrypted文件夹中
+自动根据注册表读取本地微信聊天记录文件夹，解密后保存到当前目录下的decrypted文件夹中
 
 ```shell
-python get_wx_decrypted_db.py
+python get_wx_decrypted_db.py --key ********
 ```
 
 ## 四、支持功能
