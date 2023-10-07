@@ -4,6 +4,7 @@ import hashlib
 import os
 
 from Cryptodome.Cipher import AES
+# from Crypto.Cipher import AES # 如果上面的导入失败，可以尝试使用这个
 
 SQLITE_FILE_HEADER = "SQLite format 3\x00"  # SQLite文件头
 
