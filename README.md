@@ -12,7 +12,9 @@
 
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
-**如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)呗**
+*
+*如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
+呗**
 
 ## 二、使用方法
 
@@ -109,6 +111,8 @@ print(data)
 
 ```shell
 python get_base_addr.py  --mobile 152******** --name ****** --account ****** --key **********************************************
+
+# return：{'3.9.7.29': [63486984, 63488320, 63486792, 0, 63488256]}
 ```
 
 参数说明：
@@ -121,6 +125,8 @@ python get_base_addr.py  --mobile 152******** --name ****** --account ****** --k
     key = '**********************************************'  # key
     # 需要降低版本使用get_wx_info.py获取key，也可以通过CheatEngine等工具获取
     # 最好是保存之前同微信使用过的key，非常方便
+
+[注]：如果参数错误，得到的对应地址偏移为0，邮箱默认为0
 
 **3.2 通过CheatEngine等工具获取**
 

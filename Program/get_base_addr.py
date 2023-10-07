@@ -169,7 +169,6 @@ class BaseAddr:
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, self.pid)
         array = ctypes.create_string_buffer(self.batch)
-
         for i in range(module_start_addr, module_end_addr, self.batch):
             if ctypes.windll.kernel32.ReadProcessMemory(Handle, ctypes.c_void_p(i), array, self.batch, None) == 0:
                 continue
@@ -178,6 +177,9 @@ class BaseAddr:
             if key in hex_string:
                 self.key_addr_tmp = i + hex_string.find(key)
                 break
+            if ((i - module_start_addr) / self.batch) > 300000:
+                self.key_addr = 0
+                return -1
 
         array_key = []
         for i in range(8):
@@ -204,6 +206,8 @@ class BaseAddr:
         :param addr:
         :return:
         """
+        if addr == 0:
+            return 0
         offset = addr - self.base_address
         return offset
 
