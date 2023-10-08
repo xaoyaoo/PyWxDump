@@ -84,17 +84,7 @@ def get_hex(h_process, lp_base_address):
 
     num = 32
     array2 = (ctypes.c_ubyte * num)()
-
-    lp_base_address2 = (
-            (int(binascii.hexlify(array[7]), 16) << 56) +
-            (int(binascii.hexlify(array[6]), 16) << 48) +
-            (int(binascii.hexlify(array[5]), 16) << 40) +
-            (int(binascii.hexlify(array[4]), 16) << 32) +
-            (int(binascii.hexlify(array[3]), 16) << 24) +
-            (int(binascii.hexlify(array[2]), 16) << 16) +
-            (int(binascii.hexlify(array[1]), 16) << 8) +
-            int(binascii.hexlify(array[0]), 16)
-    )
+    lp_base_address2 = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
     if ctypes.windll.kernel32.ReadProcessMemory(h_process, ctypes.c_void_p(lp_base_address2), ctypes.byref(array2), num,
                                                 0) == 0:
         return ""
@@ -103,16 +93,12 @@ def get_hex(h_process, lp_base_address):
 
 
 def get_file_version(file_path):
-
     info = win32api.GetFileVersionInfo(file_path, "\\")
     ms = info['FileVersionMS']
     ls = info['FileVersionLS']
     file_version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
     # version = parse(file_version)
     return file_version
-
-# def get_wx_id(h_process, lp_base_address):
-
 
 
 def read_info(version_list):
@@ -136,8 +122,6 @@ def read_info(version_list):
                     file_version_str = str(file_version)
 
                     tmp_rd['version'] = file_version_str
-
-                    # print("[+] WeChatVersion: " + file_version_str)
 
                     if file_version_str not in version_list:
                         return "[-] WeChat Current Version Is: " + file_version_str + " Not Supported"
