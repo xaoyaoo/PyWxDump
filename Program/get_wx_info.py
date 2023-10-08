@@ -41,7 +41,6 @@ def get_file_version(file_path):
 
 
 def read_info(version_list):
-    support_list = None
     wechat_process = []
     result = []
 
@@ -54,8 +53,9 @@ def read_info(version_list):
 
     for process in wechat_process:
         tmp_rd = {}
-        tmp_rd['pid'] = process.pid
+        support_list = None
 
+        tmp_rd['pid'] = process.pid
         wechat_base_address = 0
         for module in process.memory_maps(grouped=False):
             if module.path and 'WeChatWin.dll' in module.path:
