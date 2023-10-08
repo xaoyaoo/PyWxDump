@@ -272,17 +272,28 @@ class BaseAddr:
         return result
 
     def search_key(self, key: bytes):
-        pm = self.pm
-        pid = pm.process_id
-        module = pymem.process.module_from_name(pm.process_handle, "WeChatResource.dll")
-        start_addr, mem_size = module.lpBaseOfDll, 30918448
+        pid = self.pm.process_id
 
         batch = 4096
+
+        module_start_addr = 34199871460642
+        module_end_addr = 0
+        for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
+            if process.name() == self.process_name:
+                for module in process.memory_maps(grouped=False):
+                    if "WeChat" in module.path:
+                        start_addr = int(module.addr, 16)
+                        end_addr = start_addr + module.rss
+
+                        if module_start_addr > start_addr:
+                            module_start_addr = start_addr
+                        if module_end_addr < end_addr:
+                            module_end_addr = end_addr
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, pid)
         array = ctypes.create_string_buffer(batch)
         key_addr = 0
-        for i in range(start_addr, start_addr + mem_size, batch):
+        for i in range(module_start_addr, module_end_addr, batch):
             if ReadProcessMemory(Handle, void_p(i), array, batch, None) == 0:
                 continue
             hex_string = array.raw  # 读取到的内存数据
