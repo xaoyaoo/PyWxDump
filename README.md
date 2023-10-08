@@ -1,8 +1,9 @@
 # <center>PyWxDump</center>
 
 * 更新日志（如果有[version_list.json](./Program/version_list.json)缺少的版本，请帮忙添加。）
-    * 2021.10.07 修改获取基址内存搜索方式，防止进入死循环
-    * 2021.10.07 增加了3.9.7.29版本的偏移地址
+    * 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
+    * 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
+    * 2023.10.07 增加了3.9.7.29版本的偏移地址
     * 2023.10.06 增加命令行解密数据库
     * 2023.09.28 增加了数据库部分解析
     * 2023.09.15 增加了3.9.7.25版本的偏移地址
@@ -14,6 +15,7 @@
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
 *
+
 *如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
 呗**
 

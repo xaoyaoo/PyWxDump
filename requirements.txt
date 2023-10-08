@@ -1,3 +1,4 @@
 psutil
 pycryptodomex
 pywin32
+pymem
