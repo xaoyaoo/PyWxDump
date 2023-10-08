@@ -35,8 +35,7 @@ def get_key(h_process, address):
 
 def get_file_version(file_path):
     info = win32api.GetFileVersionInfo(file_path, "\\")
-    ms = info['FileVersionMS']
-    ls = info['FileVersionLS']
+    ms,ls = info['FileVersionMS'],info['FileVersionLS']
     file_version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
     return file_version
 
