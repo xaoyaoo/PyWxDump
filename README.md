@@ -1,6 +1,7 @@
 # <center>PyWxDump</center>
 
 * 更新日志（如果有[version_list.json](./Program/version_list.json)缺少的版本，请帮忙添加。）
+    * 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
     * 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
     * 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
     * 2023.10.07 增加了3.9.7.29版本的偏移地址
@@ -113,7 +114,10 @@ print(data)
 **3.1 通过python脚本获取**
 
 ```shell
-python get_base_addr.py  --mobile 152******** --name ****** --account ****** --key **********************************************
+python get_base_addr.py  --mobile 152***** --name **** --account *** --key ********** --db_path  "****\WeChat Files\wxid_******"
+```
+
+# mobile、name、account为必填参数, key、db_path二者必填其一，使用key时，执行速度快，db_path时，执行速度慢（大约需要10s-60s，也可能更长）
 
 # return：{'3.9.7.29': [63486984, 63488320, 63486792, 0, 63488256]}
 # (十进制)按顺序代表：微信昵称、微信账号、微信手机号、微信邮箱（默认0）、微信KEY
