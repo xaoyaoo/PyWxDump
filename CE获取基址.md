@@ -45,6 +45,8 @@
 计算方式：KEY=用户名-000024
 KEY的基址即：**2FFF970-000024=2FFF94C**
 
+(3.7.5.11以上，KEY=用户名-000040)
+
 ![image](https://user-images.githubusercontent.com/33925462/236711975-db8b891c-68a6-4a72-820e-af53f57a3e39.png)
 
 十进制地址为：50329932
