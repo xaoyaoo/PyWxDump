@@ -208,7 +208,7 @@ if __name__ == '__main__':
     parser.add_argument("--name", type=str, help="微信昵称")
     parser.add_argument("--account", type=str, help="微信账号")
     parser.add_argument("--key", type=str, help="密钥")
-    parser.add_argument("--db_path", type=str, help="加密数据库路径(登录的微信文件夹路径)")
+    parser.add_argument("--db_path", type=str, help="微信文件夹(已经登录微信)路径")
 
     # 解析命令行参数
     args = parser.parse_args()
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     if not args.mobile or not args.name or not args.account:
         raise ValueError("缺少必要的命令行参数！请提供手机号、微信昵称、微信账号。")
     if not args.key and not args.db_path:
-        raise ValueError("缺少必要的命令行参数！请提供密钥或加密数据库路径。")
+        raise ValueError("缺少必要的命令行参数！请提供密钥或微信文件夹(已经登录微信)路径。")
     # 从命令行参数获取值
     mobile = args.mobile
     name = args.name
