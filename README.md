@@ -15,10 +15,8 @@
 
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
-*
-
 *如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
-呗**
+呗*
 
 ## 二、使用方法
 
@@ -117,10 +115,8 @@ print(data)
 python get_base_addr.py  --mobile 152***** --name **** --account *** --key ********** --db_path  "****\WeChat Files\wxid_******"
 ```
 
-
-
 参数说明：
-    
+
     以下参数必选
     mobile = "152********"  # 手机号
     name = "******"  # 微信昵称
@@ -133,7 +129,6 @@ python get_base_addr.py  --mobile 152***** --name **** --account *** --key *****
       # 最好是保存之前同微、同设备信使用过的key，非常方便
     db_path = "****\WeChat Files\wxid_******"  
       # 微信文件夹，通过微信客户端，设置-文件管理-微信文件的默认保存位置获取
-    
 
 return：{'3.9.7.29': [63486984, 63488320, 63486792, 0, 63488256]}
 
