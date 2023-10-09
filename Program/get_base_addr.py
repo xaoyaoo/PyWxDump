@@ -166,7 +166,6 @@ class BaseAddr:
             return maybe_key
 
         def verify_key(keys, wx_db_path):
-
             with open(wx_db_path, "rb") as file:
                 blist = file.read(5000)
             salt = blist[:16]
