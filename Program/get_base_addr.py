@@ -120,25 +120,10 @@ class BaseAddr:
         result = self.search_memory_value(key, self.module_name)
         return result
 
-    def get_key_bias(self, wx_db_path):
+    def get_key_bias(self, wx_db_path, account_bias=0):
         wx_db_path = os.path.join(wx_db_path, "Msg", "MicroMsg.db")
         if not os.path.exists(wx_db_path):
             return False
-
-        module_name = "WeChatWin.dll"
-        pm = self.pm
-        module = pymem.process.module_from_name(pm.process_handle, module_name)
-        start_addr = module.lpBaseOfDll
-        size = module.SizeOfImage
-        mem_data = pm.read_bytes(start_addr, size)
-
-        min_addr = 0xffffffffffffffffffffffff
-        max_addr = 0
-        for module1 in pm.list_modules():
-            if module1.lpBaseOfDll < min_addr:
-                min_addr = module1.lpBaseOfDll
-            if module1.lpBaseOfDll > max_addr:
-                max_addr = module1.lpBaseOfDll
 
         def read_key(addr):
             key = ctypes.create_string_buffer(35)
@@ -180,7 +165,31 @@ class BaseAddr:
                         return keys[i]
                 return b"", 0
 
-        maybe_key = get_maybe_key(mem_data)
+        module_name = "WeChatWin.dll"
+        pm = self.pm
+        module = pymem.process.module_from_name(pm.process_handle, module_name)
+        start_addr = module.lpBaseOfDll
+        size = module.SizeOfImage
+
+        min_addr = 0xffffffffffffffffffffffff
+        max_addr = 0
+        for module1 in pm.list_modules():
+            if module1.lpBaseOfDll < min_addr:
+                min_addr = module1.lpBaseOfDll
+            if module1.lpBaseOfDll > max_addr:
+                max_addr = module1.lpBaseOfDll
+
+        if account_bias > 1:
+            maybe_key = []
+            for i in [0x24, 0x40]:
+                addr = start_addr + account_bias - i
+                mem_data = pm.read_bytes(addr, 8)
+                key = read_key(int.from_bytes(mem_data, byteorder='little'))
+                if key != b"":
+                    maybe_key.append([key, addr - start_addr])
+        else:
+            mem_data = pm.read_bytes(start_addr, size)
+            maybe_key = get_maybe_key(mem_data)
         key, bais = verify_key(maybe_key, wx_db_path)
         return bais
 
@@ -194,7 +203,7 @@ class BaseAddr:
         if self.key:
             key_bias = self.search_key(self.key)
         elif self.db_path:
-            key_bias = self.get_key_bias(self.db_path)
+            key_bias = self.get_key_bias(self.db_path, account_bias)
         else:
             key_bias = 0
         return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
@@ -224,9 +233,10 @@ if __name__ == '__main__':
     key = args.key
     db_path = args.db_path
 
+    st = time.time()
     # 调用 run 函数，并传入参数
     rdata = BaseAddr(account, mobile, name, key, db_path).run()
-
+    print(f"耗时：{time.time() - st}")
     print(rdata)
 
     # 添加到version_list.json
