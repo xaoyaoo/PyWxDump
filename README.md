@@ -17,7 +17,7 @@
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
 <strong><big>
-超级想要star，走过路过，帮忙点个![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)呗
+超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)呗
 ，谢谢啦~</big></strong>
 
 ## 二、使用方法
