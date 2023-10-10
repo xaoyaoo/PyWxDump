@@ -1,6 +1,6 @@
 # <center>PyWxDump</center>
 
-* 更新日志（如果有[version_list.json](./Program/version_list.json)缺少的版本，请帮忙添加。）
+* 更新日志（发现[version_list.json](./Program/version_list.json)缺失或错误，请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))。）
     * 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
     * 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
     * 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
@@ -15,8 +15,8 @@
 
 该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
-*如果觉得好用的话的话，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
-呗*
+<strong>超想要star，走过路过帮忙点[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
+呗，谢谢啦~</strong>
 
 ## 二、使用方法
 

@@ -15,14 +15,16 @@ ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
 
 
-def get_info_without_key(pid, address, n_size=64):
+# 读取内存中的字符串(非key部分)
+def get_info_without_key(h_process, address, n_size=64):
     array = ctypes.create_string_buffer(n_size)
-    if ReadProcessMemory(void_p(pid), void_p(address), array, n_size, 0) == 0: return "None"
+    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
     array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
     text = array.decode('utf-8', errors='ignore')
     return text.strip() if text.strip() != "" else "None"
 
 
+# 读取内存中的key
 def get_key(h_process, address):
     array = ctypes.create_string_buffer(8)
     if ReadProcessMemory(h_process, void_p(address), array, 8, 0) == 0: return "None"
@@ -33,13 +35,15 @@ def get_key(h_process, address):
     return key_string
 
 
+# 读取文件版本
 def get_file_version(file_path):
     info = win32api.GetFileVersionInfo(file_path, "\\")
-    ms,ls = info['FileVersionMS'],info['FileVersionLS']
+    ms, ls = info['FileVersionMS'], info['FileVersionLS']
     file_version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
     return file_version
 
 
+# 读取微信信息(key, name, account, mobile, mail)
 def read_info(version_list):
     wechat_process = []
     result = []
@@ -88,13 +92,16 @@ def read_info(version_list):
 
 
 if __name__ == "__main__":
+    # 读取微信各版本偏移
     version_list = json.load(open("version_list.json", "r", encoding="utf-8"))
-    result = read_info(version_list)
-    if isinstance(result, str):
+    result = read_info(version_list)  # 读取微信信息
+
+    print("=" * 32)
+    if isinstance(result, str):  # 输出报错
         print(result)
-    else:
-        print("=" * 32)
-        for i in result:
-            for k, v in i.items():
+    else:  # 输出结果
+        for i, rlt in enumerate(result):
+            for k, v in rlt.items():
                 print(f"[+] {k:>7}: {v}")
-            print("=" * 32)
+            print(end="-" * 32 + "\n" if i != len(result) - 1 else "")
+    print("=" * 32)
