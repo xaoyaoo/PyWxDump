@@ -29,7 +29,6 @@ def get_key(h_process, address):
     if ReadProcessMemory(h_process, void_p(address), array, 8, 0) == 0: return "None"
     key = ctypes.create_string_buffer(32)
     address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
-    print(hex(address))
     if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
     key_string = bytes(key).hex()
     return key_string
