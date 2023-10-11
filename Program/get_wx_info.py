@@ -5,10 +5,9 @@
 # Author:       xaoyaoo
 # Date:         2023/08/21
 # -------------------------------------------------------------------------------
-import binascii
 import json
 import ctypes
-import win32api
+from win32com.client import Dispatch
 import psutil
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
@@ -30,17 +29,10 @@ def get_key(h_process, address):
     if ReadProcessMemory(h_process, void_p(address), array, 8, 0) == 0: return "None"
     key = ctypes.create_string_buffer(32)
     address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
+    print(hex(address))
     if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
     key_string = bytes(key).hex()
     return key_string
-
-
-# 读取文件版本
-def get_file_version(file_path):
-    info = win32api.GetFileVersionInfo(file_path, "\\")
-    ms, ls = info['FileVersionMS'], info['FileVersionLS']
-    file_version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
-    return file_version
 
 
 # 读取微信信息(key, name, account, mobile, mail)
@@ -57,21 +49,21 @@ def read_info(version_list):
 
     for process in wechat_process:
         tmp_rd = {}
-        support_list = None
 
         tmp_rd['pid'] = process.pid
+        tmp_rd['version'] = Dispatch("Scripting.FileSystemObject").GetFileVersion(process.exe())
+
+        support_list = version_list.get(tmp_rd['version'], None)
+        if not isinstance(support_list, list):
+            return f"[-] WeChat Current Version {tmp_rd['version']} Is Not Supported"
+
         wechat_base_address = 0
         for module in process.memory_maps(grouped=False):
             if module.path and 'WeChatWin.dll' in module.path:
                 wechat_base_address = int(module.addr, 16)
-                tmp_rd['version'] = get_file_version(module.path)
-                support_list = version_list.get(tmp_rd['version'], None)
                 break
-
         if wechat_base_address == 0:
             return f"[-] WeChat WeChatWin.dll Not Found"
-        if not isinstance(support_list, list):
-            return f"[-] WeChat Current Version {tmp_rd['version']} Is Not Supported"
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
 

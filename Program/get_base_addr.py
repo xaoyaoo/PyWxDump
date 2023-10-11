@@ -17,7 +17,8 @@ import winreg
 import threading
 
 import psutil
-import win32api
+# import win32api
+from win32com.client import Dispatch
 from pymem import Pymem
 import pymem
 import hmac
@@ -66,12 +67,9 @@ class BaseAddr:
         return [base_addr + m.start() for m in re.finditer(re.escape(c), string)]
 
     def get_file_version(self, process_name):
-        for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
+        for process in psutil.process_iter(['pid', 'name', 'exe']):
             if process.name() == process_name:
-                file_path = process.exe()
-                info = win32api.GetFileVersionInfo(file_path, "\\")
-                ms, ls = info['FileVersionMS'], info['FileVersionLS']
-                file_version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
+                file_version = Dispatch("Scripting.FileSystemObject").GetFileVersion(process.exe())
                 return file_version
         self.islogin = False
 
@@ -125,18 +123,6 @@ class BaseAddr:
         if not os.path.exists(wx_db_path):
             return False
 
-        def read_key(addr):
-            key = ctypes.create_string_buffer(35)
-            if ReadProcessMemory(pm.process_handle, void_p(addr - 1), key, 35, 0) == 0:
-                return b""
-
-            if b"\x00\x00" in key.raw[1:33]:
-                return b""
-
-            if b"\x00\x00" == key.raw[33:35] and b"\x90" == key.raw[0:1]:
-                return key.raw[1:33]
-            return b""
-
         def get_maybe_key(mem_data):
             maybe_key = []
             for i in range(0, len(mem_data), 8):
@@ -149,6 +135,18 @@ class BaseAddr:
                         continue
                     maybe_key.append([key, i])
             return maybe_key
+
+        def read_key(addr):
+            key = ctypes.create_string_buffer(35)
+            if ReadProcessMemory(pm.process_handle, void_p(addr - 1), key, 35, 0) == 0:
+                return b""
+
+            if b"\x00\x00" in key.raw[1:33]:
+                return b""
+
+            if b"\x00\x00" == key.raw[33:35] and b"\x90" == key.raw[0:1]:
+                return key.raw[1:33]
+            return b""
 
         def verify_key(keys, wx_db_path):
             with open(wx_db_path, "rb") as file:
@@ -171,14 +169,6 @@ class BaseAddr:
         start_addr = module.lpBaseOfDll
         size = module.SizeOfImage
 
-        min_addr = 0xffffffffffffffffffffffff
-        max_addr = 0
-        for module1 in pm.list_modules():
-            if module1.lpBaseOfDll < min_addr:
-                min_addr = module1.lpBaseOfDll
-            if module1.lpBaseOfDll > max_addr:
-                max_addr = module1.lpBaseOfDll
-
         if account_bias > 1:
             maybe_key = []
             for i in [0x24, 0x40]:
@@ -187,9 +177,20 @@ class BaseAddr:
                 key = read_key(int.from_bytes(mem_data, byteorder='little'))
                 if key != b"":
                     maybe_key.append([key, addr - start_addr])
-        else:
-            mem_data = pm.read_bytes(start_addr, size)
-            maybe_key = get_maybe_key(mem_data)
+            key, bais = verify_key(maybe_key, wx_db_path)
+            if bais != 0:
+                return bais
+
+        min_addr = 0xffffffffffffffffffffffff
+        max_addr = 0
+        for module1 in pm.list_modules():
+            if module1.lpBaseOfDll < min_addr:
+                min_addr = module1.lpBaseOfDll
+            if module1.lpBaseOfDll > max_addr:
+                max_addr = module1.lpBaseOfDll + module1.SizeOfImage
+
+        mem_data = pm.read_bytes(start_addr, size)
+        maybe_key = get_maybe_key(mem_data)
         key, bais = verify_key(maybe_key, wx_db_path)
         return bais
 
@@ -200,13 +201,14 @@ class BaseAddr:
         mobile_bias = self.search_memory_value(self.mobile)
         name_bias = self.search_memory_value(self.name)
         account_bias = self.search_memory_value(self.account)
+        version_bias = self.search_memory_value(self.version.encode("utf-8"))
         if self.key:
             key_bias = self.search_key(self.key)
         elif self.db_path:
             key_bias = self.get_key_bias(self.db_path, account_bias)
         else:
             key_bias = 0
-        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
+        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias, version_bias]}
 
 
 if __name__ == '__main__':
@@ -230,13 +232,11 @@ if __name__ == '__main__':
     mobile = args.mobile
     name = args.name
     account = args.account
-    key = args.key
+    key = None  # args.key
     db_path = args.db_path
 
-    st = time.time()
     # 调用 run 函数，并传入参数
     rdata = BaseAddr(account, mobile, name, key, db_path).run()
-    print(f"耗时：{time.time() - st}")
     print(rdata)
 
     # 添加到version_list.json
