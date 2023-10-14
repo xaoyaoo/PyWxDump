@@ -9,7 +9,7 @@ import json
 import argparse
 import os
 
-from app import *
+from . import *
 
 
 class MainBiasAddr():
@@ -23,12 +23,13 @@ class MainBiasAddr():
         sb_bias_addr.add_argument("--db_path", type=str, help="(与key二选一)已登录账号的微信文件夹路径")
         sb_bias_addr.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径",
                                   default="./app/version_list.json")
+        self.sb_bias_addr = sb_bias_addr
         return sb_bias_addr
 
     def run(self, args):
         # 判断是否至少输入一个参数
         if not args.key and not args.db_path:
-            sb_bias_addr.error("必须至少指定 --key 或 --db_path 参数中的一个")
+            self.sb_bias_addr.error("必须至少指定 --key 或 --db_path 参数中的一个")
 
         # 从命令行参数获取值
         mobile = args.mobile
@@ -80,8 +81,9 @@ class MainWxDbPath():
         sb_wx_db_path = parser.add_parser("wx_db", help="获取微信文件夹路径")
         sb_wx_db_path.add_argument("-r", "--require_list", type=str,
                                    help="(可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )",
-                                   default="all")
-        sb_wx_db_path.add_argument("-wf", type=str, help="(可选)'WeChat Files'路径", default=None)
+                                   default="all", metavar="")
+        sb_wx_db_path.add_argument("-wf", "--wx_files", type=str, help="(可选)'WeChat Files'路径", default=None,
+                                   metavar="")
         return sb_wx_db_path
 
     def run(self, args):
@@ -112,10 +114,11 @@ class MainDecrypt():
     def init_parses(self, parser):
         # 添加 'decrypt' 子命令解析器
         sb_decrypt = parser.add_parser("decrypt", help="解密微信数据库")
-        sb_decrypt.add_argument("-k", "--key", type=str, help="密钥", required=True)
-        sb_decrypt.add_argument("-i", "--db_path", type=str, help="数据库路径(目录or文件)", required=True)
+        sb_decrypt.add_argument("-k", "--key", type=str, help="密钥", required=True, metavar="")
+        sb_decrypt.add_argument("-i", "--db_path", type=str, help="数据库路径(目录or文件)", required=True, metavar="")
         sb_decrypt.add_argument("-o", "--out_path", type=str,
-                                help="输出路径(必须是目录),输出文件为 out_path/de_{original_name}", required=True)
+                                help="输出路径(必须是目录),输出文件为 out_path/de_{original_name}", required=True,
+                                metavar="")
         return sb_decrypt
 
     def run(self, args):
@@ -202,12 +205,12 @@ class MainAll():
         print("=" * 32)
 
 
-if __name__ == '__main__':
+def console_run():
     # 创建命令行参数解析器
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
     # 添加子命令解析器
-    subparsers = parser.add_subparsers(dest="mode", help="""运行模式:""")
+    subparsers = parser.add_subparsers(dest="mode", help="""运行模式:""", required=True, metavar="mode")
 
     # 添加 'bias_addr' 子命令解析器
     main_bias_addr = MainBiasAddr()
@@ -235,6 +238,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()  # 解析命令行参数
 
+    if not any(vars(args).values()):
+        parser.print_help()
     # 根据不同的 'mode' 参数，执行不同的操作
     if args.mode == "bias_addr":
         main_bias_addr.run(args)
@@ -248,3 +253,7 @@ if __name__ == '__main__':
         main_parse_wx_db.run(args)
     elif args.mode == "all":
         main_all.run(args)
+
+
+if __name__ == '__main__':
+    console_run()

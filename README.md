@@ -72,7 +72,7 @@ pip install -r requirements.txt
 ### 2.1 命令行
 
 ```shell script
-python main.py [模式] [参数]
+python -m app.command 模式 [参数]
 #  运行模式(mode):
 #    bias_addr     获取微信基址偏移
 #    wx_info       获取微信信息
@@ -87,7 +87,7 @@ python main.py [模式] [参数]
 以下是示例命令：
 
 ```shell script
-python main.py bias_addr -h
+python -m app.command  bias_addr -h
 #usage: main.py bias_addr [-h] --mobile MOBILE --name NAME --account ACCOUNT [--key KEY] [--db_path DB_PATH] [-vlp VLP]
 #options:
 #  -h, --help         show this help message and exit
@@ -98,13 +98,13 @@ python main.py bias_addr -h
 #  --db_path DB_PATH  (与key二选一)已登录账号的微信文件夹路径
 #  -vlp VLP           (可选)微信版本偏移文件路径
 
-python main.py wx_info -h
+python -m app.command  wx_info -h
 #usage: main.py wx_info [-h] [-vlp VLP]
 #options:
 #  -h, --help  show this help message and exit
 #  -vlp VLP    (可选)微信版本偏移文件路径
 
-python main.py wx_db -h
+python -m app.command  wx_db -h
 #usage: main.py wx_db [-h] [-r REQUIRE_LIST] [-wf WF]
 #options:
 #  -h, --help            show this help message and exit
@@ -112,7 +112,7 @@ python main.py wx_db -h
 #                        (可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )
 #  -wf WF                (可选)'WeChat Files'路径
 
-python main.py decrypt -h
+python -m app.command  decrypt -h
 #usage: main.py decrypt [-h] -k KEY -i DB_PATH -o OUT_PATH
 #options:
 #  -h, --help            show this help message and exit
@@ -122,13 +122,13 @@ python main.py decrypt -h
 #  -o OUT_PATH, --out_path OUT_PATH
 #                        输出路径(必须是目录),输出文件为 out_path/de_{original_name}
 
-python main.py analyse -h
+python -m app.command  analyse -h
 #usage: main.py analyse [-h] [--arg ARG]
 #options:
 #  -h, --help  show this help message and exit
 #  --arg ARG   参数
 
-python main.py all -h
+python -m app.command  all -h
 #usage: main.py all [-h]
 #options:
 #  -h, --help  show this help message and exit
