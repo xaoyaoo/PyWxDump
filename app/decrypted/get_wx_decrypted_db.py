@@ -248,12 +248,26 @@ def merge_media_msg_db(db_path: list, save_path: str):
     return save_path
 
 
-def main(keys=None):
+if __name__ == '__main__':
+    # 创建命令行参数解析器
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-k", "--key", help="解密密钥", nargs="+", required=True)
+
+    # 解析命令行参数
+    args = parser.parse_args()
+
+    # 检查是否缺少必要参数，并抛出错误
+    if not args.key:
+        raise ValueError("缺少必要的命令行参数！请提供密钥。")
+
+    # 从命令行参数获取值
+    keys = args.key
+
     decrypted_ROOT = os.path.join(os.getcwd(), "decrypted")
 
     if keys is None:
         print("keys is None")
-        return False
+        exit(0)
     if isinstance(keys, str):
         keys = [keys]
 
@@ -293,22 +307,3 @@ def main(keys=None):
 
         shutil.rmtree(decrypted_path_tmp)  # 删除临时文件
         print(f"解密完成：{user}, {decrypted_path}")
-    return True
-
-
-if __name__ == '__main__':
-    # 创建命令行参数解析器
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-k", "--key", help="解密密钥", nargs="+", required=True)
-
-    # 解析命令行参数
-    args = parser.parse_args()
-
-    # 检查是否缺少必要参数，并抛出错误
-    if not args.key:
-        raise ValueError("缺少必要的命令行参数！请提供密钥。")
-
-    # 从命令行参数获取值
-    keys = args.key
-
-    main(keys)

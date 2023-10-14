@@ -42,7 +42,7 @@ def validate_key(key, salt, first, mac_salt):
         return False
 
 
-class BaseAddr:
+class BiasAddr:
     def __init__(self, account, mobile, name, key, db_path):
         self.account = account.encode("utf-8")
         self.mobile = mobile.encode("utf-8")
@@ -201,22 +201,22 @@ class BaseAddr:
         mobile_bias = self.search_memory_value(self.mobile)
         name_bias = self.search_memory_value(self.name)
         account_bias = self.search_memory_value(self.account)
-        version_bias = self.search_memory_value(self.version.encode("utf-8"))
+        # version_bias = self.search_memory_value(self.version.encode("utf-8"))
         if self.key:
             key_bias = self.search_key(self.key)
         elif self.db_path:
             key_bias = self.get_key_bias(self.db_path, account_bias)
         else:
             key_bias = 0
-        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias, version_bias]}
+        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
 
 
 if __name__ == '__main__':
     # 创建命令行参数解析器
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mobile", type=str, help="手机号")
-    parser.add_argument("--name", type=str, help="微信昵称")
-    parser.add_argument("--account", type=str, help="微信账号")
+    parser.add_argument("--mobile", type=str, help="手机号", required=True)
+    parser.add_argument("--name", type=str, help="微信昵称", required=True)
+    parser.add_argument("--account", type=str, help="微信账号", required=True)
     parser.add_argument("--key", type=str, help="密钥")
     parser.add_argument("--db_path", type=str, help="微信文件夹(已经登录微信)路径")
 
@@ -232,16 +232,16 @@ if __name__ == '__main__':
     mobile = args.mobile
     name = args.name
     account = args.account
-    key = None  # args.key
+    key = args.key
     db_path = args.db_path
 
     # 调用 run 函数，并传入参数
-    rdata = BaseAddr(account, mobile, name, key, db_path).run()
+    rdata = BiasAddr(account, mobile, name, key, db_path).run()
     print(rdata)
 
     # 添加到version_list.json
-    with open("version_list.json", "r", encoding="utf-8") as f:
+    with open("../version_list.json", "r", encoding="utf-8") as f:
         data = json.load(f)
         data.update(rdata)
-    with open("version_list.json", "w", encoding="utf-8") as f:
+    with open("../version_list.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)

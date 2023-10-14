@@ -84,7 +84,7 @@ def read_info(version_list):
 
 if __name__ == "__main__":
     # 读取微信各版本偏移
-    version_list = json.load(open("version_list.json", "r", encoding="utf-8"))
+    version_list = json.load(open("../version_list.json", "r", encoding="utf-8"))
     result = read_info(version_list)  # 读取微信信息
 
     print("=" * 32)
