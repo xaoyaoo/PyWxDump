@@ -1,32 +1,35 @@
 # <center>PyWxDump</center>
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+
 [![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump)
 
-* 更新日志（发现[version_list.json](app/version_list.json)
-  缺失或错误，请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))：
-    * 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
-    * 2023.10.11 添加"3.9.5.81"版本的偏移地址[#10](https://github.com/xaoyaoo/PyWxDump/issues/10),
-      感谢@[sv3nbeast](https://github.com/sv3nbeast)
-    * 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
-    * 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
-    * 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
-    * 2023.10.07 增加了3.9.7.29版本的偏移地址
-    * 2023.10.06 增加命令行解密数据库
-    * 2023.09.28 增加了数据库部分解析
-    * 2023.09.15 增加了3.9.7.25版本的偏移地址
+#### 更新日志（发现[version_list.json](app/version_list.json)缺失或错误，请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))：
+
+* 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
+* 2023.10.11 添加"3.9.5.81"版本的偏移地址[#10](https://github.com/xaoyaoo/PyWxDump/issues/10)
+  ,感谢@[sv3nbeast](https://github.com/sv3nbeast)
+* 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
+* 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
+* 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
+* 2023.10.07 增加了3.9.7.29版本的偏移地址
+* 2023.10.06 增加命令行解密数据库
+* 2023.09.28 增加了数据库部分解析
+* 2023.09.15 增加了3.9.7.25版本的偏移地址
 
 # 一、项目介绍
 
-本项目可以获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
+## 1. 项目简介
 
-该分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
+本项目可以获取基址的偏移，获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
+
+本分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
 <strong><big>
 超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
 呗，谢谢啦~</big></strong>
 
-**目录结构**
+## 2. 项目结构
 
 ```
 PyWxDump
@@ -49,7 +52,6 @@ PyWxDump
 ├─ README.md              
 └─ requirements.txt
 ```
-
 
 # 二、使用方法
 
@@ -145,7 +147,7 @@ from app import *
 * 关于数据库解析，参考[wx数据库简述.md](doc/wx数据库简述.md)
 * 关于更多使用方法，以及各个模块的使用方法，参考前一版本的[python1.0_README.md](doc/python1.0_README.md)
 
-## 三、支持功能
+# 三、支持功能
 
 1. 支持微信多开场景，获取多用户信息等
 2. 微信需要登录状态才能获取数据库密钥
@@ -163,7 +165,7 @@ from app import *
 4. 自行备份(日常备份自己留存)
 5. 等等...............
 
-## 四、免责声明（非常重要！！！！！！！）
+# 四、免责声明（非常重要！！！！！！！）
 
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
 
