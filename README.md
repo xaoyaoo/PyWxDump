@@ -60,7 +60,7 @@ PyWxDump
 ## 1. 安装
 
 ```shell script
-git clone http://github.com/xaoyaoo/PyWxDump.git
+git clone https://github.com/xaoyaoo/PyWxDump.git
 cd PyWxDump
 python -m pip install -U .
 ```
