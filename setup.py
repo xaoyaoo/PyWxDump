@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.1.1"
+version = "2.1.2"
 setup(
     name="pywxdump",
     author="xaoyaoo",
