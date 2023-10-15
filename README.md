@@ -68,7 +68,7 @@ python -m pip install -U .
 或者
 
 ```shell script
-pip install git+http://github.com/xaoyaoo/PyWxDump.git
+pip install git+git://github.com/xaoyaoo/PyWxDump.git
 ```
 
 **说明**：
