@@ -3,6 +3,9 @@
 # Name:         __init__.py.py
 # Description:  
 # Author:       xaoyaoo
-# Date:         2023/10/14
+# Date:         2023/10/15
 # -------------------------------------------------------------------------------
-from .get_bias_addr import BiasAddr
+
+
+if __name__ == '__main__':
+    pass

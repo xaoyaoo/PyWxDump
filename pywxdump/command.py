@@ -11,6 +11,8 @@ import os
 
 from . import *
 
+# version_list_path = os.path.join(os.path.dirname(__file__), "version_list.json")
+
 
 class MainBiasAddr():
     def init_parses(self, parser):
@@ -21,8 +23,8 @@ class MainBiasAddr():
         sb_bias_addr.add_argument("--account", type=str, help="微信账号", required=True)
         sb_bias_addr.add_argument("--key", type=str, help="(与db_path二选一)密钥")
         sb_bias_addr.add_argument("--db_path", type=str, help="(与key二选一)已登录账号的微信文件夹路径")
-        sb_bias_addr.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径",
-                                  default="./app/version_list.json")
+        sb_bias_addr.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径,如有，则自动更新",
+                                  default=None)
         self.sb_bias_addr = sb_bias_addr
         return sb_bias_addr
 
@@ -37,15 +39,16 @@ class MainBiasAddr():
         account = args.account
         key = args.key
         db_path = args.db_path
-        version_list_path = args.vlp
+        vlp = args.vlp
         # 调用 run 函数，并传入参数
         rdata = BiasAddr(account, mobile, name, key, db_path).run()
         print(rdata)
 
-        # 添加到version_list.json
-        version_list = json.load(open(version_list_path, "r", encoding="utf-8"))
-        version_list.update(rdata)
-        json.dump(version_list, open(version_list_path, "w", encoding="utf-8"), ensure_ascii=False, indent=4)
+        if vlp is not None:
+            # 添加到version_list.json
+            version_list = json.load(open(vlp, "r", encoding="utf-8"))
+            version_list.update(rdata)
+            json.dump(version_list, open(vlp, "w", encoding="utf-8"), ensure_ascii=False, indent=4)
 
         return rdata
 
@@ -54,13 +57,13 @@ class MainWxInfo():
     def init_parses(self, parser):
         # 添加 'wx_info' 子命令解析器
         sb_wx_info = parser.add_parser("wx_info", help="获取微信信息")
-        sb_wx_info.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径", default="./app/version_list.json")
+        sb_wx_info.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
         return sb_wx_info
 
     def run(self, args):
         # 读取微信各版本偏移
-        version_list_path = args.vlp
-        version_list = json.load(open(version_list_path, "r", encoding="utf-8"))
+        VERSION_LIST_PATH = args.vlp
+        version_list = json.load(open(VERSION_LIST_PATH, "r", encoding="utf-8"))
         result = read_info(version_list)  # 读取微信信息
 
         print("=" * 32)
@@ -158,7 +161,7 @@ class MainAll():
 
     def run(self, args):
         # 获取微信信息
-        args.vlp = "./app/version_list.json"
+        args.vlp = VERSION_LIST_PATH
         result_WxInfo = MainWxInfo().run(args)
         keys = [i.get('key', "") for i in result_WxInfo]
 

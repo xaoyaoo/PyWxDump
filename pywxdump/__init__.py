@@ -11,20 +11,8 @@ from .wx_info.get_wx_db import get_wechat_db
 from .decrypted.decrypt import batch_decrypt, decrypt
 from .decrypted.get_wx_decrypted_db import all_decrypt, merge_copy_msg_db, merge_msg_db, merge_media_msg_db
 from .analyse.parse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio
+import os,json
 
-__all__ = [
-    "BiasAddr",
-    "read_info",
-    "get_wechat_db",
-    "batch_decrypt",
-    "decrypt",
-    "merge_copy_msg_db",
-    "merge_msg_db",
-    "merge_media_msg_db",
-    "read_img_dat",
-    "read_emoji",
-
-    "decompress_CompressContent",
-    "read_audio_buf",
-    "read_audio",
-]
+VERSION_LIST_PATH = os.path.join(os.path.dirname(__file__), "version_list.json")
+with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
+    VERSION_LIST = json.load(f)

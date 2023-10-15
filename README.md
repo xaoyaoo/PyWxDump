@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump)
 
 #### 更新日志（发现[version_list.json](app/version_list.json)缺失或错误，请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))：
-
+* 2023.10.15 将整个项目作为包安装，增加命令行统一操作
 * 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
 * 2023.10.11 添加"3.9.5.81"版本的偏移地址[#10](https://github.com/xaoyaoo/PyWxDump/issues/10)
   ,感谢@[sv3nbeast](https://github.com/sv3nbeast)
@@ -44,21 +44,30 @@ PyWxDump
 │  ├─ wx_info                     # 获取微信基本信息
 │  │  ├─ get_wx_info.py               # 获取微信基本信息脚本
 │  │  └─ get_wx_db.py                 # 获取本地所有的微信相关数据库
+│  ├─ command.py                  # 命令行入口
 │  └─ version_list.json           # 微信版本列表
 ├─ doc                        # 项目文档
 │  ├─ wx数据库简述.md               # wx数据库简述
 │  └─ CE获取基址.md                 # CE获取基址
-├─ main.py                  # 命令行入口
 ├─ README.md              
+├─ setup.py                   # 安装脚本
 └─ requirements.txt
+
 ```
 
 # 二、使用方法
 
-## 1. 安装依赖
+## 1. 安装
 
 ```shell script
-pip install -r requirements.txt
+cd PyWxDump
+python -m pip install -U .
+```
+
+或者
+
+```shell script
+pip install git+git://github.com/xaoyaoo/PyWxDump.git
 ```
 
 **说明**：
@@ -71,8 +80,10 @@ pip install -r requirements.txt
 
 ### 2.1 命令行
 
+激活虚拟环境后（如果有的话），在项目根目录下运行：
+
 ```shell script
-python -m app.command 模式 [参数]
+wxdump 模式 [参数]
 #  运行模式(mode):
 #    bias_addr     获取微信基址偏移
 #    wx_info       获取微信信息
@@ -87,7 +98,7 @@ python -m app.command 模式 [参数]
 以下是示例命令：
 
 ```shell script
-python -m app.command  bias_addr -h
+wxdump bias_addr -h
 #usage: main.py bias_addr [-h] --mobile MOBILE --name NAME --account ACCOUNT [--key KEY] [--db_path DB_PATH] [-vlp VLP]
 #options:
 #  -h, --help         show this help message and exit
@@ -98,13 +109,13 @@ python -m app.command  bias_addr -h
 #  --db_path DB_PATH  (与key二选一)已登录账号的微信文件夹路径
 #  -vlp VLP           (可选)微信版本偏移文件路径
 
-python -m app.command  wx_info -h
+wxdump wx_info -h
 #usage: main.py wx_info [-h] [-vlp VLP]
 #options:
 #  -h, --help  show this help message and exit
 #  -vlp VLP    (可选)微信版本偏移文件路径
 
-python -m app.command  wx_db -h
+wxdump wx_db -h
 #usage: main.py wx_db [-h] [-r REQUIRE_LIST] [-wf WF]
 #options:
 #  -h, --help            show this help message and exit
@@ -112,7 +123,7 @@ python -m app.command  wx_db -h
 #                        (可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )
 #  -wf WF                (可选)'WeChat Files'路径
 
-python -m app.command  decrypt -h
+wxdump decrypt -h
 #usage: main.py decrypt [-h] -k KEY -i DB_PATH -o OUT_PATH
 #options:
 #  -h, --help            show this help message and exit
@@ -122,13 +133,13 @@ python -m app.command  decrypt -h
 #  -o OUT_PATH, --out_path OUT_PATH
 #                        输出路径(必须是目录),输出文件为 out_path/de_{original_name}
 
-python -m app.command  analyse -h
+wxdump analyse -h
 #usage: main.py analyse [-h] [--arg ARG]
 #options:
 #  -h, --help  show this help message and exit
 #  --arg ARG   参数
 
-python -m app.command  all -h
+wxdump all -h
 #usage: main.py all [-h]
 #options:
 #  -h, --help  show this help message and exit
@@ -137,8 +148,29 @@ python -m app.command  all -h
 ### 2.2 python API
 
 ```python
-from app import *
 # 单独使用各模块，返回值一般为字典，参数参考命令行
+import pywxdump
+from pywxdump import VERSION_LIST_PATH, VERSION_LIST
+
+# 1. 获取基址偏移
+from pywxdump.bias_addr import BiasAddr
+bias_addr = BiasAddr(VERSION_LIST_PATH, VERSION_LIST).run()
+
+# 2. 获取微信信息
+from pywxdump.wx_info import read_info
+wx_info = read_info(VERSION_LIST)
+
+# 3. 获取微信文件夹路径
+from pywxdump.wx_info import get_wechat_db
+wx_db = get_wechat_db()
+
+# 4. 解密数据库
+from pywxdump.decrypted import batch_decrypt
+batch_decrypt("key", "db_path", "out_path")
+
+# 5. 解析数据库
+from pywxdump.analyse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio
+pass
 ```
 
 【注】:

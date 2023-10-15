@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.0.1"
+version = "2.0.8"
 setup(
     name="pywxdump",
     author="xaoyaoo",
@@ -15,9 +15,16 @@ setup(
     url="https://github.com/xaoyaoo/PyWxDump",
     license='MIT',
 
-    packages=find_packages(),
+    packages=['pywxdump', 'pywxdump.bias_addr', 'pywxdump.wx_info', 'pywxdump.decrypted', 'pywxdump.analyse'],
+    package_dir={'pywxdump': 'pywxdump',
+                 'pywxdump.bias_addr': 'pywxdump/bias_addr',
+                 'pywxdump.wx_info': 'pywxdump/wx_info',
+                 'pywxdump.decrypted': 'pywxdump/decrypted',
+                 'pywxdump.analyse': 'pywxdump/analyse',
+                 },
+
     package_data={
-        'app': ['version_list.json'],
+        'pywxdump': ['version_list.json'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -32,7 +39,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'wxdump = app.command:console_run',
+            'wxdump = pywxdump.command:console_run',
         ],
     },
 )
