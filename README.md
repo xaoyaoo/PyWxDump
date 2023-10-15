@@ -5,6 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump)
 
 #### 更新日志（发现[version_list.json](app/version_list.json)缺失或错误，请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))：
+
 * 2023.10.15 将整个项目作为包安装，增加命令行统一操作
 * 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
 * 2023.10.11 添加"3.9.5.81"版本的偏移地址[#10](https://github.com/xaoyaoo/PyWxDump/issues/10)
@@ -59,23 +60,25 @@ PyWxDump
 
 ## 1. 安装
 
+### 1.1 从pypi安装
+
+```shell script
+pip install pywxdump
+```
+
+### 1.2 从源码安装
+
 ```shell script
 git clone https://github.com/xaoyaoo/PyWxDump.git
 cd PyWxDump
 python -m pip install -U .
 ```
 
-或者
+或
 
 ```shell script
 pip install git+git://github.com/xaoyaoo/PyWxDump.git
 ```
-
-**说明**：
-
-1. requirements.txt中的包可能不全，如果运行报错，请自行安装缺少的包
-2. 如果运行报错，请检查python版本，本项目使用的是python3.10
-3. 安装pycryptodome时可能会报错，可以使用下面的命令安装，自行搜索解决方案（该包为解密的核心包）
 
 ## 2. 使用方法
 
@@ -155,22 +158,27 @@ from pywxdump import VERSION_LIST_PATH, VERSION_LIST
 
 # 1. 获取基址偏移
 from pywxdump.bias_addr import BiasAddr
+
 bias_addr = BiasAddr(VERSION_LIST_PATH, VERSION_LIST).run()
 
 # 2. 获取微信信息
 from pywxdump.wx_info import read_info
+
 wx_info = read_info(VERSION_LIST)
 
 # 3. 获取微信文件夹路径
 from pywxdump.wx_info import get_wechat_db
+
 wx_db = get_wechat_db()
 
 # 4. 解密数据库
 from pywxdump.decrypted import batch_decrypt
+
 batch_decrypt("key", "db_path", "out_path")
 
 # 5. 解析数据库
 from pywxdump.analyse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio
+
 pass
 ```
 
