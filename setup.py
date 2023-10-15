@@ -36,6 +36,10 @@ setup(
         "pycryptodomex",
         "pywin32",
         "pymem",
+        "silk-python",
+        "pyaudio",
+        "requests",
+        "pillow"
     ],
     entry_points={
         'console_scripts': [
