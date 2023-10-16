@@ -1,13 +1,17 @@
 # <center>PyWxDump</center>
 
-[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
 [![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump)
 
-#### 更新日志（发现[version_list.json](app/version_list.json)缺失或错误，请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))：
+#### 更新日志：
 
+（发现[version_list.json](app/version_list.json)
+缺失或错误，亦或有其他想要的功能，都请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))
+
+* 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12),感谢@[GentlemanII](https://github.com/GentlemanII)
 * 2023.10.15 将整个项目作为包安装，增加命令行统一操作
 * 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
-* 2023.10.11 添加"3.9.5.81"版本的偏移地址[#10](https://github.com/xaoyaoo/PyWxDump/issues/10),感谢@[sv3nbeast](https://github.com/sv3nbeast)
+* 2023.10.11 添加"3.9.5.81"版本的偏移[#10](https://github.com/xaoyaoo/PyWxDump/issues/10),感谢@[sv3nbeast](https://github.com/sv3nbeast)
 * 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
 * 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
 * 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
@@ -28,7 +32,16 @@
 超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
 呗，谢谢啦~</big></strong>
 
-## 2. 项目结构
+## 2. 功能介绍
+
+* （1）获取微信昵称、微信账号、微信手机号、微信邮箱、微信KEY的基址偏移
+* （2）根据内置的偏移地址列表，获取微信的微信昵称、微信账号、微信手机号、微信邮箱、微信KEY
+* （3）获取微信文件夹路径
+* （4）根据key解密微信数据库
+* （5）提供数据库中部分加密内容解析工具
+* （6）提供数据库部分字段说明
+
+## 3. 项目结构
 
 ```
 PyWxDump

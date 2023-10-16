@@ -20,7 +20,8 @@ def decrypt(key: str, db_path, out_path):
         return f"[-] db_path:'{db_path}' File not found!"
     if not os.path.exists(os.path.dirname(out_path)):
         return f"[-] out_path:'{out_path}' File not found!"
-
+    if len(key) != 64:
+        return f"[-] key:'{key}' Error!"
     password = bytes.fromhex(key.strip())
     with open(db_path, "rb") as file:
         blist = file.read()
