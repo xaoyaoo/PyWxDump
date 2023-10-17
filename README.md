@@ -1,7 +1,19 @@
 # <center>PyWxDump</center>
 
 [![Python](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
-[![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump)
+[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/xaoyaoo/pywxdump)](https://github.com/xaoyaoo/PyWxDump)
+[![GitHub all releases](https://img.shields.io/github/downloads/xaoyaoo/pywxdump/total)](https://github.com/xaoyaoo/PyWxDump)
+[![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg)](https://github.com/xaoyaoo/PyWxDump)
+[![GitHub forks](https://img.shields.io/github/forks/xaoyaoo/PyWxDump.svg)](https://github.com/xaoyaoo/PyWxDump/fork)
+[![GitHub issues](https://img.shields.io/github/issues/xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/issues)
+
+[![PyPI](https://img.shields.io/pypi/v/pywxdump)](https://pypi.org/project/pywxdump/)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
+[![PyPI - Format](https://img.shields.io/pypi/format/pywxdump)](https://pypi.org/project/pywxdump/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
+
+
+[![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
@@ -249,4 +261,4 @@ pass
 
 # 五、许可证
 
-[![GitHub license](https://img.shields.io/github/license/xaoyaoo/PyWxDump.svg)](./LICENSE)
+[![GitHub license](https://img.shields.io/pypi/l/pywxdump)](./LICENSE)
