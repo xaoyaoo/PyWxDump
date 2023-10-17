@@ -26,7 +26,7 @@
 
 ## 1. 项目简介
 
-本项目可以获取基址的偏移，获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
+PyWxDump可以获取基址的偏移，获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
 
 * <strong><big>
   超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
