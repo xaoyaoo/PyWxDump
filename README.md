@@ -76,7 +76,8 @@ PyWxDump
 
 PyWxDump是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
-* 如发现[version_list.json](pywxdump/version_list.json)缺失或错误, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
+* 如发现[version_list.json](pywxdump/version_list.json)缺失或错误,
+  请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 
@@ -244,3 +245,7 @@ pass
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
 
 请勿利用本项目的相关技术从事非法测试，如因此产生的一切不良后果与项目作者无关。
+
+# 五、许可证
+
+[![GitHub license](https://img.shields.io/github/license/xaoyaoo/PyWxDump.svg)](./LICENSE)
