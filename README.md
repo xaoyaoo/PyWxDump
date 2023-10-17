@@ -12,8 +12,8 @@
 [![PyPI - Format](https://img.shields.io/pypi/format/pywxdump)](https://pypi.org/project/pywxdump/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
 
-
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
+
 
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
