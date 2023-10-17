@@ -3,15 +3,15 @@
 [![Python](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
 [![GitHub stars](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump)
 
-#### 更新日志：
+<details>
+<summary><strong>更新日志(点击展开)：</strong></summary>
 
-（发现[version_list.json](app/version_list.json)
-缺失或错误，亦或有其他想要的功能，都请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues))
-
-* 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12),感谢@[GentlemanII](https://github.com/GentlemanII)
+* 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12)
+  ,感谢@[GentlemanII](https://github.com/GentlemanII)
 * 2023.10.15 将整个项目作为包安装，增加命令行统一操作
 * 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
-* 2023.10.11 添加"3.9.5.81"版本的偏移[#10](https://github.com/xaoyaoo/PyWxDump/issues/10),感谢@[sv3nbeast](https://github.com/sv3nbeast)
+* 2023.10.11 添加"3.9.5.81"版本的偏移[#10](https://github.com/xaoyaoo/PyWxDump/issues/10)
+  ,感谢@[sv3nbeast](https://github.com/sv3nbeast)
 * 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
 * 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
 * 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
@@ -20,17 +20,17 @@
 * 2023.09.28 增加了数据库部分解析
 * 2023.09.15 增加了3.9.7.25版本的偏移地址
 
+</details>
+
 # 一、项目介绍
 
 ## 1. 项目简介
 
 本项目可以获取基址的偏移，获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
 
-本分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
-
-<strong><big>
-超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
-呗，谢谢啦~</big></strong>
+* <strong><big>
+  超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
+  呗，谢谢啦~</big></strong>
 
 ## 2. 功能介绍
 
@@ -43,9 +43,12 @@
 
 ## 3. 项目结构
 
+<details>
+<summary>点击展开</summary>
+
 ```
 PyWxDump
-├─ app                        # 项目代码,存放各个模块
+├─ pywxdump                        # 项目代码,存放各个模块
 │  ├─ analyse                     # 解析数据库
 │  │  └─ parse.py                     # 解析数据库脚本，可以解析语音、图片、聊天记录等
 │  ├─ bias_addr                   # 获取偏移地址
@@ -59,13 +62,22 @@ PyWxDump
 │  ├─ command.py                  # 命令行入口
 │  └─ version_list.json           # 微信版本列表
 ├─ doc                        # 项目文档
+│  ├─ python1.0_README.md         # python1.0版本的README
 │  ├─ wx数据库简述.md               # wx数据库简述
 │  └─ CE获取基址.md                 # CE获取基址
 ├─ README.md              
 ├─ setup.py                   # 安装脚本
 └─ requirements.txt
-
 ```
+
+</details>
+
+## 4. 其他
+
+本分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
+
+如发现[version_list.json](app/version_list.json)
+缺失或错误，亦或有其他想要的功能，都请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues)
 
 # 二、使用方法
 
