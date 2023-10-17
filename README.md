@@ -74,7 +74,7 @@ PyWxDump
 
 ## 4. 其他
 
-本分支是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
+PyWxDump是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
 
 * 如发现[version_list.json](pywxdump/version_list.json)缺失或错误, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
