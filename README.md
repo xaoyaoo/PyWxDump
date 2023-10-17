@@ -6,6 +6,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.10.17 add LICENSE
 * 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12)
   ,感谢@[GentlemanII](https://github.com/GentlemanII)
 * 2023.10.15 将整个项目作为包安装，增加命令行统一操作
