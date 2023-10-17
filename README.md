@@ -92,15 +92,15 @@ pip install pywxdump
 ### 1.2 从源码安装
 
 ```shell script
-git clone https://github.com/xaoyaoo/PyWxDump.git
-cd PyWxDump
-python -m pip install -U .
+pip install git+git://github.com/xaoyaoo/PyWxDump.git
 ```
 
 或
 
 ```shell script
-pip install git+git://github.com/xaoyaoo/PyWxDump.git
+git clone https://github.com/xaoyaoo/PyWxDump.git
+cd PyWxDump
+python -m pip install -U .
 ```
 
 ## 2. 使用方法
