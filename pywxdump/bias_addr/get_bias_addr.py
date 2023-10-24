@@ -15,6 +15,7 @@ import re
 import time
 import winreg
 import threading
+import platform
 
 import psutil
 # import win32api
@@ -55,6 +56,8 @@ class BiasAddr:
 
         self.pm = Pymem("WeChat.exe")
 
+        self.bits = self.get_osbits()
+
         self.islogin = True
 
     def find_all(self, c: bytes, string: bytes, base_addr=0):
@@ -73,55 +76,105 @@ class BiasAddr:
                 return file_version
         self.islogin = False
 
+    def get_osbits(self):
+        return int(platform.architecture()[0][:-3])
+
     def search_memory_value(self, value: bytes, module_name="WeChatWin.dll"):
         # 创建 Pymem 对象
         pm = self.pm
         module = pymem.process.module_from_name(pm.process_handle, module_name)
+
+        # result = pymem.pattern.pattern_scan_module(pm.process_handle, module, value, return_multiple=True)
+        # result = result[-1]-module.lpBaseOfDll if len(result) > 0 else 0
         mem_data = pm.read_bytes(module.lpBaseOfDll, module.SizeOfImage)
         result = self.find_all(value, mem_data)
         result = result[-1] if len(result) > 0 else 0
         return result
 
     def search_key(self, key: bytes):
-        pid = self.pm.process_id
-        # print(self.pm.process_base.lpBaseOfDll, self.pm.process_base.SizeOfImage)
-
-        module_start_addr = 34199871460642
-        module_end_addr = 0
-        process = psutil.Process(pid)
-        for module in process.memory_maps(grouped=False):
-            if "WeChat" in module.path:
-                start_addr = int(module.addr, 16)
-                end_addr = start_addr + module.rss
-
-                if module_start_addr > start_addr:
-                    module_start_addr = start_addr
-                if module_end_addr < end_addr:
-                    module_end_addr = end_addr
-
-        batch = 4096
-        Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, pid)
-        array = ctypes.create_string_buffer(batch)
-        key_addr = 0
-        for i in range(module_start_addr, module_end_addr, batch):
-            if ReadProcessMemory(Handle, void_p(i), array, batch, None) == 0:
-                continue
-            hex_string = array.raw  # 读取到的内存数据
-            key_addr = self.find_all(key, hex_string, i)
-            if len(key_addr) > 0:
-                key_addr = key_addr[0]
-                break
-
-        # print(hex(key_addr))
-        key = key_addr.to_bytes(8, byteorder='little')
-        # print(key.hex())
+        byteLen = 4 if self.bits == 32 else 8  # 4字节或8字节
+        key_addr = self.pm.pattern_scan_all(key, return_multiple=True)[-1] if len(key) > 0 else 0
+        key = key_addr.to_bytes(byteLen, byteorder='little', signed=True)
         result = self.search_memory_value(key, self.module_name)
         return result
+
+    def get_key_bias_test(self):
+        byteLen = 4 if self.bits == 32 else 8  # 4字节或8字节
+        keyLenOffset = 0x8c if self.bits == 32 else 0xd0
+        keyWindllOffset = 0x90 if self.bits == 32 else 0xd8
+
+        pm = self.pm
+
+        module = pymem.process.module_from_name(pm.process_handle, "WeChatWin.dll")
+        keyBytes = b'-----BEGIN PUBLIC KEY-----\n...'
+        publicKeyList = pymem.pattern.pattern_scan_all(self.pm.process_handle, keyBytes, return_multiple=True)
+
+        keyaddrs = []
+        for addr in publicKeyList:
+            keyBytes = addr.to_bytes(byteLen, byteorder="little", signed=True)  # 低位在前
+            addrs = pymem.pattern.pattern_scan_module(pm.process_handle, module, keyBytes, return_multiple=True)
+            if addrs != 0:
+                keyaddrs += addrs
+
+        keyWinAddr = 0
+        for addr in keyaddrs:
+            keyLen = pm.read_uchar(addr - keyLenOffset)
+            if keyLen != 32:
+                continue
+            keyWinAddr = addr - keyWindllOffset
+            # keyaddr = int.from_bytes(pm.read_bytes(keyWinAddr, byteLen), byteorder='little')
+            # key = pm.read_bytes(keyaddr, 32)
+            # print("key", key.hex())
+
+        return keyWinAddr - module.lpBaseOfDll
+
+    def get_wxid_bias(self):
+        byteLen = 4 if self.bits == 32 else 8  # 4字节或8字节
+        keyLenOffset = 0x8c if self.bits == 32 else 0xd0
+        keyWindllOffset = 0x90 if self.bits == 32 else 0xd8
+
+        pm = self.pm
+
+        module = pymem.process.module_from_name(pm.process_handle, "WeChatWin.dll")
+        keyBytes = b'wxid_'
+        publicWxidList = pymem.pattern.pattern_scan_all(self.pm.process_handle, keyBytes, return_multiple=True)
+
+        import ahocorasick
+        def search_substrings(text, substrings):
+            A = ahocorasick.Automaton()
+            for index, s in enumerate(substrings):
+                A.add_word(s, (index, s))
+            A.make_automaton()
+
+            results = []
+            for end_index, (insert_order, original_value) in A.iter(text):
+                start_index = end_index - len(original_value) + 1
+                results.append(int(start_index / 2))
+            return results
+
+        patterns = []
+        for addr in publicWxidList:
+            keyBytes = addr.to_bytes(byteLen, byteorder="little", signed=True)  # 低位在前
+            patterns.append(keyBytes.hex())
+        text = pm.read_bytes(module.lpBaseOfDll, module.SizeOfImage).hex()
+
+        wxidaddrs = search_substrings(text, patterns)
+        # print("wxidaddrs", wxidaddrs)
+
+        # wxidaddr = 0
+        # for addr in wxidaddrs:
+        #     print(addr - 63488256)
+        #     wxidaddr = int.from_bytes(pm.read_bytes(addr + module.lpBaseOfDll, byteLen), byteorder='little')
+        #     print("wxidaddr", hex(wxidaddr))
+        #     wxid = pm.read_bytes(wxidaddr, 24).split(b"\x00")[0]
+        #     print("wxid", wxid)
+
+        return wxidaddrs[-2]
 
     def get_key_bias(self, wx_db_path, account_bias=0):
         wx_db_path = os.path.join(wx_db_path, "Msg", "MicroMsg.db")
         if not os.path.exists(wx_db_path):
-            return False
+            return 0
 
         def get_maybe_key(mem_data):
             maybe_key = []
@@ -202,13 +255,24 @@ class BiasAddr:
         name_bias = self.search_memory_value(self.name)
         account_bias = self.search_memory_value(self.account)
         # version_bias = self.search_memory_value(self.version.encode("utf-8"))
-        if self.key:
-            key_bias = self.search_key(self.key)
-        elif self.db_path:
-            key_bias = self.get_key_bias(self.db_path, account_bias)
-        else:
+
+        try:
+            key_bias = self.get_key_bias_test()
+        except:
             key_bias = 0
-        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
+        try:
+            wxid_bias = self.get_wxid_bias()
+        except:
+            wxid_bias = 0
+
+        if key_bias <= 0:
+            if self.key:
+                key_bias = self.search_key(self.key)
+            elif self.db_path:
+                key_bias = self.get_key_bias(self.db_path, account_bias)
+            else:
+                key_bias = 0
+        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias, wxid_bias]}
 
 
 if __name__ == '__main__':

@@ -44,7 +44,7 @@ def get_wechat_db(require_list: [list | str] = "all", msg_dir: str = None):
     elif isinstance(require_list, list):
         pattern = {}
         for require in require_list:
-            pattern[require] = re.compile(r".*%s.*\.db$" % require)
+            pattern[require] = re.compile(r"%s.*\.db$" % require)
     else:
         return "[-] 参数错误"
 

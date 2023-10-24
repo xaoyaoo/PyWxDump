@@ -11,6 +11,7 @@ import os
 
 from . import *
 
+
 # version_list_path = os.path.join(os.path.dirname(__file__), "version_list.json")
 
 
@@ -30,8 +31,8 @@ class MainBiasAddr():
 
     def run(self, args):
         # 判断是否至少输入一个参数
-        if not args.key and not args.db_path:
-            self.sb_bias_addr.error("必须至少指定 --key 或 --db_path 参数中的一个")
+        # if not args.key and not args.db_path:
+        #     self.sb_bias_addr.error("必须至少指定 --key 或 --db_path 参数中的一个")
 
         # 从命令行参数获取值
         mobile = args.mobile
@@ -164,6 +165,10 @@ class MainAll():
         args.vlp = VERSION_LIST_PATH
         result_WxInfo = MainWxInfo().run(args)
         keys = [i.get('key', "") for i in result_WxInfo]
+        if not keys:
+            print("[-] 未获取到密钥")
+            return
+        wxids = [i.get('wxid', "") for i in result_WxInfo]
 
         args.require_list = 'all'
         args.wf = None

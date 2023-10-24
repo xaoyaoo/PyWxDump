@@ -23,18 +23,26 @@ def get_info_without_key(h_process, address, n_size=64):
     return text.strip() if text.strip() != "" else "None"
 
 
+def get_info_wxid(h_process, address, n_size=32):
+    array = ctypes.create_string_buffer(8)
+    if ReadProcessMemory(h_process, void_p(address), array, 8, 0) == 0: return "None"
+    address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
+    wxid = get_info_without_key(h_process, address, n_size)
+    return wxid
+
+
 # 读取内存中的key
 def get_key(h_process, address):
     array = ctypes.create_string_buffer(8)
     if ReadProcessMemory(h_process, void_p(address), array, 8, 0) == 0: return "None"
-    key = ctypes.create_string_buffer(32)
     address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
+    key = ctypes.create_string_buffer(32)
     if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
     key_string = bytes(key).hex()
     return key_string
 
 
-# 读取微信信息(key, name, account, mobile, mail)
+# 读取微信信息(account,mobile,name,mail,wxid,key)
 def read_info(version_list):
     wechat_process = []
     result = []
@@ -71,11 +79,14 @@ def read_info(version_list):
         mobile_baseaddr = wechat_base_address + support_list[2]
         mail_baseaddr = wechat_base_address + support_list[3]
         key_baseaddr = wechat_base_address + support_list[4]
+        wxid_baseaddr = wechat_base_address + support_list[5]
 
         tmp_rd['account'] = get_info_without_key(Handle, account__baseaddr, 32)
         tmp_rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64)
         tmp_rd['name'] = get_info_without_key(Handle, name_baseaddr, 64)
         tmp_rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if support_list[3] != 0 else "None"
+        tmp_rd['wxid'] = get_info_wxid(Handle, wxid_baseaddr, 24) if support_list[5] != 0 else "None"
+        if not tmp_rd['wxid'].startswith("wxid_"): tmp_rd['wxid'] = "None"
         tmp_rd['key'] = get_key(Handle, key_baseaddr)
         result.append(tmp_rd)
 

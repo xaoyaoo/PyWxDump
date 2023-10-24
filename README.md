@@ -18,6 +18,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.10.24 add auto get bias addr ,not need input key or wx folder path.
 * 2023.10.17 add LICENSE
 * 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12)
   ,感谢@[GentlemanII](https://github.com/GentlemanII)
@@ -73,7 +74,7 @@ PyWxDump
 │  │  ├─ get_wx_info.py               # 获取微信基本信息脚本
 │  │  └─ get_wx_db.py                 # 获取本地所有的微信相关数据库
 │  ├─ command.py                  # 命令行入口
-│  └─ version_list.json           # 微信版本列表
+│  └─ version_list.json           # 微信版本列表 (十进制)按顺序代表：微信昵称、微信账号、微信手机号、微信邮箱（默认0）、微信KEY、微信原始ID（wxid_******）
 ├─ doc                        # 项目文档
 │  ├─ python1.0_README.md         # python1.0版本的README
 │  ├─ wx数据库简述.md               # wx数据库简述
@@ -156,8 +157,8 @@ wxdump bias_addr -h
 #  --mobile MOBILE    手机号
 #  --name NAME        微信昵称
 #  --account ACCOUNT  微信账号
-#  --key KEY          (与db_path二选一)密钥
-#  --db_path DB_PATH  (与key二选一)已登录账号的微信文件夹路径
+#  --key KEY          (可选)密钥
+#  --db_path DB_PATH  (可选)已登录账号的微信文件夹路径
 #  -vlp VLP           (可选)微信版本偏移文件路径
 
 wxdump wx_info -h
