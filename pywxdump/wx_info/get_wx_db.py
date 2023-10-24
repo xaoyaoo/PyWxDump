@@ -8,9 +8,9 @@
 import os
 import re
 import winreg
+from typing import List, Union
 
-
-def get_wechat_db(require_list: [list | str] = "all", msg_dir: str = None):
+def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = None):
     if not msg_dir:
         try:
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Tencent\WeChat", 0, winreg.KEY_READ)
