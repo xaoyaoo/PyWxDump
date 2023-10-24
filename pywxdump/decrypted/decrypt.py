@@ -2,7 +2,7 @@ import argparse
 import hmac
 import hashlib
 import os
-
+from typing import Union, List
 from Cryptodome.Cipher import AES
 
 # from Crypto.Cipher import AES # 如果上面的导入失败，可以尝试使用这个
@@ -55,7 +55,7 @@ def decrypt(key: str, db_path, out_path):
     return [True, db_path, out_path, key]
 
 
-def batch_decrypt(key: str, db_path: [str | list], out_path: str):
+def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str):
     if not isinstance(key, str) or not isinstance(out_path, str) or not os.path.exists(out_path) or len(key) != 64:
         return f"[-] (key:'{key}' or out_path:'{out_path}') Error!"
 
