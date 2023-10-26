@@ -9,9 +9,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/pywxdump)](https://pypi.org/project/pywxdump/)
 [![PyPI - Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
-[![PyPI - Format](https://img.shields.io/pypi/format/pywxdump)](https://pypi.org/project/pywxdump/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
-
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 
 
@@ -142,7 +140,7 @@ wxdump 模式 [参数]
 #    wx_db         获取微信文件夹路径
 #    decrypt       解密微信数据库
 #    analyse       解析微信数据库(未完成)
-#    all           执行所有操作(除获取基址偏移、Analyse)
+#    all           执行所有操作(除获取基址偏移、解密所有已经登陆的数据库)
 ```
 
 *示例*
