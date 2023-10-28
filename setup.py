@@ -47,4 +47,5 @@ setup(
             'wxdump = pywxdump.command:console_run',
         ],
     },
+    setup_requires=['wheel']
 )

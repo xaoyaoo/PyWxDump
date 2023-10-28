@@ -33,7 +33,8 @@ jobs:
           pip install .
 
       - name: Build package # 构建包
-        run: python setup.py sdist bdist_wheel # 构建 wheel 和 sdist 包
+        run: |
+          python setup.py sdist bdist_wheel # 构建 wheel 和 sdist 包
 
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1 # 使用 PyPA 的 action
