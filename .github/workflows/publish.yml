@@ -27,9 +27,9 @@ jobs:
       - name: Install dependencies # 安装依赖
         run: | 
           python -m pip install -U pip
-          python -m pip install --upgrade twine
-          python -m pip install --upgrade setuptools
-          python -m pip install --upgrade wheel
+          python -m pip install -U setuptools
+          python -m pip install -U wheel
+          python -m pip install -U twine
           pip install .
 
       - name: Build package # 构建包
