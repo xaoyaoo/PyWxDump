@@ -34,6 +34,7 @@ jobs:
 
       - name: Build package # 构建包
         run: |
+          cat setup.py
           python setup.py sdist bdist_wheel # 构建 wheel 和 sdist 包
 
       - name: Publish package
