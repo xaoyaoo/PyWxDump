@@ -24,18 +24,13 @@ jobs:
         with:
           python-version: 3.8  # 指定 Python 版本 (3.8)
 
-      - name: Install dependencies # 安装依赖
-        run: | 
-          python -m pip install -U pip
-          python -m pip install -U setuptools
-          python -m pip install -U wheel
-          python -m pip install -U twine
-#          pip install .
-
-      - name: Build package # 构建包
+      - name: Install dependencies
         run: |
-          cat setup.py
-          python setup.py sdist bdist_wheel # 构建 wheel 和 sdist 包
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build package
+        run: python -m build
 
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1 # 使用 PyPA 的 action
