@@ -1,3 +1,5 @@
+setuptools
+wheel
 psutil
 pycryptodomex
 pywin32

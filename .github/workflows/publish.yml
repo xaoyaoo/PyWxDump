@@ -1,0 +1,54 @@
+name: PublishPYPI
+
+on:
+  # 当master分支有push时，触发action
+  push:
+    tags:
+      - 'v*'  # 以 'v' 开头的标签触发工作流程
+
+jobs:
+  publish:
+    name: Publish Pypi
+    if: github.repository == 'xaoyaoo/PyWxDump' && contains(github.ref, 'tags/v') # 仅在指定仓库的 tag 触发工作流程
+    # 此作业在 Linux 上运行
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository # 检出仓库
+        uses: actions/checkout@v2 # 使用 GitHub 官方的 checkout action
+      - run: |
+          git fetch --prune --unshallow
+
+      - name: Set up Python # 设置 Python 环境
+        uses: actions/setup-python@v2 # 使用 GitHub 官方的 setup-python action
+        with:
+          python-version: 3.8  # 指定 Python 版本 (3.8)
+
+      - name: Install dependencies # 安装依赖
+        run: | 
+          python -m pip install -U pip
+          python -m pip install --upgrade twine
+          pip install .
+
+      - name: Build package # 构建包
+        run: python setup.py sdist bdist_wheel # 构建 wheel 和 sdist 包
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1 # 使用 PyPA 的 action
+        with:
+          user: __token__  # 使用 GitHub Token 进行身份验证
+          password: ${{ secrets.PYPI_TOKEN }}  # 设置 GitHub Token 密钥
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Update PyWxDump
+          draft: false
+          prerelease: false
+

@@ -8,14 +8,16 @@
 [![GitHub issues](https://img.shields.io/github/issues/xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/issues)
 
 [![PyPI](https://img.shields.io/pypi/v/pywxdump)](https://pypi.org/project/pywxdump/)
-[![PyPI - Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
+[![Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
+[![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
-
+[![AutoPyPI](https://github.com/xaoyaoo/PyWxDump/workflows/PublishPYPI/badge.svg)](https://pypi.org/project/pywxdump/)
 
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.10.28 添加自动发布到pypi的github action
+* 2023.10.28 修复3.9.5.91版本的偏移
 * 2023.10.24 add auto get bias addr ,not need input key or wx folder path.
 * 2023.10.17 add LICENSE
 * 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12)
