@@ -30,7 +30,7 @@ jobs:
           python -m pip install -U setuptools
           python -m pip install -U wheel
           python -m pip install -U twine
-          pip install .
+#          pip install .
 
       - name: Build package # 构建包
         run: |
