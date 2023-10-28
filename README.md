@@ -11,7 +11,7 @@
 [![Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
 [![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
-[![PublishPYPI](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml/badge.svg?branch=master)](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml)
+[![Publish](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml/badge.svg)](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml)
 
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
