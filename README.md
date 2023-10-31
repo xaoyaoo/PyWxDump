@@ -16,6 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.10.31 修复3.9.2.*版本无法正常运行
 * 2023.10.28 添加自动发布到pypi的github action
 * 2023.10.28 修复3.9.5.91版本的偏移
 * 2023.10.24 add auto get bias addr ,not need input key or wx folder path.
