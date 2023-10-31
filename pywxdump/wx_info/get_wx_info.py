@@ -83,7 +83,7 @@ def read_info(version_list):
         key_baseaddr = wechat_base_address + bias_list[4]
         wxid_baseaddr = wechat_base_address + bias_list[5]
 
-        addrLen = 4 if tmp_rd['version'] in ["3.9.2.23", "3.9.2.26"] else  8
+        addrLen = 4 if tmp_rd['version'] in ["3.9.2.23", "3.9.2.26"] else 8
 
         tmp_rd['account'] = get_info_without_key(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
         tmp_rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
