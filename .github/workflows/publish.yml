@@ -9,7 +9,7 @@ on:
 jobs:
   publishNew:
     name: Publish Pypi and Create Release
-    if: github.repository == 'xaoyaoo/PyWxDump' && contains(github.ref, 'tags/v') # 仅在指定仓库的 tag 触发工作流程
+    if: github.repository == 'xaoyaoo/PyWxDump' # 仅在指定仓库的 tag 触发工作流程
     # 此作业在 Linux 上运行
     runs-on: windows-latest
 
@@ -55,3 +55,9 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Upload .whl file
+        uses: actions/upload-artifact@v2
+        if: exists('dist/*.whl')
+        with:
+          name: wheel
+          path: dist/*.whl
