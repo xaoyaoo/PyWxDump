@@ -3,8 +3,6 @@ name: Publish
 on:
   # 当master分支有push时，触发action
   push:
-    branches:
-      - master
     tags:
       - 'v*'  # 以 'v' 开头的标签触发工作流程
 
