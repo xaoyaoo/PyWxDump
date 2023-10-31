@@ -55,6 +55,8 @@ jobs:
 
       - name: Upload .whl file
         uses: actions/upload-artifact@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: wheel
           path: dist/*.whl
