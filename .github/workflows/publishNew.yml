@@ -28,15 +28,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install build
+        
+      - name: Install Twine
+        run: python -m pip install --upgrade twine
 
       - name: Build package
         run: python -m build
 
-      - name: Publish package
-        uses: pypa/gh-action-pypi-publish@release/v1 # 使用 PyPA 的 action
-        with:
-          user: __token__  # 使用 GitHub Token 进行身份验证
-          password: ${{ secrets.PYPI_TOKEN }}  # 设置 GitHub Token 密钥
+      - name: Publish package with Twine
+        run: |
+          twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
       - name: Create Release
         id: create_release
