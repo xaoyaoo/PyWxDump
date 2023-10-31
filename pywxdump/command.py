@@ -22,8 +22,8 @@ class MainBiasAddr():
         sb_bias_addr.add_argument("--mobile", type=str, help="手机号", required=True)
         sb_bias_addr.add_argument("--name", type=str, help="微信昵称", required=True)
         sb_bias_addr.add_argument("--account", type=str, help="微信账号", required=True)
-        sb_bias_addr.add_argument("--key", type=str, help="(与db_path二选一)密钥")
-        sb_bias_addr.add_argument("--db_path", type=str, help="(与key二选一)已登录账号的微信文件夹路径")
+        sb_bias_addr.add_argument("--key", type=str, help="(可选)密钥")
+        sb_bias_addr.add_argument("--db_path", type=str, help="(可选)已登录账号的微信文件夹路径")
         sb_bias_addr.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径,如有，则自动更新",
                                   default=None)
         self.sb_bias_addr = sb_bias_addr
@@ -43,6 +43,7 @@ class MainBiasAddr():
         vlp = args.vlp
         # 调用 run 函数，并传入参数
         rdata = BiasAddr(account, mobile, name, key, db_path).run()
+        print("{版本:微信昵称,微信账号,微信手机号,微信邮箱,微信KEY,微信原始ID(wxid_******)}")
         print(rdata)
 
         if vlp is not None:

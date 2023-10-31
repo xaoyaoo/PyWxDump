@@ -57,8 +57,17 @@ class BiasAddr:
         self.pm = Pymem("WeChat.exe")
 
         self.bits = self.get_osbits()
+        self.version = self.get_file_version(self.process_name)
+        self.address_len = self.get_addr_len()
 
         self.islogin = True
+
+    def get_addr_len(self):
+        version_nums = list(map(int, self.version.split(".")))  # 将版本号拆分为数字列表
+        if version_nums[0] <= 3 and version_nums[1] <= 9 and version_nums[2] <= 2:
+            return 4
+        else:
+            return 8
 
     def find_all(self, c: bytes, string: bytes, base_addr=0):
         """
@@ -92,14 +101,15 @@ class BiasAddr:
         return result
 
     def search_key(self, key: bytes):
-        byteLen = 4 if self.bits == 32 else 8  # 4字节或8字节
+        byteLen = self.address_len  # if self.bits == 32 else 8  # 4字节或8字节
+        key = re.escape(key)  # 转义特殊字符
         key_addr = self.pm.pattern_scan_all(key, return_multiple=True)[-1] if len(key) > 0 else 0
         key = key_addr.to_bytes(byteLen, byteorder='little', signed=True)
         result = self.search_memory_value(key, self.module_name)
         return result
 
     def get_key_bias_test(self):
-        byteLen = 4 if self.bits == 32 else 8  # 4字节或8字节
+        byteLen = self.address_len  # 4 if self.bits == 32 else 8  # 4字节或8字节
         keyLenOffset = 0x8c if self.bits == 32 else 0xd0
         keyWindllOffset = 0x90 if self.bits == 32 else 0xd8
 
@@ -129,7 +139,7 @@ class BiasAddr:
         return keyWinAddr - module.lpBaseOfDll
 
     def get_wxid_bias(self):
-        byteLen = 4 if self.bits == 32 else 8  # 4字节或8字节
+        byteLen = self.address_len  # 4 if self.bits == 32 else 8  # 4字节或8字节
         keyLenOffset = 0x8c if self.bits == 32 else 0xd0
         keyWindllOffset = 0x90 if self.bits == 32 else 0xd8
 
@@ -178,8 +188,8 @@ class BiasAddr:
 
         def get_maybe_key(mem_data):
             maybe_key = []
-            for i in range(0, len(mem_data), 8):
-                addr = mem_data[i:i + 8]
+            for i in range(0, len(mem_data), self.address_len):
+                addr = mem_data[i:i + self.address_len]
                 addr = int.from_bytes(addr, byteorder='little')
                 # 去掉不可能的地址
                 if min_addr < addr < max_addr:
@@ -226,7 +236,7 @@ class BiasAddr:
             maybe_key = []
             for i in [0x24, 0x40]:
                 addr = start_addr + account_bias - i
-                mem_data = pm.read_bytes(addr, 8)
+                mem_data = pm.read_bytes(addr, self.address_len)
                 key = read_key(int.from_bytes(mem_data, byteorder='little'))
                 if key != b"":
                     maybe_key.append([key, addr - start_addr])
@@ -257,13 +267,14 @@ class BiasAddr:
         # version_bias = self.search_memory_value(self.version.encode("utf-8"))
 
         try:
-            key_bias = self.get_key_bias_test()
-        except:
-            key_bias = 0
-        try:
             wxid_bias = self.get_wxid_bias()
         except:
             wxid_bias = 0
+
+        try:
+            key_bias = self.get_key_bias_test()
+        except:
+            key_bias = 0
 
         if key_bias <= 0:
             if self.key:
@@ -281,8 +292,8 @@ if __name__ == '__main__':
     parser.add_argument("--mobile", type=str, help="手机号", required=True)
     parser.add_argument("--name", type=str, help="微信昵称", required=True)
     parser.add_argument("--account", type=str, help="微信账号", required=True)
-    parser.add_argument("--key", type=str, help="密钥")
-    parser.add_argument("--db_path", type=str, help="微信文件夹(已经登录微信)路径")
+    parser.add_argument("--key", type=str, help="(可选)密钥")
+    parser.add_argument("--db_path", type=str, help="(可选)已登录账号的微信文件夹路径")
 
     # 解析命令行参数
     args = parser.parse_args()
@@ -290,8 +301,7 @@ if __name__ == '__main__':
     # 检查是否缺少必要参数，并抛出错误
     if not args.mobile or not args.name or not args.account:
         raise ValueError("缺少必要的命令行参数！请提供手机号、微信昵称、微信账号。")
-    if not args.key and not args.db_path:
-        raise ValueError("缺少必要的命令行参数！请提供密钥或微信文件夹(已经登录微信)路径。")
+
     # 从命令行参数获取值
     mobile = args.mobile
     name = args.name
@@ -301,6 +311,7 @@ if __name__ == '__main__':
 
     # 调用 run 函数，并传入参数
     rdata = BiasAddr(account, mobile, name, key, db_path).run()
+    print("{版本:昵称,账号,手机号,邮箱,KEY,原始ID(wxid_******)}")
     print(rdata)
 
     # 添加到version_list.json
