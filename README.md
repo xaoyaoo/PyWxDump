@@ -16,7 +16,6 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
-
 * 2023.11.08 增加3.9.8.15版本支持
 * 2023.10.31 修复3.9.2.*版本无法正常运行
 * 2023.10.28 添加自动发布到pypi的github action
@@ -265,4 +264,29 @@ pass
 
 # 五、许可证
 
-[![GitHub license](https://img.shields.io/pypi/l/pywxdump)](./LICENSE)
+
+```text
+MIT License
+
+Copyright (c) 2023 xaoyaoo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+PyWxDump is hosted at: https://github.com/xaoyaoo/PyWxDump
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
