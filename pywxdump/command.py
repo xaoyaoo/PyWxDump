@@ -172,7 +172,7 @@ class MainAll():
         wxids = [i.get('wxid', "") for i in result_WxInfo]
 
         args.require_list = 'all'
-        args.wf = None
+        args.wx_files = None
         result_WxDbPath = MainWxDbPath().run(args)
         wxdbpaths = [path for user_dir in result_WxDbPath.values() for paths in user_dir.values() for path in paths]
         wxdblen = len(wxdbpaths)
