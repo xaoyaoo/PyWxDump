@@ -94,7 +94,7 @@ class MainWxDbPath():
     def run(self, args):
         # 从命令行参数获取值
         require_list = args.require_list
-        msg_dir = args.wf
+        msg_dir = args.wx_files
 
         user_dirs = get_wechat_db(require_list, msg_dir)
 
