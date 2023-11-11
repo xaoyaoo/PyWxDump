@@ -3,6 +3,9 @@
 # Name:         __init__.py.py
 # Description:  
 # Author:       xaoyaoo
-# Date:         2023/09/27
+# Date:         2023/11/11
 # -------------------------------------------------------------------------------
-from .parse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio, parse_xml_string
+
+
+if __name__ == '__main__':
+    pass

@@ -189,8 +189,8 @@ python get_wx_decrypted_db.py --key ********
 
 ## 四、解析数据库
 
-* [parse.py](./parse_db/parse.py) : 数据库解析脚本，可以解析语音、图片、聊天记录等
-* 关于各个数据库的说明文档，请查看[parse_db](./parse_db)目录下的[README.md](./parse_db/README.md)
+* [parse.py](../pywxdump/analyse/parse.py) : 数据库解析脚本，可以解析语音、图片、聊天记录等
+* 关于各个数据库的说明文档，请查看[wx数据库简述.md](./wx数据库简述.md)
 
 未完待续...
 

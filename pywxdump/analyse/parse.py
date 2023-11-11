@@ -70,6 +70,11 @@ def parse_xml_string(xml_string):
 
 
 def read_img_dat(input_data):
+    """
+    读取图片文件dat格式
+    :param input_data:  图片文件路径或者图片文件数据
+    :return:  图片格式，图片md5，图片数据
+    """
     # 常见图片格式的文件头
     img_head = {
         b"\xFF\xD8\xFF": ".jpg",
@@ -82,36 +87,41 @@ def read_img_dat(input_data):
         b"\x52\x49\x46\x46": ".WebP",
         b"\x00\x00\x00\x18\x66\x74\x79\x70\x68\x65\x69\x63": ".HEIC",
     }
-    fomt = "un"  # 文件格式
 
     if isinstance(input_data, str):
         with open(input_data, "rb") as f:
             input_bytes = f.read()
+    else:
+        input_bytes = input_data
 
-    t = 0
+    try:
+        import numpy as np
+        input_bytes = np.frombuffer(input_bytes, dtype=np.uint8)
+        for hcode in img_head:  # 遍历文件头
+            t = input_bytes[0] ^ hcode[0]  # 异或解密
+            if np.all(t == np.bitwise_xor(np.frombuffer(input_bytes[:len(hcode)], dtype=np.uint8),
+                                          np.frombuffer(hcode, dtype=np.uint8))):  # 使用NumPy进行向量化的异或解密操作，并进行类型转换
+                fomt = img_head[hcode]  # 获取文件格式
+
+                out_bytes = np.bitwise_xor(input_bytes, t)  # 使用NumPy进行向量化的异或解密操作
+                md5 = get_md5(out_bytes)
+                return fomt, md5, out_bytes
+        return False
+    except ImportError:
+        pass
+
     for hcode in img_head:
         t = input_bytes[0] ^ hcode[0]
         for i in range(1, len(hcode)):
             if t == input_bytes[i] ^ hcode[i]:
                 fomt = img_head[hcode]
-            else:
-                break
-        else:
-            break
-    else:
-        return False
-
-    if fomt == "un":
-        print("未知文件格式")
-        return False
-
-    out_bytes = bytearray()
-    for nowByte in input_bytes:  # 读取文件
-        newByte = nowByte ^ t  # 异或解密
-        out_bytes.append(newByte)
-
-    md5 = get_md5(out_bytes)
-    return fomt, md5, out_bytes
+                out_bytes = bytearray()
+                for nowByte in input_bytes:  # 读取文件
+                    newByte = nowByte ^ t  # 异或解密
+                    out_bytes.append(newByte)
+                md5 = get_md5(out_bytes)
+                return fomt, md5, out_bytes
+    return False
 
 
 def read_emoji(cdnurl, is_show=False):

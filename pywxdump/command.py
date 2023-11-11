@@ -144,6 +144,45 @@ class MainDecrypt():
             print(result)
 
 
+class MainShowChatRecords():
+    def init_parses(self, parser):
+        # 添加 'decrypt' 子命令解析器
+        sb_decrypt = parser.add_parser("show_records", help="聊天记录查看[需要安装flask]")
+        sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
+                                metavar="")
+        sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=True,
+                                metavar="")
+        sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
+                                metavar="")
+        sb_decrypt.add_argument("-fs", "--filestorage_path", type=str, help="文件夹FileStorage的路径", required=True,
+                                metavar="")
+        return sb_decrypt
+
+    def run(self, args):
+        # 从命令行参数获取值
+        try:
+            from flask import Flask, request, jsonify, render_template, g
+            from .show_chat.main_window import app_show_chat, get_user_list
+        except Exception as e:
+            print(e)
+            print("[-] 请安装flask( pip install flask )")
+            return
+
+        app = Flask(__name__, template_folder='./show_chat/templates')
+
+        @app.before_request
+        def before_request():
+            g.MSG_ALL_db_path = args.msg_path
+            g.MicroMsg_db_path = args.micro_path
+            g.MediaMSG_all_db_path = args.media_path
+            g.FileStorage_path = args.filestorage_path
+            g.USER_LIST = get_user_list(args.msg_path, args.micro_path)
+
+        app.register_blueprint(app_show_chat)
+
+        app.run()
+
+
 class MainAnalyseWxDb():
     def init_parses(self, parser):
         # 添加 'parse_wx_db' 子命令解析器
@@ -237,6 +276,10 @@ def console_run():
     main_decrypt = MainDecrypt()
     sb_decrypt = main_decrypt.init_parses(subparsers)
 
+    # 添加 'show_chat_records' 子命令解析器
+    main_show_chat_records = MainShowChatRecords()
+    sb_show_chat_records = main_show_chat_records.init_parses(subparsers)
+
     # 添加 'parse_wx_db' 子命令解析器
     main_parse_wx_db = MainAnalyseWxDb()
     sb_parse_wx_db = main_parse_wx_db.init_parses(subparsers)
@@ -258,6 +301,8 @@ def console_run():
         main_wx_db_path.run(args)
     elif args.mode == "decrypt":
         main_decrypt.run(args)
+    elif args.mode == "show_chat_records":
+        main_show_chat_records.run(args)
     elif args.mode == "parse":
         main_parse_wx_db.run(args)
     elif args.mode == "all":

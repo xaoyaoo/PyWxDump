@@ -16,6 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.11.11 添加聊天记录解析，查看工具
 * 2023.11.10 修复wxdump wx_db命令行参数错误 [#19](https://github.com/xaoyaoo/PyWxDump/issues/19)
 * 2023.11.08 增加3.9.8.15版本支持
 * 2023.10.31 修复3.9.2.*版本无法正常运行
@@ -43,7 +44,7 @@
 
 ## 1. 项目简介
 
-PyWxDump可以获取基址的偏移，获取微信基本信息，以及key，通过key可以解密微信数据库，获取聊天记录，好友信息，群信息等。
+PyWxDump可以获取基址的偏移，获取微信基本信息，以及key，通过key可以解密微信数据库，查看聊天记录，解析数据库等。
 
 * <strong><big>
   超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
@@ -57,6 +58,7 @@ PyWxDump可以获取基址的偏移，获取微信基本信息，以及key，通
 * （4）根据key解密微信数据库
 * （5）提供数据库中部分加密内容解析工具
 * （6）提供数据库部分字段说明
+* （7）提供查看聊天记录工具
 
 ## 3. 项目结构
 
@@ -76,6 +78,9 @@ PyWxDump
 │  ├─ wx_info                     # 获取微信基本信息
 │  │  ├─ get_wx_info.py               # 获取微信基本信息脚本
 │  │  └─ get_wx_db.py                 # 获取本地所有的微信相关数据库
+│  ├─ show_records                # 显示聊天记录
+│  │  ├─ main_window.py               # 显示聊天记录的窗口
+│  │  └─ templates                    # 显示聊天记录的html模板
 │  ├─ command.py                  # 命令行入口
 │  └─ version_list.json           # 微信版本列表 (十进制)按顺序代表：微信昵称、微信账号、微信手机号、微信邮箱（默认0）、微信KEY、微信原始ID（wxid_******）
 ├─ doc                        # 项目文档
@@ -144,6 +149,7 @@ wxdump 模式 [参数]
 #    wx_info       获取微信信息
 #    wx_db         获取微信文件夹路径
 #    decrypt       解密微信数据库
+#    show_records  显示聊天记录[需要安装flask]
 #    analyse       解析微信数据库(未完成)
 #    all           执行所有操作(除获取基址偏移、解密所有已经登陆的数据库)
 ```
@@ -187,6 +193,15 @@ wxdump decrypt -h
 #                        数据库路径(目录or文件)
 #  -o OUT_PATH, --out_path OUT_PATH
 #                        输出路径(必须是目录),输出文件为 out_path/de_{original_name}
+
+wxdump show_records -h
+#usage: wxdump show_records [-h] -msg  -micro  -media  -fs
+#options:
+#  -h, --help             show this help message and exit
+#  -msg , --msg_path      解密后的 MSG.db 的路径
+#  -micro , --micro_path  解密后的 MicroMsg.db 的路径
+#  -media , --media_path  解密后的 MediaMSG.db 的路径
+#  -fs , --filestorage_path  文件夹FileStorage的路径
 
 wxdump analyse -h
 #usage: main.py analyse [-h] [--arg ARG]

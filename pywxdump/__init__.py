@@ -10,7 +10,7 @@ from .wx_info.get_wx_info import read_info
 from .wx_info.get_wx_db import get_wechat_db
 from .decrypted.decrypt import batch_decrypt, decrypt
 from .decrypted.get_wx_decrypted_db import all_decrypt, merge_copy_msg_db, merge_msg_db, merge_media_msg_db
-from .analyse.parse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio
+from .analyse.parse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio, parse_xml_string
 import os,json
 
 VERSION_LIST_PATH = os.path.join(os.path.dirname(__file__), "version_list.json")
