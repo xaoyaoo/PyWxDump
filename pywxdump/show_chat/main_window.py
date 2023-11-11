@@ -51,7 +51,8 @@ def get_user_list(MSG_ALL_db_path, MicroMsg_db_path):
 
 def load_base64_audio_data(MsgSvrID, MediaMSG_all_db_path):
     wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=MediaMSG_all_db_path)
-
+    if not wave_data:
+        return ""
     video_base64 = base64.b64encode(wave_data).decode("utf-8")
     video_data = f"data:audio/wav;base64,{video_base64}"
     return video_data

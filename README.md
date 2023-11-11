@@ -136,7 +136,7 @@ cd PyWxDump
 python -m pip install -U .
 ```
 
-## 2. 使用方法
+## 2. 使用
 
 ### 2.1 命令行
 
