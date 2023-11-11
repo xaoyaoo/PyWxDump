@@ -16,7 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
-* 2023.11.11 添加聊天记录解析，查看工具
+* 2023.11.11 添加聊天记录解析，查看工具,修复部分bug
 * 2023.11.10 修复wxdump wx_db命令行参数错误 [#19](https://github.com/xaoyaoo/PyWxDump/issues/19)
 * 2023.11.08 增加3.9.8.15版本支持
 * 2023.10.31 修复3.9.2.*版本无法正常运行
