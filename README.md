@@ -9,13 +9,14 @@
 
 [![PyPI](https://img.shields.io/pypi/v/pywxdump)](https://pypi.org/project/pywxdump/)
 [![Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
-[![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypi.org/project/pywxdump/)
+[![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypistats.org/packages/pywxdump)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 [![Publish](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml/badge.svg)](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml)
 
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.11.14 修复部分bug
 * 2023.11.11 添加聊天记录解析，查看工具,修复部分bug
 * 2023.11.10 修复wxdump wx_db命令行参数错误 [#19](https://github.com/xaoyaoo/PyWxDump/issues/19)
 * 2023.11.08 增加3.9.8.15版本支持

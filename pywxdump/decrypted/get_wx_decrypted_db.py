@@ -231,7 +231,7 @@ def merge_media_msg_db(db_path: list, save_path: str):
             merged_cursor.execute(s)
             r0 = merged_cursor.fetchall()
 
-            ex_sql = f"select * from {tblname} where Reserved0 not in ({','.join([str(r[0]) for r in r0])})"
+            ex_sql = f"select `Key`,Reserved0,Buf,Reserved1,Reserved2 from {tblname} where Reserved0 not in ({','.join([str(r[0]) for r in r0])})"
             cursor.execute(ex_sql)
             data = cursor.fetchall()
 
