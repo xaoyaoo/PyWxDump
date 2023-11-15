@@ -5,6 +5,9 @@
 # Author:       xaoyaoo
 # Date:         2023/10/21
 # -------------------------------------------------------------------------------
-from pywxdump import get_wechat_db
-user_dirs = get_wechat_db(require_list=["MediaMSG", "MicroMsg", "FTSMSG", "MSG", "Sns", "Emotion"])
-print(user_dirs)
+
+from pywxdump.wx_info import read_info
+
+from pywxdump import VERSION_LIST_PATH, VERSION_LIST
+
+result = read_info(VERSION_LIST, is_logging=True)  # 读取微信信息

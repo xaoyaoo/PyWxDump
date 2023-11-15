@@ -10,6 +10,12 @@ from pywxdump import VERSION_LIST_PATH, VERSION_LIST
 from pywxdump.bias_addr import BiasAddr
 from pywxdump.wx_info import read_info
 
-# bias = BiasAddr("12345678901", "test", "test", "test", "test").run()
-wx_info = read_info(VERSION_LIST)
-print(wx_info)
+mobile = '13800138000'
+name = '张三'
+account = 'xxxxxx'
+key = None  # "xxxxxx"
+db_path = None  # "xxxxxx"
+vlp = None  # VERSION_LIST_PATH
+# 调用 run 函数，并传入参数
+rdata = BiasAddr(account, mobile, name, key, db_path).run(True, vlp)
+
