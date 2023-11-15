@@ -16,7 +16,8 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
-* 2023.11.15 修复无法获取wxid的bug,更新部分逻辑,重构解密脚本的返回值，重构命令行参数
+* 2023.11.15 [v2.2.5变化较大]重构解密脚本的返回值，重构命令行参数
+* 2023.11.15 修复无法获取wxid的bug
 * 2023.11.14 修复部分bug
 * 2023.11.11 添加聊天记录解析，查看工具,修复部分bug
 * 2023.11.10 修复wxdump wx_db命令行参数错误 [#19](https://github.com/xaoyaoo/PyWxDump/issues/19)
