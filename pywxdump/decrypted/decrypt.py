@@ -16,12 +16,21 @@ DEFAULT_ITER = 64000
 
 # 通过密钥解密数据库
 def decrypt(key: str, db_path, out_path):
-    if not os.path.exists(db_path):
-        return f"[-] db_path:'{db_path}' File not found!"
+    """
+    通过密钥解密数据库
+    :param key: 密钥 64位16进制字符串
+    :param db_path:  待解密的数据库路径(必须是文件)
+    :param out_path:  解密后的数据库输出路径(必须是文件)
+    :return:
+    """
+    if not os.path.exists(db_path) or not os.path.isfile(db_path):
+        return False, f"[-] db_path:'{db_path}' File not found!"
     if not os.path.exists(os.path.dirname(out_path)):
-        return f"[-] out_path:'{out_path}' File not found!"
+        return False, f"[-] out_path:'{out_path}' File not found!"
+
     if len(key) != 64:
-        return f"[-] key:'{key}' Error!"
+        return False, f"[-] key:'{key}' Len Error!"
+
     password = bytes.fromhex(key.strip())
     with open(db_path, "rb") as file:
         blist = file.read()
@@ -36,7 +45,7 @@ def decrypt(key: str, db_path, out_path):
     hash_mac.update(b'\x01\x00\x00\x00')
 
     if hash_mac.digest() != first[-32:-12]:
-        return f"[-] Password Error! (key:'{key}'; db_path:'{db_path}'; out_path:'{out_path}' )"
+        return False, f"[-] Key Error! (key:'{key}'; db_path:'{db_path}'; out_path:'{out_path}' )"
 
     newblist = [blist[i:i + DEFAULT_PAGESIZE] for i in range(DEFAULT_PAGESIZE, len(blist), DEFAULT_PAGESIZE)]
 
@@ -52,18 +61,22 @@ def decrypt(key: str, db_path, out_path):
             decrypted = t.decrypt(i[:-48])
             deFile.write(decrypted)
             deFile.write(i[-48:])
-    return [True, db_path, out_path, key]
+    return True, [db_path, out_path, key]
 
 
-def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str):
+def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_logging: bool = False):
     if not isinstance(key, str) or not isinstance(out_path, str) or not os.path.exists(out_path) or len(key) != 64:
-        return f"[-] (key:'{key}' or out_path:'{out_path}') Error!"
+        error = f"[-] (key:'{key}' or out_path:'{out_path}') Error!"
+        if is_logging: print(error)
+        return False, error
 
     process_list = []
 
     if isinstance(db_path, str):
         if not os.path.exists(db_path):
-            return f"[-] db_path:'{db_path}' not found!"
+            error = f"[-] db_path:'{db_path}' not found!"
+            if is_logging: print(error)
+            return False, error
 
         if os.path.isfile(db_path):
             inpath = db_path
@@ -81,7 +94,10 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str):
                         os.makedirs(os.path.dirname(outpath))
                     process_list.append([key, inpath, outpath])
         else:
-            return f"[-] db_path:'{db_path}' Error "
+            error = f"[-] db_path:'{db_path}' Error "
+            if is_logging: print(error)
+            return False, error
+
     elif isinstance(db_path, list):
         rt_path = os.path.commonprefix(db_path)
         if not os.path.exists(rt_path):
@@ -89,7 +105,9 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str):
 
         for inpath in db_path:
             if not os.path.exists(inpath):
-                return f"[-] db_path:'{db_path}' not found!"
+                erreor = f"[-] db_path:'{db_path}' not found!"
+                if is_logging: print(erreor)
+                return False, erreor
 
             inpath = os.path.normpath(inpath)
             rel = os.path.relpath(os.path.dirname(inpath), rt_path)
@@ -98,7 +116,9 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str):
                 os.makedirs(os.path.dirname(outpath))
             process_list.append([key, inpath, outpath])
     else:
-        return f"[-] db_path:'{db_path}' Error "
+        error = f"[-] db_path:'{db_path}' Error "
+        if is_logging: print(error)
+        return False, error
 
     result = []
     for i in process_list:
@@ -110,7 +130,21 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str):
             if not os.listdir(os.path.join(root, dir)):
                 os.rmdir(os.path.join(root, dir))
 
-    return result
+    if is_logging:
+        print("=" * 32)
+        success_count = 0
+        fail_count = 0
+        for code, ret in result:
+            if code == False:
+                print(ret)
+                fail_count += 1
+            else:
+                print(f'[+] "{ret[0]}" -> "{ret[1]}"')
+                success_count += 1
+        print("-" * 32)
+        print(f"[+] 共 {len(result)} 个文件, 成功 {success_count} 个, 失败 {fail_count} 个")
+        print("=" * 32)
+    return True, result
 
 
 if __name__ == '__main__':

@@ -138,49 +138,6 @@ class BiasAddr:
 
         return keyWinAddr - module.lpBaseOfDll
 
-    def get_wxid_bias(self):
-        byteLen = self.address_len  # 4 if self.bits == 32 else 8  # 4字节或8字节
-        keyLenOffset = 0x8c if self.bits == 32 else 0xd0
-        keyWindllOffset = 0x90 if self.bits == 32 else 0xd8
-
-        pm = self.pm
-
-        module = pymem.process.module_from_name(pm.process_handle, "WeChatWin.dll")
-        keyBytes = b'wxid_'
-        publicWxidList = pymem.pattern.pattern_scan_all(self.pm.process_handle, keyBytes, return_multiple=True)
-
-        import ahocorasick
-        def search_substrings(text, substrings):
-            A = ahocorasick.Automaton()
-            for index, s in enumerate(substrings):
-                A.add_word(s, (index, s))
-            A.make_automaton()
-
-            results = []
-            for end_index, (insert_order, original_value) in A.iter(text):
-                start_index = end_index - len(original_value) + 1
-                results.append(int(start_index / 2))
-            return results
-
-        patterns = []
-        for addr in publicWxidList:
-            keyBytes = addr.to_bytes(byteLen, byteorder="little", signed=True)  # 低位在前
-            patterns.append(keyBytes.hex())
-        text = pm.read_bytes(module.lpBaseOfDll, module.SizeOfImage).hex()
-
-        wxidaddrs = search_substrings(text, patterns)
-        # print("wxidaddrs", wxidaddrs)
-
-        # wxidaddr = 0
-        # for addr in wxidaddrs:
-        #     print(addr - 63488256)
-        #     wxidaddr = int.from_bytes(pm.read_bytes(addr + module.lpBaseOfDll, byteLen), byteorder='little')
-        #     print("wxidaddr", hex(wxidaddr))
-        #     wxid = pm.read_bytes(wxidaddr, 24).split(b"\x00")[0]
-        #     print("wxid", wxid)
-
-        return wxidaddrs[-2]
-
     def get_key_bias(self, wx_db_path, account_bias=0):
         wx_db_path = os.path.join(wx_db_path, "Msg", "MicroMsg.db")
         if not os.path.exists(wx_db_path):
@@ -257,19 +214,16 @@ class BiasAddr:
         key, bais = verify_key(maybe_key, wx_db_path)
         return bais
 
-    def run(self):
+    def run(self, is_logging=False, version_list_path=None):
         self.version = self.get_file_version(self.process_name)
         if not self.islogin:
-            return "[-] WeChat No Run"
+            error = "[-] WeChat No Run"
+            if is_logging: print(error)
+            return error
         mobile_bias = self.search_memory_value(self.mobile)
         name_bias = self.search_memory_value(self.name)
         account_bias = self.search_memory_value(self.account)
         # version_bias = self.search_memory_value(self.version.encode("utf-8"))
-
-        try:
-            wxid_bias = self.get_wxid_bias()
-        except:
-            wxid_bias = 0
 
         try:
             key_bias = self.get_key_bias_test()
@@ -283,7 +237,17 @@ class BiasAddr:
                 key_bias = self.get_key_bias(self.db_path, account_bias)
             else:
                 key_bias = 0
-        return {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias, wxid_bias]}
+        rdata = {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
+        if version_list_path and os.path.exists(version_list_path):
+            with open(version_list_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                data.update(rdata)
+            with open(version_list_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        if is_logging:
+            print("{版本号:昵称,账号,手机号,邮箱,KEY}")
+            print(rdata)
+        return rdata
 
 
 if __name__ == '__main__':
@@ -310,13 +274,4 @@ if __name__ == '__main__':
     db_path = args.db_path
 
     # 调用 run 函数，并传入参数
-    rdata = BiasAddr(account, mobile, name, key, db_path).run()
-    print("{版本:昵称,账号,手机号,邮箱,KEY,原始ID(wxid_******)}")
-    print(rdata)
-
-    # 添加到version_list.json
-    with open("../version_list.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-        data.update(rdata)
-    with open("../version_list.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+    rdata = BiasAddr(account, mobile, name, key, db_path).run(True, "../version_list.json")

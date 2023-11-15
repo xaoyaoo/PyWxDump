@@ -70,6 +70,8 @@ def load_base64_img_data(start_time, end_time, username_md5, FileStorage_path):
     min_time = time.strftime("%Y-%m", time.localtime(start_time))
     max_time = time.strftime("%Y-%m", time.localtime(end_time))
     img_path = os.path.join(FileStorage_path, "MsgAttach", username_md5, "Image")
+    if not os.path.exists(img_path):
+        return {}
     # print(min_time, max_time, img_path)
     paths = []
     for root, path, files in os.walk(img_path):

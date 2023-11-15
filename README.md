@@ -16,6 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.11.15 修复无法获取wxid的bug,更新部分逻辑,重构解密脚本的返回值，重构命令行参数
 * 2023.11.14 修复部分bug
 * 2023.11.11 添加聊天记录解析，查看工具,修复部分bug
 * 2023.11.10 修复wxdump wx_db命令行参数错误 [#19](https://github.com/xaoyaoo/PyWxDump/issues/19)
@@ -97,7 +98,8 @@ PyWxDump
 
 ## 4. 其他
 
-PyWxDump是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构python语言版本，同时添加了一些新的功能。
+[PyWxDump](https://github.com/xaoyaoo/PyWxDump)是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)
+的经过重构python语言版本，同时添加了一些新的功能。
 
 * 如发现[version_list.json](pywxdump/version_list.json)缺失或错误,
   请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
@@ -146,13 +148,12 @@ python -m pip install -U .
 ```shell script
 wxdump 模式 [参数]
 #  运行模式(mode):
-#    bias_addr     获取微信基址偏移
-#    wx_info       获取微信信息
-#    wx_db         获取微信文件夹路径
-#    decrypt       解密微信数据库
-#    show_records  显示聊天记录[需要安装flask]
-#    analyse       解析微信数据库(未完成)
-#    all           执行所有操作(除获取基址偏移、解密所有已经登陆的数据库)
+#    bias      获取微信基址偏移
+#    info      获取微信信息
+#    db_path   获取微信文件夹路径
+#    decrypt   解密微信数据库
+#    dbshow    聊天记录查看[需要安装flask]
+#    all       获取微信信息，解密微信数据库，查看聊天记录
 ```
 
 *示例*
@@ -160,55 +161,51 @@ wxdump 模式 [参数]
 以下是示例命令：
 
 ```shell script
-wxdump bias_addr -h
+wxdump bias -h
 #usage: main.py bias_addr [-h] --mobile MOBILE --name NAME --account ACCOUNT [--key KEY] [--db_path DB_PATH] [-vlp VLP]
 #options:
-#  -h, --help         show this help message and exit
-#  --mobile MOBILE    手机号
-#  --name NAME        微信昵称
-#  --account ACCOUNT  微信账号
-#  --key KEY          (可选)密钥
-#  --db_path DB_PATH  (可选)已登录账号的微信文件夹路径
-#  -vlp VLP           (可选)微信版本偏移文件路径
+#  -h, --help            show this help message and exit
+#  --mobile MOBILE       手机号
+#  --name NAME           微信昵称
+#  --account ACCOUNT     微信账号
+#  --key KEY             (可选)密钥
+#  --db_path DB_PATH     (可选)已登录账号的微信文件夹路径
+#  -vlp VERSION_LIST_PATH, --version_list_path VERSION_LIST_PATH
+#                        (可选)微信版本偏移文件路径,如有，则自动更新
 
-wxdump wx_info -h
+wxdump info -h
 #usage: main.py wx_info [-h] [-vlp VLP]
 #options:
 #  -h, --help  show this help message and exit
 #  -vlp VLP    (可选)微信版本偏移文件路径
 
-wxdump wx_db -h
+wxdump db_path -h
 #usage: main.py wx_db [-h] [-r REQUIRE_LIST] [-wf WF]
 #options:
 #  -h, --help            show this help message and exit
-#  -r REQUIRE_LIST, --require_list REQUIRE_LIST
-#                        (可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )
-#  -wf WF                (可选)'WeChat Files'路径
+#  -r , --require_list   (可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )
+#  -wf , --wx_files      (可选)'WeChat Files'路径
+#  -id WXID, --wxid WXID
+#                        (可选)wxid_,用于确认用户文件夹
 
 wxdump decrypt -h
 #usage: main.py decrypt [-h] -k KEY -i DB_PATH -o OUT_PATH
 #options:
-#  -h, --help            show this help message and exit
-#  -k KEY, --key KEY     密钥
-#  -i DB_PATH, --db_path DB_PATH
-#                        数据库路径(目录or文件)
-#  -o OUT_PATH, --out_path OUT_PATH
-#                        输出路径(必须是目录),输出文件为 out_path/de_{original_name}
+#  -h, --help        show this help message and exit
+#  -k , --key        密钥
+#  -i , --db_path    数据库路径(目录or文件)
+#  -o , --out_path   输出路径(必须是目录)[默认为当前路径下decrypted文件夹]
 
-wxdump show_records -h
+wxdump dbshow -h
 #usage: wxdump show_records [-h] -msg  -micro  -media  -fs
 #options:
-#  -h, --help             show this help message and exit
-#  -msg , --msg_path      解密后的 MSG.db 的路径
-#  -micro , --micro_path  解密后的 MicroMsg.db 的路径
-#  -media , --media_path  解密后的 MediaMSG.db 的路径
-#  -fs , --filestorage_path  文件夹FileStorage的路径
-
-wxdump analyse -h
-#usage: main.py analyse [-h] [--arg ARG]
-#options:
-#  -h, --help  show this help message and exit
-#  --arg ARG   参数
+#  -msg , --msg_path     解密后的 MSG.db 的路径
+#  -micro , --micro_path
+#                        解密后的 MicroMsg.db 的路径
+#  -media , --media_path
+#                        解密后的 MediaMSG.db 的路径
+#  -fs , --filestorage_path
+#                        (可选)文件夹FileStorage的路径（用于显示图片）
 
 wxdump all -h
 #usage: main.py all [-h]
@@ -243,10 +240,35 @@ from pywxdump.decrypted import batch_decrypt
 
 batch_decrypt("key", "db_path", "out_path")
 
-# 5. 解析数据库
-from pywxdump.analyse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio
+```
 
-pass
+### 2.3 构建可执行文件exe
+
+将下面的代码保存为`build.py`，然后运行`python build.py`即可。（或者执行[build_exe.py](./tests/build_exe.py)）
+
+```python
+import site
+import os
+
+code = """from pywxdump.command import console_run;console_run()"""
+
+# 创建文件夹
+os.makedirs("dist", exist_ok=True)
+# 将代码写入文件
+with open("dist/tmp.py", "w", encoding="utf-8") as f:
+    f.write(code)
+
+# 获取安装包的路径
+package_path = site.getsitepackages()
+if package_path:
+    package_path = package_path[1]  # 假设取第一个安装包的路径
+    version_list_path = os.path.join(package_path, 'pywxdump', 'version_list.json')
+    # 执行打包命令
+    cmd = f'pyinstaller --onefile --clean --add-data "{version_list_path};pywxdump" dist/tmp.py'
+    print(cmd)
+    os.system(cmd)
+else:
+    print("未找到安装包路径")
 ```
 
 【注】:
@@ -273,6 +295,8 @@ pass
 4. 自行备份(日常备份自己留存)
 5. 等等...............
 
+[![Star History Chart](https://api.star-history.com/svg?repos=xaoyaoo/pywxdump&type=Date)](https://star-history.com/#xaoyaoo/pywxdump&Date)
+
 # 四、免责声明（非常重要！！！！！！！）
 
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
@@ -280,7 +304,6 @@ pass
 请勿利用本项目的相关技术从事非法测试，如因此产生的一切不良后果与项目作者无关。
 
 # 五、许可证
-
 
 ```text
 MIT License
@@ -307,3 +330,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
