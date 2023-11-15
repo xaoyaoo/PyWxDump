@@ -5,9 +5,8 @@
 # Author:       xaoyaoo
 # Date:         2023/10/14
 # -------------------------------------------------------------------------------
-import json
 import argparse
-import os
+import importlib.metadata
 
 from . import *
 
@@ -152,7 +151,6 @@ class MainShowChatRecords():
             print("[-] 输入数据库路径不存在")
             return
 
-
         app = Flask(__name__, template_folder='./show_chat/templates')
         app.logger.setLevel(logging.ERROR)
 
@@ -262,6 +260,10 @@ class MainAll():
 def console_run():
     # 创建命令行参数解析器
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+
+    version = importlib.metadata.version('pywxdump')
+    version = f"PyWxDump {version}"
+    parser.add_argument('-V', '--version', action='version', version=version)
 
     # 添加子命令解析器
     subparsers = parser.add_subparsers(dest="mode", help="""运行模式:""", required=True, metavar="mode")
