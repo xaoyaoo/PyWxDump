@@ -80,7 +80,6 @@ PyWxDump可用于：获取用户个人信息(昵称/账号/手机/邮箱/数据�
 4. 自行备份(日常备份自己留存)
 5. 等等...............
 
-
 ## 3. 项目结构
 
 <details>
@@ -125,9 +124,6 @@ PyWxDump
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 
-**Star History**
-[![Star History Chart](https://api.star-history.com/svg?repos=xaoyaoo/pywxdump&type=Date)](https://star-history.com/#xaoyaoo/pywxdump&Date)
-
 <details>
 <summary>提交issues方法(点击展开)</summary>
 
@@ -136,6 +132,9 @@ PyWxDump
 [![image](https://github.com/xaoyaoo/PyWxDump/assets/37209452/be1d8913-5a6e-4fff-9fcd-00edb33d255b)](https://github.com/xaoyaoo/PyWxDump/issues)
 
 </details>
+
+**Star History**
+[![Star History Chart](https://api.star-history.com/svg?repos=xaoyaoo/pywxdump&type=Date)](https://star-history.com/#xaoyaoo/pywxdump&Date)
 
 # 二、使用说明
 
@@ -300,7 +299,6 @@ else:
 * 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)
 * 关于数据库解析，参考[wx数据库简述.md](doc/wx数据库简述.md)
 * 关于更多使用方法，以及各个模块的使用方法，参考前一版本的[python1.0_README.md](doc/python1.0_README.md)
-
 
 # 三、免责声明（非常重要！！！！！！！）
 
