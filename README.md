@@ -16,6 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.11.16 增加聊天记录导出为html
 * 2023.11.15 添加test文件，添加自动构建可执行文件的脚本,添加版本描述
 * 2023.11.15 [v2.2.5变化较大]重构解密脚本的返回值，重构命令行参数
 * 2023.11.15 修复无法获取wxid的bug
@@ -48,7 +49,7 @@
 
 ## 1. 项目简介
 
-PyWxDump可用于：获取用户个人信息(昵称/账号/手机/邮箱/数据库密钥(用来解密聊天记录))；数据库读取、解密脚本；聊天记录查看工具。
+PyWxDump可用于：获取用户个人信息(昵称/账号/手机/邮箱/数据库密钥(用来解密聊天记录))；数据库读取、解密脚本；聊天记录查看导出工具。
 
 支持多账户信息获取，支持所有微信版本。
 
@@ -66,6 +67,7 @@ PyWxDump可用于：获取用户个人信息(昵称/账号/手机/邮箱/数据�
 * （6）提供数据库部分字段说明
 * （7）支持微信多开场景，获取多用户信息等
 * （8）微信需要登录状态才能获取数据库密钥
+* （9）支持导出聊天记录为html
 
 **版本差异**
 
@@ -119,6 +121,7 @@ PyWxDump
 [PyWxDump](https://github.com/xaoyaoo/PyWxDump)是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)
 的经过重构python语言版本，同时添加了一些新的功能。
 
+* 目前只在windows下测试过，linux下可能会存在问题。
 * 如发现[version_list.json](pywxdump/version_list.json)缺失或错误,
   请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
@@ -148,6 +151,9 @@ pip install pywxdump
 
 ### 1.2 从源码安装
 
+<details>
+<summary>点击展开</summary>
+
 ```shell script
 pip install git+git://github.com/xaoyaoo/PyWxDump.git
 ```
@@ -159,6 +165,7 @@ git clone https://github.com/xaoyaoo/PyWxDump.git
 cd PyWxDump
 python -m pip install -U .
 ```
+</details>
 
 ## 2. 使用
 
@@ -174,10 +181,14 @@ wxdump 模式 [参数]
 #    db_path   获取微信文件夹路径
 #    decrypt   解密微信数据库
 #    dbshow    聊天记录查看[需要安装flask]
+#    export    聊天记录导出为html[需要安装flask]
 #    all       获取微信信息，解密微信数据库，查看聊天记录
 ```
 
 *示例*
+
+<details>
+<summary>点击展开示例</summary>
 
 以下是示例命令：
 
@@ -228,11 +239,27 @@ wxdump dbshow -h
 #  -fs , --filestorage_path
 #                        (可选)文件夹FileStorage的路径（用于显示图片）
 
+wxdump export -h
+#usage: wxdump export [-h] -u  -o  -msg  -micro  -media  [-fs]
+#options:
+#  -h, --help            show this help message and exit
+#  -u , --username       微信账号
+#  -o , --outpath        导出路径
+#  -msg , --msg_path     解密后的 MSG.db 的路径
+#  -micro , --micro_path
+#                        解密后的 MicroMsg.db 的路径
+#  -media , --media_path
+#                        解密后的 MediaMSG.db 的路径
+#  -fs , --filestorage_path
+#                        (可选)文件夹FileStorage的路径（用于显示图片）
+
 wxdump all -h
 #usage: main.py all [-h]
 #options:
 #  -h, --help  show this help message and exit
 ```
+
+</details>
 
 ### 2.2 python API
 
@@ -301,6 +328,8 @@ else:
 * 关于更多使用方法，以及各个模块的使用方法，参考前一版本的[python1.0_README.md](doc/python1.0_README.md)
 
 # 三、免责声明（非常重要！！！！！！！）
+
+本项目仅供学习交流使用，请勿用于非法用途，否则后果自负。
 
 本项目仅允许在授权情况下对数据库进行备份，严禁用于非法目的，否则自行承担所有相关责任。使用该工具则代表默认同意该条款;
 

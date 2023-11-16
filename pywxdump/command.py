@@ -169,6 +169,49 @@ class MainShowChatRecords():
         app.run(debug=False)
 
 
+class MainExportChatRecords():
+    def init_parses(self, parser):
+        self.mode = "export"
+        # 添加 'decrypt' 子命令解析器
+        sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html")
+        sb_decrypt.add_argument("-u", "--username", type=str, help="微信账号", required=True, metavar="")
+        sb_decrypt.add_argument("-o", "--outpath", type=str, help="导出路径", required=True, metavar="")
+        sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
+                                metavar="")
+        sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=True,
+                                metavar="")
+        sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
+                                metavar="")
+        sb_decrypt.add_argument("-fs", "--filestorage_path", type=str,
+                                help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False,
+                                metavar="")
+        return sb_decrypt
+
+    def run(self, args):
+        # 从命令行参数获取值
+        try:
+            from flask import Flask, request, jsonify, render_template, g
+            import logging
+            from .show_chat.main_window import app_show_chat, get_user_list, export
+        except Exception as e:
+            print(e)
+            print("[-] 请安装flask( pip install flask )")
+            return
+
+        if not os.path.exists(args.msg_path) or not os.path.exists(args.micro_path) or not os.path.exists(
+                args.media_path):
+            print(os.path.exists(args.msg_path), os.path.exists(args.micro_path), os.path.exists(args.media_path))
+            print("[-] 输入数据库路径不存在")
+            return
+
+        if not os.path.exists(args.outpath):
+            os.makedirs(args.outpath)
+            print(f"[+] 创建输出文件夹：{args.outpath}")
+
+        export(args.username, args.outpath, args.msg_path, args.micro_path, args.media_path, args.filestorage_path)
+        print(f"[+] 导出成功{args.outpath}")
+
+
 class MainAll():
     def init_parses(self, parser):
         self.mode = "all"
@@ -293,6 +336,11 @@ def console_run():
     main_show_chat_records = MainShowChatRecords()
     sb_dbshow = main_show_chat_records.init_parses(subparsers)
     modes[main_show_chat_records.mode] = main_show_chat_records
+
+    # 添加 'export' 子命令解析器
+    main_export_chat_records = MainExportChatRecords()
+    sb_export = main_export_chat_records.init_parses(subparsers)
+    modes[main_export_chat_records.mode] = main_export_chat_records
 
     # 添加 'all' 子命令解析器
     main_all = MainAll()

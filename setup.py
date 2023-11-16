@@ -3,7 +3,20 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.2.6"
+version = "2.2.7"
+
+install_requires = [
+    "psutil",
+    "pycryptodomex",
+    "pywin32",
+    "pymem",
+    "silk-python",
+    "pyaudio",
+    "requests",
+    "pillow",
+    "pyahocorasick"
+]
+
 setup(
     name="pywxdump",
     author="xaoyaoo",
@@ -33,17 +46,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6, <4',
-    install_requires=[
-        "psutil",
-        "pycryptodomex",
-        "pywin32",
-        "pymem",
-        "silk-python",
-        "pyaudio",
-        "requests",
-        "pillow",
-        "pyahocorasick"
-    ],
+    install_requires=install_requires,
     entry_points={
         'console_scripts': [
             'wxdump = pywxdump.command:console_run',

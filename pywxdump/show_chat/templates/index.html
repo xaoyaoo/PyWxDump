@@ -79,7 +79,7 @@
 
                 </div>
                 <div class="col-3" style="display: flex; justify-content: flex-end;">
-                    <button type="button" class="btn btn-primary">导出</button>
+                    <button id="btn_export" type="button" class="btn btn-primary">导出</button>
                 </div>
             </div>
 
@@ -184,6 +184,13 @@
             request_function(requestUrl);
         }
     });
+
+    // 导出按钮点击事件
+    document.getElementById('btn_export').addEventListener('click', function () {
+        var requestUrl = '/export_chat_data?username=' + encodeURIComponent(globalUsername);
+        window.open(requestUrl);
+    });
+
 </script>
 
 </body>

@@ -13,6 +13,8 @@ import time
 import hashlib
 from pywxdump.analyse import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
 
+from flask import Flask, request, render_template, g, Blueprint
+
 
 def get_md5(s):
     m = hashlib.md5()
@@ -177,18 +179,49 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
     return data
 
 
-from flask import Flask, request, render_template, g, Blueprint
+def export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorage_path, page_size=500):
+    name_save = user.get("remark", user.get("nickname", user.get("username", "")))
+    username = user.get("username", "")
+
+    chatCount = user.get("chat_count", 0)
+
+    for i in range(0, chatCount, page_size):
+        start_index = i
+        data = load_chat_records(username, start_index, page_size, user, MSG_ALL_db_path, MediaMSG_all_db_path,
+                                 FileStorage_path)
+        if len(data) == 0:
+            break
+        with open(f"{outpath}/{name_save}_{int(i / page_size)}.html", "w", encoding="utf-8") as f:
+            f.write(render_template("chat.html", msgs=data))
+    return True, f"导出成功{outpath}"
+
+
+def export(username, outpath, MSG_ALL_db_path, MicroMsg_db_path, MediaMSG_all_db_path, FileStorage_path):
+    if not os.path.exists(outpath):
+        outpath = os.path.join(os.getcwd(), "export" + os.sep + username)
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+
+    USER_LIST = get_user_list(MSG_ALL_db_path, MicroMsg_db_path)
+    user = list(filter(lambda x: x["username"] == username, USER_LIST))
+
+    if username and len(user) > 0:
+        user = user[0]
+        return export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorage_path)
+
 
 app_show_chat = Blueprint('show_chat_main', __name__, template_folder='templates')
 app_show_chat.debug = False
 
 
+# 主页 - 显示用户列表
 @app_show_chat.route('/')
 def index():
     g.USER_LIST = get_user_list(g.MSG_ALL_db_path, g.MicroMsg_db_path)
     return render_template("index.html", users=g.USER_LIST)
 
 
+# 获取聊天记录
 @app_show_chat.route('/get_chat_data', methods=["GET", 'POST'])
 def get_chat_data():
     username = request.args.get("username", "")
@@ -206,5 +239,28 @@ def get_chat_data():
         data = load_chat_records(username, start_index, page_size, user, g.MSG_ALL_db_path, g.MediaMSG_all_db_path,
                                  g.FileStorage_path)
         return render_template("chat.html", msgs=data)
+    else:
+        return "error"
+
+
+# 聊天记录导出为html
+@app_show_chat.route('/export_chat_data', methods=["GET", 'POST'])
+def get_export():
+    username = request.args.get("username", "")
+
+    user = list(filter(lambda x: x["username"] == username, g.USER_LIST))
+
+    if username and len(user) > 0:
+        user = user[0]
+        n = f"{user.get('username', '')}_{user.get('nickname', '')}_{user.get('remark', '')}"
+        outpath = os.path.join(os.getcwd(), "export" + os.sep + n)
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+
+        ret = export_html(user, outpath, g.MSG_ALL_db_path, g.MediaMSG_all_db_path, g.FileStorage_path, page_size=200)
+        if ret[0]:
+            return ret[1]
+        else:
+            return ret[1]
     else:
         return "error"
