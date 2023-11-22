@@ -5,6 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2023/09/27
 # -------------------------------------------------------------------------------
+import os.path
 import sqlite3
 import pysilk
 from io import BytesIO
@@ -245,5 +246,43 @@ def read_audio(MsgSvrID, is_play=False, is_wave=False, DB_PATH: str = "", rate=2
     return pcm_data
 
 
+def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\Windows\Fonts\simhei.ttf"):
+    """
+    词云
+    :param is_show: 是否显示
+    :param img_path: 背景图片路径
+    :param text: 文本
+    :param font: 字体路径
+    :return:
+    """
+    try:
+        from wordcloud import WordCloud
+        import jieba
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from matplotlib.font_manager import fontManager
+    except ImportError as e:
+        print("error", e)
+        raise ImportError("请安装wordcloud,jieba,numpy,matplotlib,pillow库")
+    words = jieba.lcut(text)  # 精确分词
+    newtxt = ' '.join(words)  # 空格拼接
+    # 字体路径
+
+    # 创建WordCloud对象
+    wordcloud1 = WordCloud(width=800, height=400, background_color='white', font_path=font)
+    wordcloud1.generate(newtxt)
+
+    if out_path and out_path != "":
+        wordcloud1.to_file("wordcloud.png")  # 保存图片
+    if img_path and os.path.exists(img_path):  # 设置背景图片
+        img_color = np.array(Image.open(img_path))  # 读取背景图片
+        img_color = img_color.reshape((img_color.shape[0] * img_color.shape[1], 3))
+        wordcloud1.recolor(color_func=img_color)  # 设置背景图片颜色
+    if is_show:
+        # 显示词云
+        wordcloud_img = wordcloud1.to_image()
+        wordcloud_img.show()
+
+
 if __name__ == '__main__':
-    pass
+    wordcloud_generator("我是中国人,我喜欢吃饭", is_show=True)

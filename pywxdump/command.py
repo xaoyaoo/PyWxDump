@@ -7,6 +7,8 @@
 # -------------------------------------------------------------------------------
 import argparse
 import importlib.metadata
+import sys
+import textwrap
 
 from . import *
 
@@ -19,12 +21,12 @@ class MainBiasAddr():
         self.mode = "bias"
         # 添加 'bias_addr' 子命令解析器
         sb_bias_addr = parser.add_parser(self.mode, help="获取微信基址偏移")
-        sb_bias_addr.add_argument("--mobile", type=str, help="手机号", required=True)
-        sb_bias_addr.add_argument("--name", type=str, help="微信昵称", required=True)
-        sb_bias_addr.add_argument("--account", type=str, help="微信账号", required=True)
-        sb_bias_addr.add_argument("--key", type=str, help="(可选)密钥")
-        sb_bias_addr.add_argument("--db_path", type=str, help="(可选)已登录账号的微信文件夹路径")
-        sb_bias_addr.add_argument("-vlp", '--version_list_path', type=str,
+        sb_bias_addr.add_argument("--mobile", type=str, help="手机号", metavar="", required=True)
+        sb_bias_addr.add_argument("--name", type=str, help="微信昵称", metavar="", required=True)
+        sb_bias_addr.add_argument("--account", type=str, help="微信账号", metavar="", required=True)
+        sb_bias_addr.add_argument("--key", type=str, metavar="", help="(可选)密钥")
+        sb_bias_addr.add_argument("--db_path", type=str, metavar="", help="(可选)已登录账号的微信文件夹路径")
+        sb_bias_addr.add_argument("-vlp", '--version_list_path', type=str, metavar="",
                                   help="(可选)微信版本偏移文件路径,如有，则自动更新",
                                   default=None)
         self.sb_bias_addr = sb_bias_addr
@@ -52,12 +54,13 @@ class MainWxInfo():
         self.mode = "info"
         # 添加 'wx_info' 子命令解析器
         sb_wx_info = parser.add_parser(self.mode, help="获取微信信息")
-        sb_wx_info.add_argument("-vlp", type=str, help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
+        sb_wx_info.add_argument("-vlp", '--version_list_path', metavar="", type=str,
+                                help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
         return sb_wx_info
 
     def run(self, args):
         # 读取微信各版本偏移
-        path = args.vlp
+        path = args.version_list_path
         version_list = json.load(open(path, "r", encoding="utf-8"))
         result = read_info(version_list, True)  # 读取微信信息
         return result
@@ -173,7 +176,7 @@ class MainExportChatRecords():
     def init_parses(self, parser):
         self.mode = "export"
         # 添加 'decrypt' 子命令解析器
-        sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html")
+        sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html[需要安装flask]")
         sb_decrypt.add_argument("-u", "--username", type=str, help="微信账号", required=True, metavar="")
         sb_decrypt.add_argument("-o", "--outpath", type=str, help="导出路径", required=True, metavar="")
         sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
@@ -274,8 +277,11 @@ class MainAll():
                         f'[+] success "{os.path.relpath(ret1[0], os.path.commonprefix(wxdbpaths))}" -> "{os.path.relpath(ret1[1], os.getcwd())}"')
                     out_dbs.append(ret1[1])
             print("-" * 32)
-            print("[-] " + f"共 {len(errors)} 个文件解密失败;")
+            print(
+                "[-] " + f"共 {len(errors)} 个文件解密失败(可能原因:非当前登录用户数据库;非加密数据库),详见{out_path}下‘解密失败.txt’;")
             # print("; ".join([f'"{wxdbpaths[i]}"' for i in errors]))
+            with open(os.path.join(out_path, "解密失败.txt"), "w", encoding="utf-8") as f:
+                f.write("\n".join([f'{i}' for i in errors]))
             print("=" * 32)
 
             if len(out_dbs) <= 0:
@@ -300,13 +306,31 @@ class MainAll():
             MainShowChatRecords().run(args)
 
 
+PYWXDUMP_VERSION = importlib.metadata.version('pywxdump')
+
+
+class CustomArgumentParser(argparse.ArgumentParser):
+    def format_help(self):
+        # 首先显示软件简介
+        # 定义软件简介文本并进行格式化
+        PYWXDUMP_VERSION = importlib.metadata.version('pywxdump')
+        first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^80}\033[0m'
+        brief = 'PyWxDump是一款用于获取账号信息(昵称/账号/手机/邮箱/数据库密钥)、解密数据库、查看\n聊天记录、备份导出聊天记录为html的工具。'
+        other = '更多详情请查看: \033[4m\033[1mhttps://github.com/xaoyaoo/PyWxDump\033[0m'
+
+        separator = f'{"options":-^80}'
+
+        # 获取帮助信息并添加到软件简介下方
+        help_text = super().format_help().strip()
+
+        return f'{first_line}\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
+
+
 def console_run():
     # 创建命令行参数解析器
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-
-    version = importlib.metadata.version('pywxdump')
-    version = f"PyWxDump {version}"
-    parser.add_argument('-V', '--version', action='version', version=version)
+    parser = CustomArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    PYWXDUMP_VERSION = importlib.metadata.version('pywxdump')
+    parser.add_argument('-V', '--version', action='version', version=f"PyWxDump v{PYWXDUMP_VERSION}")
 
     # 添加子命令解析器
     subparsers = parser.add_subparsers(dest="mode", help="""运行模式:""", required=True, metavar="mode")
@@ -346,6 +370,12 @@ def console_run():
     main_all = MainAll()
     sb_all = main_all.init_parses(subparsers)
     modes[main_all.mode] = main_all
+
+    # 检查是否需要显示帮助信息
+    if len(sys.argv) == 1:
+        sys.argv.append('-h')
+    elif len(sys.argv) == 2 and sys.argv[1] in modes.keys():
+        sys.argv.append('-h')
 
     args = parser.parse_args()  # 解析命令行参数
 

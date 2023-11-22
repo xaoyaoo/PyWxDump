@@ -12,9 +12,6 @@ import json
 import multiprocessing
 import os
 import re
-import time
-import winreg
-import threading
 import platform
 
 import psutil

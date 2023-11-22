@@ -24,9 +24,35 @@ def get_info_without_key(h_process, address, n_size=64):
     return text.strip() if text.strip() != "" else "None"
 
 
+def pattern_scan_all(handle, pattern, *, return_multiple=False):
+    import sys
+    next_region = 0
+    found = []
+    user_space_limit = 0x7FFFFFFF0000 if sys.maxsize > 2 ** 32 else 0x7fff0000
+    while next_region < user_space_limit:
+        try:
+            next_region, page_found = pymem.pattern.scan_pattern_page(
+                handle,
+                next_region,
+                pattern,
+                return_multiple=return_multiple
+            )
+        except Exception as e:
+            print(e)
+            break
+        if not return_multiple and page_found:
+            return page_found
+        if page_found:
+            found += page_found
+    if not return_multiple:
+        return None
+    return found
+
+
 def get_info_wxid(h_process, n_size=64):
     pm = pymem.Pymem("WeChat.exe")
-    addrs = pymem.pattern.pattern_scan_all(pm.process_handle, b'wxid_', return_multiple=True)
+    # addrs = pymem.pattern.pattern_scan_all(pm.process_handle, b'wxid_', return_multiple=True)
+    addrs = pattern_scan_all(pm.process_handle, b'wxid_', return_multiple=True)
     for addr in addrs:
         wxidtmp = get_info_without_key(h_process, addr, n_size)
         if wxidtmp.startswith("wxid_") and r'\FileStorage\MsgAttach' in wxidtmp:
