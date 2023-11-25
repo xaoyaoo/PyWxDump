@@ -284,5 +284,18 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
         wordcloud_img.show()
 
 
+def read_BytesExtra(data):
+    if data[0:2] == '0x':
+        data = data[2:]
+    data = bytes.fromhex(data)
+    print(data)
+    print('*' * 50)
+    print(data.decode('utf-8', errors='ignore'))
+
+
 if __name__ == '__main__':
-    wordcloud_generator("我是中国人,我喜欢吃饭", is_show=True)
+    data = ''
+    read_BytesExtra(data)
+    print('*' * 50)
+    data2 = ''
+    read_BytesExtra(data2)
