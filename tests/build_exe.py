@@ -23,9 +23,9 @@ if package_path:
     version_list_path = os.path.join(package_path,'pywxdump', 'version_list.json')
 
     # 执行打包命令
-    cmd = f'pyinstaller --onefile --clean --add-data "{version_list_path};pywxdump" dist/tmp.py'
+    cmd = f'pyinstaller --onefile --clean --add-data "{version_list_path};pywxdump" --distpath=dist --workpath=build --specpath=build --name=pywxdump dist/tmp.py'
     print(cmd)
-    os.system(cmd)
+    # os.system(cmd)
 
 else:
     print("未找到安装包路径")

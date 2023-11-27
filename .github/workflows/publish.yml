@@ -24,16 +24,23 @@ jobs:
         with:
           python-version: 3.8  # 指定 Python 版本 (3.8)
 
-      - name: Install dependencies
+      - name: Install dependencies # 安装依赖
         run: |
           python -m pip install --upgrade pip
           pip install build
           python -m pip install --upgrade twine
+          pip install pyinstaller
 
       - name: Build package
-        run: python -m build
+        run: |
+          python -m build
+          python tests/build_exe.py
 
-      - name: Publish package with Twine
+      - name: test
+        run: |
+          ls -l dist
+
+      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
         run: |
           twine upload dist/*
         env:
@@ -42,7 +49,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -52,6 +59,9 @@ jobs:
             [Auto Release] Update PyWxDump
           draft: false
           prerelease: false
+          files: |
+            dist/*.exe
+            dist/*.whl
 
       - name: Upload .whl file
         uses: actions/upload-artifact@v2
