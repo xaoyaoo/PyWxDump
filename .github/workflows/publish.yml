@@ -43,7 +43,7 @@ jobs:
 
       - name: Build Executable
         run: |
-          pyinstaller --onefile --clean --add-data "${{ github.workspace }}/pywxdump/version_list.json;pywxdump" --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/chat.html;pywxdump/show_chat/templates" --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/index.html;pywxdump/show_chat/templates" --distpath=dist --workpath=build --specpath=build --name=pywxdump ${{ github.workspace }}/dist/tmp.py
+          pyinstaller --onefile --clean --add-data "${{ github.workspace }}/pywxdump/version_list.json;pywxdump" --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/chat.html;pywxdump/show_chat/templates" --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/index.html;pywxdump/show_chat/templates" --distpath=dist --name=pywxdump dist/tmp.py
 
       - name: test
         run: |
