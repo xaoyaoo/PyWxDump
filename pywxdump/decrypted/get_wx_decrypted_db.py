@@ -14,7 +14,11 @@ import sqlite3
 import winreg
 
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from decrypted.decrypt import decrypt
+try:
+    from decrypted.decrypt import decrypt
+except ImportError:
+    from .decrypt import decrypt
+
 
 
 # 开始获取微信数据库
