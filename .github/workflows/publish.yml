@@ -38,8 +38,8 @@ jobs:
 
       - name: test
         run: |
-          echo ${{ github.workspace }}
-          echo ${{ env.VERSION_LIST_PATH }}
+          echo "${{ github.workspace }}"
+          echo "${{ env.VERSION_LIST_PATH }}"
           ls -l dist
 
       - name: Build Executable1
