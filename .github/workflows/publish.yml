@@ -34,6 +34,7 @@ jobs:
       - name: Build package
         run: |
           python -m build
+          pip install dist/*.whl
           python tests/build_exe.py
 
       - name: Create Executable
