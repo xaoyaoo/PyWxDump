@@ -38,13 +38,14 @@ jobs:
 
       - name: Get package path
         run: |
-          $package_path = $(python -c "import site; print(site.getsitepackages()[1])")
+          $pythonCmd = "python -c ""import site; print(site.getsitepackages()[1])"""
+          $package_path = Invoke-Expression -Command $pythonCmd
           $version_list_path = "$package_path/pywxdump/version_list.json"
       
           # Execute packaging command
           $cmd = "pyinstaller --onefile --clean --add-data `"$version_list_path;pywxdump`" --distpath=dist --workpath=build --specpath=build --name=pywxdump dist/tmp.py"
           Write-Host $cmd
-          Invoke-Expression $cmd || exit 1
+          Invoke-Expression -Command $cmd || exit 1
 
       - name: Check package path
         run: |
@@ -52,6 +53,11 @@ jobs:
             Write-Error "未找到安装包路径"
             exit 1
           }
+
+      - name: test
+        run: |
+          ls -l dist
+          ls -l tests
 
 #      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
 #        run: |
