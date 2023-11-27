@@ -8,3 +8,5 @@ silk-python
 pyaudio
 requests
 pillow
+flask
+pyahocorasick
