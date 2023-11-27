@@ -184,6 +184,8 @@ def export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorag
     username = user.get("username", "")
 
     chatCount = user.get("chat_count", 0)
+    if chatCount == 0:
+        return False, "没有聊天记录"
 
     for i in range(0, chatCount, page_size):
         start_index = i
@@ -191,7 +193,8 @@ def export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorag
                                  FileStorage_path)
         if len(data) == 0:
             break
-        with open(f"{outpath}/{name_save}_{int(i / page_size)}.html", "w", encoding="utf-8") as f:
+        save_path = os.path.join(outpath, f"{name_save}_{int(i / page_size)}.html")
+        with open(save_path, "w", encoding="utf-8") as f:
             f.write(render_template("chat.html", msgs=data))
     return True, f"导出成功{outpath}"
 

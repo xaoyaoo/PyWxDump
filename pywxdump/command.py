@@ -10,7 +10,7 @@ import importlib.metadata
 import sys
 import textwrap
 
-from . import *
+from pywxdump import *
 
 
 # version_list_path = os.path.join(os.path.dirname(__file__), "version_list.json")
@@ -142,7 +142,6 @@ class MainShowChatRecords():
         try:
             from flask import Flask, request, jsonify, render_template, g
             import logging
-            from .show_chat.main_window import app_show_chat, get_user_list
         except Exception as e:
             print(e)
             print("[-] 请安装flask( pip install flask )")
@@ -177,7 +176,7 @@ class MainExportChatRecords():
         self.mode = "export"
         # 添加 'decrypt' 子命令解析器
         sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html[需要安装flask]")
-        sb_decrypt.add_argument("-u", "--username", type=str, help="微信账号", required=True, metavar="")
+        sb_decrypt.add_argument("-u", "--username", type=str, help="微信账号(聊天对象账号)", required=True, metavar="")
         sb_decrypt.add_argument("-o", "--outpath", type=str, help="导出路径", required=True, metavar="")
         sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
                                 metavar="")
@@ -195,10 +194,9 @@ class MainExportChatRecords():
         try:
             from flask import Flask, request, jsonify, render_template, g
             import logging
-            from .show_chat.main_window import app_show_chat, get_user_list, export
         except Exception as e:
             print(e)
-            print("[-] 请安装flask( pip install flask )")
+            print("[-] 请安装flask( pip install flask)")
             return
 
         if not os.path.exists(args.msg_path) or not os.path.exists(args.micro_path) or not os.path.exists(

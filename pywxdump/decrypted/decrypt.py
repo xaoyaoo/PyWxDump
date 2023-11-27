@@ -53,6 +53,8 @@ def decrypt(key: str, db_path, out_path):
     salt = blist[:16]
     byteKey = hashlib.pbkdf2_hmac("sha1", password, salt, DEFAULT_ITER, KEY_SIZE)
     first = blist[16:DEFAULT_PAGESIZE]
+    if len(salt) != 16:
+        return False, f"[-] db_path:'{db_path}' File Error!"
 
     mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
     mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
@@ -162,6 +164,50 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_lo
     return True, result
 
 
+def encrypt(key: str, db_path, out_path):
+    """
+    通过密钥加密数据库
+    :param key: 密钥 64位16进制字符串
+    :param db_path:  待加密的数据库路径(必须是文件)
+    :param out_path:  加密后的数据库输出路径(必须是文件)
+    :return:
+    """
+    if not os.path.exists(db_path) or not os.path.isfile(db_path):
+        return False, f"[-] db_path:'{db_path}' File not found!"
+    if not os.path.exists(os.path.dirname(out_path)):
+        return False, f"[-] out_path:'{out_path}' File not found!"
+
+    if len(key) != 64:
+        return False, f"[-] key:'{key}' Len Error!"
+
+    password = bytes.fromhex(key.strip())
+    with open(db_path, "rb") as file:
+        blist = file.read()
+
+    salt = os.urandom(16)  # 生成随机盐值
+    byteKey = hashlib.pbkdf2_hmac("sha1", password, salt, DEFAULT_ITER, KEY_SIZE)
+
+    # 计算消息认证码
+    mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
+    mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
+    hash_mac = hmac.new(mac_key, blist[:-32], hashlib.sha1)
+    hash_mac.update(b'\x01\x00\x00\x00')
+    mac_digest = hash_mac.digest()
+
+    newblist = [blist[i:i + DEFAULT_PAGESIZE] for i in range(DEFAULT_PAGESIZE, len(blist), DEFAULT_PAGESIZE)]
+
+    with open(out_path, "wb") as enFile:
+        enFile.write(salt)  # 写入盐值
+        enFile.write(mac_digest)  # 写入消息认证码
+
+        for i in newblist:
+            t = AES.new(byteKey, AES.MODE_CBC, os.urandom(16))  # 生成随机的初始向量
+            encrypted = t.encrypt(i)  # 加密数据块
+            enFile.write(encrypted)
+
+    return True, [db_path, out_path, key]
+
+
 if __name__ == '__main__':
     # 创建命令行参数解析器
     parser = argparse.ArgumentParser()
@@ -179,9 +225,4 @@ if __name__ == '__main__':
     out_path = args.out_path
 
     # 调用 decrypt 函数，并传入参数
-    result = batch_decrypt(key, db_path, out_path)
-    for i in result:
-        if isinstance(i, str):
-            print(i)
-        else:
-            print(f'[+] "{i[1]}" -> "{i[2]}"')
+    result = batch_decrypt(key, db_path, out_path, is_logging=True)

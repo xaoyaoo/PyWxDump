@@ -16,6 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
+* 2023.11.27 解决相对导入包的问题,完善错误提示
 * 2023.11.25 聊天记录查看工具bootstrap更换国内cdn
 * 2023.11.22 添加all命令中解密错误数据日志写入文件,修复部分bug
 * 2023.11.16 增加聊天记录导出为html
@@ -160,13 +161,13 @@ PyWxDump
 
 ## 1. 安装
 
-### 1.1 从pypi安装
+### 1.1 从pypi安装(安装稳定版)
 
 ```shell script
 pip install pywxdump
 ```
 
-### 1.2 从源码安装
+### 1.2 从源码安装(安装最新版)
 
 <details>
 <summary>点击展开</summary>
