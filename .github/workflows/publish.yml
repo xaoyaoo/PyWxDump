@@ -40,6 +40,7 @@ jobs:
         run: |
           echo ${{ github.workspace }}
           echo ${{ env.VERSION_LIST_PATH }}
+          ls -l dist
 
       - name: Build Executable
         run: |
