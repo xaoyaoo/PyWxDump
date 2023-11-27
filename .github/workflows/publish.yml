@@ -42,7 +42,7 @@ jobs:
 
       - name: Publish package with Twine # 使用 Twine 发布到 PyPI
         run: |
-          twine upload dist/*
+          twine upload dist/*.whl dist/*.tar.gz
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
