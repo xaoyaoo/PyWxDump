@@ -42,7 +42,7 @@ jobs:
           echo ${{ env.VERSION_LIST_PATH }}
           ls -l dist
 
-      - name: Build Executable
+      - name: Build Executable1
         run: |
           pyinstaller --onefile --clean --add-data "${{ github.workspace }}/${{ env.VERSION_LIST_PATH }};pywxdump" --distpath=dist --workpath=build --specpath=build --name=pywxdump ${{ github.workspace }}/dist/tmp.py
 
