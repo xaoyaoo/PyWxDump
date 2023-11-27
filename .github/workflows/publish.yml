@@ -43,7 +43,7 @@ jobs:
           requirements: '${{ github.workspace }}/requirements.txt'
           spec: 'dist/tmp.py'
           upload_exe_with_name: 'pywxdump'
-          options: --onefile, --name "pywxdump", --windowed, --clean, --add-data "${{ github.workspace }}/pywxdump/version_list.json;pywxdump", --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/chat.html;pywxdump/show_chat/templates", --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/index.html;pywxdump/show_chat/templates", --distpath=dist
+          options: --onefile, --name "pywxdump", --windowed, --clean, --add-data "${{ github.workspace }}/pywxdump/version_list.json;pywxdump", --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/chat.html;pywxdump/show_chat/templates", --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/index.html;pywxdump/show_chat/templates",
           is_uploaded: false
           executable_path: 'dist'
 
