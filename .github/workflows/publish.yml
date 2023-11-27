@@ -36,15 +36,9 @@ jobs:
           python -m build
           python tests/build_exe.py
 
-      - name: test
-        run: |
-          echo "${{ github.workspace }}"
-          echo "${{ env.VERSION_LIST_PATH }}"
-          ls -l dist
-
       - name: Build Executable1
         run: |
-          pyinstaller --onefile --clean --add-data "${{ github.workspace }}/${{ env.VERSION_LIST_PATH }};pywxdump" --distpath=dist --workpath=build --specpath=build --name=pywxdump ${{ github.workspace }}/dist/tmp.py
+          pyinstaller --onefile --clean --add-data "${{ github.workspace }}/version_list.json;pywxdump" --add-data "${{ github.workspace }}/show_chat/templates/chat.html;pywxdump/show_chat/templates" --add-data "${{ github.workspace }}/show_chat/templates/index.html;pywxdump/show_chat/templates" --distpath=dist --workpath=build --specpath=build --name=pywxdump ${{ github.workspace }}/dist/tmp.py
 
       - name: test
         run: |
