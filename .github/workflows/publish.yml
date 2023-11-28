@@ -44,6 +44,7 @@ jobs:
       - name: test
         run: |
           ls -l dist
+          ls -l
           cat dist/pywxdump.spec
 
 #      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
