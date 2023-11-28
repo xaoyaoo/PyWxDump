@@ -17,11 +17,12 @@ jobs:
       - name: Checkout repository # 检出仓库
         uses: actions/checkout@v2 # 使用 GitHub 官方的 checkout action
 
+      - name: Set git fetch --prune --unshallow
       - run: |
           git fetch --prune --unshallow  # 获取完整的 git 历史记录
 
       - name: Set up Python # 设置 Python 环境
-      - uses: actions/setup-python@v4
+        uses: actions/setup-python@v4
         with:
           python-version: '3.8'
           cache: 'pip' # caching pip dependencies
