@@ -37,17 +37,6 @@ jobs:
           pip install dist/*.whl
           python tests/build_exe.py
 
-#      - name: Create Executable
-#        uses: sayyid5416/pyinstaller@v1
-#        with:
-#          python_ver: '3.8'
-#          requirements: '${{ github.workspace }}/requirements.txt'
-#          spec: 'dist/tmp.py'
-#          upload_exe_with_name: 'pywxdump'
-#          options: --onefile, --name "pywxdump", --windowed, --clean, --add-data "${{ github.workspace }}/pywxdump/version_list.json;pywxdump", --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/chat.html;pywxdump/show_chat/templates", --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/index.html;pywxdump/show_chat/templates",
-#          is_uploaded: false
-#          executable_path: 'dist'
-
       - name: Build Executable
         run: |
           pyinstaller --onefile --clean --add-data "${{ github.workspace }}/pywxdump/version_list.json;pywxdump" --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/chat.html;pywxdump/show_chat/templates" --add-data "${{ github.workspace }}/pywxdump/show_chat/templates/index.html;pywxdump/show_chat/templates" --distpath=dist --name=pywxdump dist/tmp.py
@@ -55,26 +44,27 @@ jobs:
       - name: test
         run: |
           ls -l dist
+          cat dist/pywxdump.spec
 
-      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
-        run: |
-          twine upload dist/*.whl dist/*.tar.gz
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref.tag }}
-          body: |
-            [Auto Release] Update PyWxDump to ${{ github.ref }}
-          draft: false
-          prerelease: false
-          files: |
-            dist/*.exe
-            dist/*.whl
+#      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
+#        run: |
+#          twine upload dist/*.whl dist/*.tar.gz
+#        env:
+#          TWINE_USERNAME: __token__
+#          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+#
+#      - name: Create Release
+#        id: create_release
+#        uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.ref }}
+#          release_name: Release ${{ github.ref.tag }}
+#          body: |
+#            [Auto Release] Update PyWxDump to ${{ github.ref }}
+#          draft: false
+#          prerelease: false
+#          files: |
+#            dist/*.exe
+#            dist/*.whl
