@@ -71,14 +71,14 @@ with open("dist/tmp.py", "w", encoding="utf-8") as f:
 package_path = site.getsitepackages()
 if package_path:
     package_path = package_path[1]  # 假设取第一个安装包的路径
-    root_path = os.path.join(package_path, 'pywxdump')
-    require_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "requirements.txt")
-    print(require_path)
-    # 读取依赖
+
+    current_path = os.path.dirname(os.path.abspath(__file__))  # 当前文件所在路径
+    require_path = os.path.join(os.path.dirname(current_path), "requirements.txt")  # requirements.txt 路径
     with open(require_path, "r", encoding="utf-8") as f:
         hidden_imports = f.read().splitlines()
-    # 去掉setuptools、wheel
-    hidden_imports = [i for i in hidden_imports if i not in ["setuptools", "wheel"]]
+    hidden_imports = [i for i in hidden_imports if i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
+
+    root_path = os.path.join(package_path, 'pywxdump')
 
     # 生成 spec 文件
     spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports)
