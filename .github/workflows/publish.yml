@@ -46,7 +46,8 @@ jobs:
           ls -l dist
           ls -l "${{ github.workspace }}"
           cat pywxdump.spec
-          dist/pywxdump.exe -h
+          cd dist
+          ./pywxdump.exe -h
 
 #      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
 #        run: |
