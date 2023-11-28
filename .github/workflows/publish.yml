@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Executable
         run: |
-          pyinstaller --clean --distpath=dist tests/dist/pywxdump.spec
+          pyinstaller --clean --distpath=dist dist/pywxdump.spec
 
       - name: test
         run: |
