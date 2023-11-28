@@ -45,7 +45,6 @@ jobs:
         run: |
           ls -l dist
           ls -l "${{ github.workspace }}"
-          cat pywxdump.spec
           cd dist
           ./pywxdump.exe -h
 
