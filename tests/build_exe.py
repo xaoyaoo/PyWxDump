@@ -8,7 +8,10 @@
 import site
 import os
 
-code = """from pywxdump.command import console_run;console_run()"""
+code = """
+from pywxdump.command import console_run
+console_run()
+"""
 spec_content = '''
 # -*- mode: python ; coding: utf-8 -*-
 
@@ -60,7 +63,7 @@ coll = COLLECT(exe,
                upx_exclude=[],
                name='pywxdump')
 
-    '''
+'''
 # 创建文件夹
 os.makedirs("dist", exist_ok=True)
 # 将代码写入文件
