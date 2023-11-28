@@ -83,7 +83,7 @@ if package_path:
     # 生成 spec 文件
     spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports)
     spec_file = os.path.join("dist", "pywxdump.spec")
-    with open(spec_file, 'w') as f:
+    with open(spec_file, 'w', encoding="utf-8") as f:
         f.write(spec_content.strip())
 
     # 执行打包命令
