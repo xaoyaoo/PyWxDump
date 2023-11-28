@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.2.12"
+version = "2.2.13"
 
 install_requires = [
     "psutil",
@@ -14,7 +14,8 @@ install_requires = [
     "pyaudio",
     "requests",
     "pillow",
-    "pyahocorasick"
+    "pyahocorasick",
+    "flask",
 ]
 
 setup(

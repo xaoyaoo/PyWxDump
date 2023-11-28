@@ -44,21 +44,21 @@ def pattern_scan_all(handle, pattern, *, return_multiple=False):
             return page_found
         if page_found:
             found += page_found
-    if not return_multiple:
-        return None
+        if len(found) > 100:
+            break
     return found
 
 
-def get_info_wxid(h_process, n_size=64):
-    pm = pymem.Pymem("WeChat.exe")
-    # addrs = pymem.pattern.pattern_scan_all(pm.process_handle, b'wxid_', return_multiple=True)
-    addrs = pattern_scan_all(pm.process_handle, b'wxid_', return_multiple=True)
-    for addr in addrs:
+def get_info_wxid(h_process, n_size=19):
+    # addrs = pymem.pattern.pattern_scan_all(h_process, b'wxid_', return_multiple=True)
+    addrs = pattern_scan_all(h_process, b'wxid_', return_multiple=True)
+    wxids = []
+    for addr in addrs[0:100]:
         wxidtmp = get_info_without_key(h_process, addr, n_size)
-        if wxidtmp.startswith("wxid_") and r'\FileStorage\MsgAttach' in wxidtmp:
-            wxid = wxidtmp.split(r'\FileStorage\MsgAttach')[0]
-            return wxid
-    return "None"
+        if wxidtmp.startswith("wxid_"):
+            wxids.append(wxidtmp.split('\\')[0])
+    wxid = max(wxids, key=wxids.count) if wxids else "None"
+    return wxid
 
 
 # 读取内存中的key
@@ -122,7 +122,7 @@ def read_info(version_list, is_logging=False):
         tmp_rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
         tmp_rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
         tmp_rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
-        tmp_rd['wxid'] = get_info_wxid(Handle, 64)
+        tmp_rd['wxid'] = get_info_wxid(Handle)
         tmp_rd['key'] = get_key(Handle, key_baseaddr, addrLen) if bias_list[4] != 0 else "None"
         result.append(tmp_rd)
 
