@@ -68,7 +68,7 @@ coll = COLLECT(exe,
 os.makedirs("dist", exist_ok=True)
 # 将代码写入文件
 with open("dist/tmp.py", "w", encoding="utf-8") as f:
-    f.write(code)
+    f.write(code.strip())
 
 # 获取安装包的路径
 package_path = site.getsitepackages()
