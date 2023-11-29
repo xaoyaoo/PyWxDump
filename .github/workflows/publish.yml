@@ -17,8 +17,8 @@ jobs:
       - name: Checkout repository # 检出仓库
         uses: actions/checkout@v2 # 使用 GitHub 官方的 checkout action
 
-      - name: Set git fetch --prune --unshallow
-      - run: |
+      - name: Set git fetch depth # 设置 git fetch 深度
+        run: |
           git fetch --prune --unshallow  # 获取完整的 git 历史记录
 
       - name: Set up Python # 设置 Python 环境
