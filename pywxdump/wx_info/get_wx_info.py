@@ -7,9 +7,14 @@
 # -------------------------------------------------------------------------------
 import json
 import ctypes
+import os
+import re
+import winreg
+
 import pymem
 from win32com.client import Dispatch
 import psutil
+import sys
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
@@ -24,8 +29,7 @@ def get_info_without_key(h_process, address, n_size=64):
     return text.strip() if text.strip() != "" else "None"
 
 
-def pattern_scan_all(handle, pattern, *, return_multiple=False):
-    import sys
+def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
     next_region = 0
     found = []
     user_space_limit = 0x7FFFFFFF0000 if sys.maxsize > 2 ** 32 else 0x7fff0000
@@ -44,21 +48,49 @@ def pattern_scan_all(handle, pattern, *, return_multiple=False):
             return page_found
         if page_found:
             found += page_found
-        if len(found) > 100:
+        if len(found) > find_num:
             break
     return found
 
 
-def get_info_wxid(h_process, n_size=19):
-    # addrs = pymem.pattern.pattern_scan_all(h_process, b'wxid_', return_multiple=True)
-    addrs = pattern_scan_all(h_process, b'wxid_', return_multiple=True)
+def get_info_wxid(h_process):
+    find_num = 100
+    addrs = pattern_scan_all(h_process, br'\\FileStorage', return_multiple=True, find_num=find_num)
     wxids = []
-    for addr in addrs[0:100]:
-        wxidtmp = get_info_without_key(h_process, addr, n_size)
-        if wxidtmp.startswith("wxid_"):
-            wxids.append(wxidtmp.split('\\')[0])
+    for addr in addrs:
+        array = ctypes.create_string_buffer(33)
+        if ReadProcessMemory(h_process, void_p(addr - 21), array, 33, 0) == 0: return "None"
+        array = bytes(array)  # .decode('utf-8', errors='ignore')
+        array = array.split(br'\FileStorage')[0]
+        for part in [b'}', b'\x7f', b'\\']:
+            if part in array:
+                array = array.split(part)[1]
+                wxids.append(array.decode('utf-8', errors='ignore'))
+                break
     wxid = max(wxids, key=wxids.count) if wxids else "None"
     return wxid
+
+
+def get_info_filePath(wxid):
+    if not wxid:
+        return "None"
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Tencent\WeChat", 0, winreg.KEY_READ)
+        value, _ = winreg.QueryValueEx(key, "FileSavePath")
+        winreg.CloseKey(key)
+        w_dir = value
+    except Exception as e:
+        w_dir = "MyDocument:"
+
+    if w_dir == "MyDocument:":
+        profile = os.path.expanduser("~")
+        msg_dir = os.path.join(profile, "Documents", "WeChat Files")
+    else:
+        msg_dir = os.path.join(w_dir, "WeChat Files")
+
+    if not os.path.exists(msg_dir):
+        return "None"
+    return os.path.join(msg_dir, wxid)
 
 
 # 读取内存中的key
@@ -123,6 +155,7 @@ def read_info(version_list, is_logging=False):
         tmp_rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
         tmp_rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
         tmp_rd['wxid'] = get_info_wxid(Handle)
+        tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid'])
         tmp_rd['key'] = get_key(Handle, key_baseaddr, addrLen) if bias_list[4] != 0 else "None"
         result.append(tmp_rd)
 
@@ -133,7 +166,7 @@ def read_info(version_list, is_logging=False):
         else:  # 输出结果
             for i, rlt in enumerate(result):
                 for k, v in rlt.items():
-                    print(f"[+] {k:>7}: {v}")
+                    print(f"[+] {k:>8}: {v}")
                 print(end="-" * 32 + "\n" if i != len(result) - 1 else "")
         print("=" * 32)
 
