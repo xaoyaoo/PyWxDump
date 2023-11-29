@@ -61,7 +61,7 @@
 * 6.查看群聊中具体发言成员的ID [#31](https://github.com/xaoyaoo/PyWxDump/issues/31)
 * 7.增加数据库合并功能，方便查看
 
-注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目，欢迎加入交流qq群：577704006 or 点击链接加入群聊[pywxdump功能交流-bug反馈](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
+注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目，欢迎加入交流qq群：577704006 or 点击链接加入群聊[pywxdump功能交流](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
 
 <div style="text-align:center">
     <img src="./doc/qq.png" alt="image" />
@@ -170,7 +170,7 @@ PyWxDump
 ### 1.1 从pypi安装(安装稳定版)
 
 ```shell script
-pip install pywxdump
+pip install -U pywxdump
 ```
 
 ### 1.2 从源码安装(安装最新版)
@@ -179,7 +179,7 @@ pip install pywxdump
 <summary>点击展开</summary>
 
 ```shell script
-pip install git+git://github.com/xaoyaoo/PyWxDump.git
+pip install -U git+git://github.com/xaoyaoo/PyWxDump.git
 ```
 
 或
