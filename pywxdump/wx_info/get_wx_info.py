@@ -8,9 +8,7 @@
 import json
 import ctypes
 import os
-import re
 import winreg
-
 import pymem
 from win32com.client import Dispatch
 import psutil
@@ -71,7 +69,7 @@ def get_info_wxid(h_process):
     return wxid
 
 
-def get_info_filePath(wxid):
+def get_info_filePath(wxid="all"):
     if not wxid:
         return "None"
     try:
@@ -88,10 +86,11 @@ def get_info_filePath(wxid):
     else:
         msg_dir = os.path.join(w_dir, "WeChat Files")
 
+    if wxid == "all" and os.path.exists(msg_dir):
+        return msg_dir
+
     filePath = os.path.join(msg_dir, wxid)
-    if not os.path.exists(filePath):
-        return "None"
-    return filePath
+    return filePath if os.path.exists(filePath) else "None"
 
 
 # 读取内存中的key
