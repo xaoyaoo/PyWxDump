@@ -92,7 +92,7 @@ if package_path:
     # 执行打包命令
     cmd = f'pyinstaller --clean  --distpath=dist {spec_file}'
     print(cmd)
-    # os.system(cmd)
+    os.system(cmd)
 
 else:
     print("未找到安装包路径")

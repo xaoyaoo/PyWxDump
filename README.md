@@ -16,7 +16,7 @@
 <details>
 <summary><strong>更新日志(点击展开)：</strong></summary>
 
-* 2023.11.29 添加异性wxid获取方式，添加用户路径自动获取
+* 2023.11.29 添加异形wxid获取方式，添加用户路径自动获取，重建说明文档，对新手更友好
 * 2023.11.28 修改wxid获取方式，修复部分bug
 * 2023.11.27 解决相对导入包的问题,完善错误提示
 * 2023.11.25 聊天记录查看工具bootstrap更换国内cdn
@@ -59,12 +59,13 @@
 * 4.生成年度可视化报告
 * 5.创建GUI图形界面，方便使用
 * 6.查看群聊中具体发言成员的ID [#31](https://github.com/xaoyaoo/PyWxDump/issues/31)
-* 7.完善操作文档，增加更多的使用说明
-* 8.增加数据库合并功能，方便查看
+* 7.增加数据库合并功能，方便查看
 
-注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目，欢迎加入交流qq群：577704006。
-![img.png](./doc/img.png)
+注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目，欢迎加入交流qq群：577704006 or 点击链接加入群聊[pywxdump功能交流-bug反馈](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
 
+<div style="text-align:center">
+    <img src="./doc/qq.png" alt="image" />
+</div>
 # 一、项目介绍
 
 ## 1. 项目简介
@@ -215,133 +216,152 @@ wxdump 模式 [参数]
 
 以下是示例命令：
 
-```shell script
-wxdump bias -h
-#usage: main.py bias_addr [-h] --mobile MOBILE --name NAME --account ACCOUNT [--key KEY] [--db_path DB_PATH] [-vlp VLP]
-#options:
-#  -h, --help            show this help message and exit
-#  --mobile MOBILE       手机号
-#  --name NAME           微信昵称
-#  --account ACCOUNT     微信账号
-#  --key KEY             (可选)密钥
-#  --db_path DB_PATH     (可选)已登录账号的微信文件夹路径
-#  -vlp VERSION_LIST_PATH, --version_list_path VERSION_LIST_PATH
-#                        (可选)微信版本偏移文件路径,如有，则自动更新
+##### 获取微信基址偏移
 
-wxdump info -h
-#usage: main.py wx_info [-h] [-vlp VLP]
-#options:
-#  -h, --help  show this help message and exit
-#  -vlp VLP    (可选)微信版本偏移文件路径
+```bash
+pywxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--version_list_path <微信版本偏移文件路径>]
+```
 
-wxdump db_path -h
-#usage: main.py wx_db [-h] [-r REQUIRE_LIST] [-wf WF]
-#options:
-#  -h, --help            show this help message and exit
-#  -r , --require_list   (可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )
-#  -wf , --wx_files      (可选)'WeChat Files'路径
-#  -id WXID, --wxid WXID
-#                        (可选)wxid_,用于确认用户文件夹
+##### 获取微信信息
 
-wxdump decrypt -h
-#usage: main.py decrypt [-h] -k KEY -i DB_PATH -o OUT_PATH
-#options:
-#  -h, --help        show this help message and exit
-#  -k , --key        密钥
-#  -i , --db_path    数据库路径(目录or文件)
-#  -o , --out_path   输出路径(必须是目录)[默认为当前路径下decrypted文件夹]
+```bash
+pywxdump info [--version_list_path <微信版本偏移文件路径>]
+```
 
-wxdump dbshow -h
-#usage: wxdump show_records [-h] -msg  -micro  -media  -fs
-#options:
-#  -msg , --msg_path     解密后的 MSG.db 的路径
-#  -micro , --micro_path
-#                        解密后的 MicroMsg.db 的路径
-#  -media , --media_path
-#                        解密后的 MediaMSG.db 的路径
-#  -fs , --filestorage_path
-#                        (可选)文件夹FileStorage的路径（用于显示图片）
+##### 获取微信文件夹路径
 
-wxdump export -h
-#usage: wxdump export [-h] -u  -o  -msg  -micro  -media  [-fs]
-#options:
-#  -h, --help            show this help message and exit
-#  -u , --username       微信账号
-#  -o , --outpath        导出路径
-#  -msg , --msg_path     解密后的 MSG.db 的路径
-#  -micro , --micro_path
-#                        解密后的 MicroMsg.db 的路径
-#  -media , --media_path
-#                        解密后的 MediaMSG.db 的路径
-#  -fs , --filestorage_path
-#                        (可选)文件夹FileStorage的路径（用于显示图片）
+```bash
+pywxdump db_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
+```
 
-wxdump all -h
-#usage: main.py all [-h]
-#options:
-#  -h, --help  show this help message and exit
+##### 解密微信数据库
+
+```bash
+pywxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路径>]
+```
+
+##### 查看聊天记录
+
+```bash
+pywxdump dbshow -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
+```
+
+##### 导出聊天记录为 HTML
+
+```bash
+pywxdump export -u <微信账号> -o <导出路径> -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
+```
+
+##### 获取微信信息、解密数据库、查看聊天记录
+
+```bash
+pywxdump all
 ```
 
 </details>
 
 ### 2.2 python API
 
-更多使用方法参考[tests](./tests)文件夹下的[test_*.py](./tests/)文件
+*import调用示例*
+
+<details>
+<summary>点击展开示例</summary>
 
 ```python
 # 单独使用各模块，返回值一般为字典，参数参考命令行
-import pywxdump
-from pywxdump import VERSION_LIST_PATH, VERSION_LIST
+from pywxdump import *
 
-# 1. 获取基址偏移
-from pywxdump.bias_addr import BiasAddr
+# ************************************************************************************************ #
+# 获取微信基址偏移
+args = {
+    "mode": "bias",
+    "mobile": "13800138000",  # 手机号
+    "name": "微信昵称",  # 微信昵称
+    "account": "微信账号",  # 微信账号
+    "key": "密钥",  # 密钥（可选）
+    "db_path": "已登录账号的微信文件夹路径",  # 微信文件夹路径（可选）
+    "version_list_path": "微信版本偏移文件路径"  # 微信版本偏移文件路径（可选）
+}
+bias_addr = BiasAddr(args["account"], args["mobile"], args["name"], args["key"], args["db_path"])
+result = bias_addr.run(True, args["version_list_path"])
+# ************************************************************************************************ #
+# 获取微信信息
+wx_info = read_info(VERSION_LIST, True)
 
-bias_addr = BiasAddr(VERSION_LIST_PATH, VERSION_LIST).run()
+# 获取微信文件夹路径
+args = {
+    "mode": "db_path",
+    "require_list": "all",  # 需要的数据库名称（可选）
+    "wx_files": "WeChat Files",  # 'WeChat Files'路径（可选）
+    "wxid": "wxid_",  # wxid_，用于确认用户文件夹（可选）
+}
+user_dirs = get_wechat_db(args["require_list"], args["wx_files"], args["wxid"], True)
+# ************************************************************************************************ #
+# 解密微信数据库
+args = {
+    "mode": "decrypt",
+    "key": "密钥",  # 密钥
+    "db_path": "数据库路径(目录or文件)",  # 数据库路径
+    "out_path": "/path/to/decrypted"  # 输出路径（必须是目录）[默认为当前路径下decrypted文件夹]
+}
+result = batch_decrypt(args["key"], args["db_path"], args["out_path"], True)
+# ************************************************************************************************ #
+# 查看聊天记录
+args = {
+    "mode": "dbshow",
+    "msg_path": "解密后的 MSG.db 的路径",  # 解密后的 MSG.db 的路径
+    "micro_path": "解密后的 MicroMsg.db 的路径",  # 解密后的 MicroMsg.db 的路径
+    "media_path": "解密后的 MediaMSG.db 的路径",  # 解密后的 MediaMSG.db 的路径
+    "filestorage_path": "文件夹FileStorage的路径"  # 文件夹 FileStorage 的路径（用于显示图片）
+}
+from flask import Flask, request, jsonify, render_template, g
+import logging
 
-# 2. 获取微信信息
-from pywxdump.wx_info import read_info
+app = Flask(__name__, template_folder='./show_chat/templates')
+app.logger.setLevel(logging.ERROR)
 
-wx_info = read_info(VERSION_LIST)
 
-# 3. 获取微信文件夹路径
-from pywxdump.wx_info import get_wechat_db
+@app.before_request
+def before_request():
+    g.MSG_ALL_db_path = args["msg_path"]
+    g.MicroMsg_db_path = args["micro_path"]
+    g.MediaMSG_all_db_path = args["media_path"]
+    g.FileStorage_path = args["filestorage_path"]
+    g.USER_LIST = get_user_list(args["msg_path"], args["micro_path"])
 
-wx_db = get_wechat_db()
 
-# 4. 解密数据库
-from pywxdump.decrypted import batch_decrypt
-
-batch_decrypt("key", "db_path", "out_path")
-
+app.register_blueprint(app_show_chat)
+print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
+app.run(debug=False)
+# ************************************************************************************************ #
+# 导出聊天记录为 HTML
+args = {
+    "mode": "export",
+    "username": "微信账号",  # 微信账号（聊天对象账号）
+    "outpath": "/path/to/export",  # 导出路径
+    "msg_path": "解密后的 MSG.db 的路径",  # 解密后的 MSG.db 的路径
+    "micro_path": "解密后的 MicroMsg.db 的路径",  # 解密后的 MicroMsg.db 的路径
+    "media_path": "解密后的 MediaMSG.db 的路径",  # 解密后的 MediaMSG.db 的路径
+    "filestorage_path": "文件夹FileStorage的路径"  # 文件夹 FileStorage 的路径（用于显示图片）
+}
+export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], args["media_path"],
+       args["filestorage_path"])
 ```
 
-### 2.3 构建可执行文件exe
+</details>
 
-将下面的代码保存为`build.py`，然后运行`python build.py`即可。（或者执行[build_exe.py](./tests/build_exe.py)）
+更多使用方法参考[tests](./tests)文件夹下的[test_*.py](./tests/)文件
 
-```python
-import site
-import os
+### 2.3 可执行文件exe
 
-code = """from pywxdump.command import console_run;console_run()"""
+* 1.release中提供了可执行文件，可以直接下载使用。
+* 2.或者自行打包，打包脚本见： [build_exe.py](./tests/build_exe.py)
 
-# 创建文件夹
-os.makedirs("dist", exist_ok=True)
-# 将代码写入文件
-with open("dist/tmp.py", "w", encoding="utf-8") as f:
-    f.write(code)
+*使用示例*
 
-# 获取安装包的路径
-package_path = site.getsitepackages()
-if package_path:
-    package_path = package_path[1]  # 假设取第一个安装包的路径
-    version_list_path = os.path.join(package_path, 'pywxdump', 'version_list.json')
-    # 执行打包命令
-    cmd = f'pyinstaller --onefile --clean --add-data "{version_list_path};pywxdump" dist/tmp.py'
-    print(cmd)
-    os.system(cmd)
-else:
-    print("未找到安装包路径")
+```shell
+cd tests
+python build_exe.py
 ```
 
 【注】:
