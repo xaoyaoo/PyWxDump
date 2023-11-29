@@ -88,9 +88,10 @@ def get_info_filePath(wxid):
     else:
         msg_dir = os.path.join(w_dir, "WeChat Files")
 
-    if not os.path.exists(msg_dir):
+    filePath = os.path.join(msg_dir, wxid)
+    if not os.path.exists(filePath):
         return "None"
-    return os.path.join(msg_dir, wxid)
+    return filePath
 
 
 # 读取内存中的key
