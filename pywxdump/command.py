@@ -320,16 +320,15 @@ class CustomArgumentParser(argparse.ArgumentParser):
         PYWXDUMP_VERSION = importlib.metadata.version('pywxdump')
         wxdump_line = '\n'.join([f'\033[36m{line:^{line_len}}\033[0m' for line in wxdump_ascii.split('\n') if line])
         first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^{line_len}}\033[0m'
-        brief = 'PyWxDump是一款用于获取账号信息(昵称/账号/手机/邮箱/数据库密钥)、解密数据库、查看\n聊天记录、备份导出聊天记录为html的工具。'
-
+        brief = 'PyWxDump功能：获取账号信息、解密数据库、查看聊天记录、导出聊天记录为html等'
         other = '更多详情请查看: \033[4m\033[1mhttps://github.com/xaoyaoo/PyWxDump\033[0m'
 
-        separator = f'{"options":-^{line_len}}'
+        separator = f'\033[36m{" options ":-^{line_len}}\033[0m'
 
         # 获取帮助信息并添加到软件简介下方
         help_text = super().format_help().strip()
 
-        return f'\n{wxdump_line}\n\n{first_line}\n\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
+        return f'\n{wxdump_line}\n\n{first_line}\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
 
 
 def console_run():
