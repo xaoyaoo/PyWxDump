@@ -8,12 +8,17 @@
 import argparse
 import importlib.metadata
 import sys
-import textwrap
 
 from pywxdump import *
 
-
-# version_list_path = os.path.join(os.path.dirname(__file__), "version_list.json")
+wxdump_ascii = r"""
+██████╗ ██╗   ██╗██╗    ██╗██╗  ██╗██████╗ ██╗   ██╗███╗   ███╗██████╗ 
+██╔══██╗╚██╗ ██╔╝██║    ██║╚██╗██╔╝██╔══██╗██║   ██║████╗ ████║██╔══██╗
+██████╔╝ ╚████╔╝ ██║ █╗ ██║ ╚███╔╝ ██║  ██║██║   ██║██╔████╔██║██████╔╝
+██╔═══╝   ╚██╔╝  ██║███╗██║ ██╔██╗ ██║  ██║██║   ██║██║╚██╔╝██║██╔═══╝ 
+██║        ██║   ╚███╔███╔╝██╔╝ ██╗██████╔╝╚██████╔╝██║ ╚═╝ ██║██║     
+╚═╝        ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝     
+"""
 
 
 class MainBiasAddr():
@@ -311,17 +316,20 @@ class CustomArgumentParser(argparse.ArgumentParser):
     def format_help(self):
         # 首先显示软件简介
         # 定义软件简介文本并进行格式化
+        line_len = 70
         PYWXDUMP_VERSION = importlib.metadata.version('pywxdump')
-        first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^80}\033[0m'
+        wxdump_line = '\n'.join([f'\033[36m{line:^{line_len}}\033[0m' for line in wxdump_ascii.split('\n') if line])
+        first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^{line_len}}\033[0m'
         brief = 'PyWxDump是一款用于获取账号信息(昵称/账号/手机/邮箱/数据库密钥)、解密数据库、查看\n聊天记录、备份导出聊天记录为html的工具。'
+
         other = '更多详情请查看: \033[4m\033[1mhttps://github.com/xaoyaoo/PyWxDump\033[0m'
 
-        separator = f'{"options":-^80}'
+        separator = f'{"options":-^{line_len}}'
 
         # 获取帮助信息并添加到软件简介下方
         help_text = super().format_help().strip()
 
-        return f'{first_line}\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
+        return f'\n{wxdump_line}\n\n{first_line}\n\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
 
 
 def console_run():
