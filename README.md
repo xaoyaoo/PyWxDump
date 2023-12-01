@@ -221,7 +221,7 @@ python -m pip install -U .
 
 </details>
 
-### 1.3 使用可执行文件
+### 1.3 使用可执行文件exe
 
 <details>
 <summary>点击展开</summary>
