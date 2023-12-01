@@ -185,8 +185,12 @@ PyWxDump
 
 </details>
 
-**Star History**
+<details>
+<summary><strong>Star History(click to expand)</strong></summary>
+
 [![Star History Chart](https://api.star-history.com/svg?repos=xaoyaoo/pywxdump&type=Date)](https://star-history.com/#xaoyaoo/pywxdump&Date)
+
+</details>
 
 # 二、使用说明
 
@@ -217,13 +221,18 @@ python -m pip install -U .
 
 </details>
 
-### 1.3 从Release中下载可执行文件
+### 1.3 使用可执行文件
 
 <details>
 <summary>点击展开</summary>
 
 * 1.下载[release](https://github.com/xaoyaoo/PyWxDump/releases)中的exe文件
-* 2.打开cmd，进入exe文件所在目录
+* 2.或者自行打包，打包脚本见： [build_exe.py](./tests/build_exe.py)
+
+```shell
+cd tests
+python build_exe.py
+```
 
 </details>
 
@@ -390,15 +399,7 @@ export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], 
 
 ### 2.3 可执行文件exe
 
-* 1.release中提供了可执行文件，可以直接下载使用。
-* 2.或者自行打包，打包脚本见： [build_exe.py](./tests/build_exe.py)
-
-*使用示例*
-
-```shell
-cd tests
-python build_exe.py
-```
+进入exe文件所在目录，运行： `wxdump.exe 模式 [参数]`，方法同[命令行](#21-命令行)
 
 【注】:
 
