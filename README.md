@@ -67,7 +67,8 @@
 <details>
 <summary>贡献代码方法(点击展开)：</summary>
 
-要提交拉取请求（Pull Request），你需要按照以下步骤进行操作：
+
+提交拉取请求（Pull Request），请按照以下步骤进行操作：
 
 1. Fork 仓库：首先，在项目的 GitHub 页面上点击 "Fork" 按钮，将项目的代码仓库 fork 到你自己的 GitHub 账号下。
 2. 克隆仓库：在你自己的 GitHub 账号下找到 fork 后的项目，点击 `Clone or download`按钮，获取仓库的 URL。然后在本地使用 Git
@@ -80,9 +81,12 @@
    git commit -m "提交信息"
    ```
 6. 推送分支：使用 `git push` 命令将你的本地分支推送到你的 GitHub 仓库中：`git push origin 你的分支名`
-7. 提交拉取请求：在你的 GitHub 仓库页面上切换到你刚刚推送的分支，点击 "New pull request" 按钮，填写一些说明信息，然后点击 `Create pull request`
+7. 提交拉取请求：在你的 GitHub 仓库页面上切换到你刚刚推送的分支，点击 "New pull request"
+   按钮，填写一些说明信息，然后点击 `Create pull request`
    按钮，即可提交拉取请求。
-8. 等待审核：等待项目维护者审核你的拉取请求，如果通过审核，你的修改将会被合并到项目的主分支中，接着你就可以在右边的`contributors`中看到你的名字了。
+8.
+等待审核：等待项目维护者审核你的拉取请求，如果通过审核，你的修改将会被合并到项目的主分支中，接着你就可以在右边的`contributors`
+中看到你的名字了。
 
 </details>
 
@@ -91,15 +95,12 @@
 
 <a href="https://s.xaoyo.top/gOLUDl"><img src="./doc/qq.png" alt="QQ群" title="加入QQ群" height="280"></a>
 
-
 # 一、项目介绍
 
 ## 1. 项目简介
 
 [PyWxDump](https://github.com/xaoyaoo/PyWxDump)是一款用于获取账号信息(昵称/账号/手机/邮箱/数据库密钥)
 、解密数据库、查看聊天记录、备份导出聊天记录为html的工具。
-
-支持多账户信息获取，支持所有微信版本。
 
 * <strong><big>
   超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
@@ -170,7 +171,7 @@ PyWxDump
 的经过重构python语言版本，同时添加了一些新的功能。
 
 * 项目地址：https://github.com/xaoyaoo/PyWxDump
-* 目前只在windows下测试过，linux下可能会存在问题。
+* 目前只在windows下测试过，mac、linux下可能会存在问题。
 * 如发现[version_list.json](pywxdump/version_list.json)缺失或错误,
   请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
@@ -214,6 +215,16 @@ git clone https://github.com/xaoyaoo/PyWxDump.git
 cd PyWxDump
 python -m pip install -U .
 ```
+
+</details>
+
+### 1.3 从Release中下载可执行文件
+
+<details>
+<summary>点击展开</summary>
+
+* 1.下载[release](https://github.com/xaoyaoo/PyWxDump/releases)中的exe文件
+* 2.打开cmd，进入exe文件所在目录
 
 </details>
 
