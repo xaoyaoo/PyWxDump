@@ -130,7 +130,7 @@ class MainShowChatRecords():
     def init_parses(self, parser):
         self.mode = "dbshow"
         # 添加 'decrypt' 子命令解析器
-        sb_decrypt = parser.add_parser(self.mode, help="聊天记录查看[需要安装flask]")
+        sb_decrypt = parser.add_parser(self.mode, help="聊天记录查看")
         sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
                                 metavar="")
         sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=True,
@@ -180,7 +180,7 @@ class MainExportChatRecords():
     def init_parses(self, parser):
         self.mode = "export"
         # 添加 'decrypt' 子命令解析器
-        sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html[需要安装flask]")
+        sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html")
         sb_decrypt.add_argument("-u", "--username", type=str, help="微信账号(聊天对象账号)", required=True, metavar="")
         sb_decrypt.add_argument("-o", "--outpath", type=str, help="导出路径", required=True, metavar="")
         sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,

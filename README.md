@@ -62,9 +62,34 @@
 * 6.查看群聊中具体发言成员的ID [#31](https://github.com/xaoyaoo/PyWxDump/issues/31)
 * 7.增加数据库合并功能，方便查看
 
-注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目，欢迎加入交流qq群：577704006 or 点击链接加入群聊[pywxdump功能交流](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
+注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
 
-<div style="text-align:center">
+<details>
+<summary><strong>贡献代码方法(点击展开)：</strong></summary>
+
+要提交拉取请求（Pull Request），你需要按照以下步骤进行操作：
+
+1. Fork 仓库：首先，在项目的 GitHub 页面上点击 "Fork" 按钮，将项目的代码仓库 fork 到你自己的 GitHub 账号下。
+2. 克隆仓库：在你自己的 GitHub 账号下找到 fork 后的项目，点击 `Clone or download`按钮，获取仓库的 URL。然后在本地使用 Git
+   命令克隆仓库到你的电脑上：`git clone 仓库的URL`
+3. 创建分支：在本地仓库中创建一个新的分支，用于进行你的修改：`git checkout -b 你的分支名`
+4. 进行修改：在新创建的分支中进行你需要的修改，包括修复错误、改进现有功能或添加新功能。
+5. 提交修改：使用 `git add` 和 `git commit` 命令将修改提交到本地仓库中：
+   ```
+   git add .
+   git commit -m "提交信息"
+   ```
+6. 推送分支：使用 `git push` 命令将你的本地分支推送到你的 GitHub 仓库中：`git push origin 你的分支名`
+7. 提交拉取请求：在你的 GitHub 仓库页面上切换到你刚刚推送的分支，点击 "New pull request" 按钮，填写一些说明信息，然后点击 `Create pull request`
+   按钮，即可提交拉取请求。
+8. 等待审核：等待项目维护者审核你的拉取请求，如果通过审核，你的修改将会被合并到项目的主分支中，接着你就可以在右边的`contributors`中看到你的名字了。
+
+</details>
+
+欢迎加入交流qq群：577704006 or
+点击链接加入群聊[pywxdump功能交流](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
+
+<div style="text-align:center;max-width: 300px;">
     <img src="./doc/qq.png" alt="image" />
 </div>
 
@@ -206,8 +231,8 @@ wxdump 模式 [参数]
 #    info      获取微信信息
 #    db_path   获取微信文件夹路径
 #    decrypt   解密微信数据库
-#    dbshow    聊天记录查看[需要安装flask]
-#    export    聊天记录导出为html[需要安装flask]
+#    dbshow    聊天记录查看
+#    export    聊天记录导出为html
 #    all       获取微信信息，解密微信数据库，查看聊天记录
 ```
 
@@ -254,7 +279,7 @@ pywxdump dbshow -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroM
 pywxdump export -u <微信账号> -o <导出路径> -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
 ```
 
-##### 获取微信信息、解密数据库、查看聊天记录
+##### 获取微信信息、解密数据库、查看聊天记录，一条命令搞定，开放端口5000，浏览器访问查看聊天记录（支持局域网其他机器访问）
 
 ```bash
 pywxdump all
@@ -368,9 +393,8 @@ python build_exe.py
 
 【注】:
 
-* 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)
+* 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)（该方法一般可用`wxdump bias`命令代替，仅用作学习原理）
 * 关于数据库解析，参考[wx数据库简述.md](doc/wx数据库简述.md)
-* 关于更多使用方法，以及各个模块的使用方法，参考前一版本的[python1.0_README.md](doc/python1.0_README.md)
 
 # 三、免责声明（非常重要！！！！！！！）
 
