@@ -87,9 +87,10 @@
 </details>
 
 欢迎加入交流qq群：577704006 or
-点击链接加入群聊[pywxdump功能交流](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
+点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
 
-[![qq](./doc/qq.png)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)
+<a href="https://s.xaoyo.top/gOLUDl"><img src="./doc/qq.png" alt="QQ群" title="加入QQ群" height="230"></a>
+
 
 # 一、项目介绍
 
