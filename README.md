@@ -65,7 +65,7 @@
 注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
 
 <details>
-<summary><strong>贡献代码方法(点击展开)：</strong></summary>
+<summary>贡献代码方法(点击展开)：</summary>
 
 要提交拉取请求（Pull Request），你需要按照以下步骤进行操作：
 
