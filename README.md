@@ -89,7 +89,7 @@
 欢迎加入交流qq群：577704006 or
 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
 
-<a href="https://s.xaoyo.top/gOLUDl"><img src="./doc/qq.png" alt="QQ群" title="加入QQ群" height="230"></a>
+<a href="https://s.xaoyo.top/gOLUDl"><img src="./doc/qq.png" alt="QQ群" title="加入QQ群" height="280"></a>
 
 
 # 一、项目介绍
