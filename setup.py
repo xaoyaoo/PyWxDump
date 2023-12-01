@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.2.16"
+version = "2.2.17"
 
 install_requires = [
     "psutil",
