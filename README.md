@@ -401,6 +401,8 @@ export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], 
 
 进入exe文件所在目录，运行： `wxdump.exe 模式 [参数]`，方法同[命令行](#21-命令行)
 
+### 2.4 其他说明
+
 【注】:
 
 * 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)（该方法一般可用`wxdump bias`命令代替，仅用作学习原理）
