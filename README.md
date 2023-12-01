@@ -89,7 +89,7 @@
 欢迎加入交流qq群：577704006 or
 点击链接加入群聊[pywxdump功能交流](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)。
 
-[![qq](./doc/qq.png){:height="200px"}](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)
+[![qq](./doc/qq.png)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=d3hyEpFtRgBTZy6lyX0_ZQC5cBKQ2_Tv&authKey=bctofjxdjHb8YyPz9SpdoTVYY8QPInMQiDKQ82py4pjGYsUCJVqhhmTqHBRIZMev&noverify=0&group_code=577704006)
 
 # 一、项目介绍
 
