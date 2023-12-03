@@ -81,7 +81,7 @@ def get_info_filePath(wxid="all"):
         # 获取文档实际目录
         try:
             # 打开注册表路径
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
             documents_path = winreg.QueryValueEx(key, "Personal")[0]# 读取文档实际目录路径
             winreg.CloseKey(key) # 关闭注册表
             w_dir = documents_path
