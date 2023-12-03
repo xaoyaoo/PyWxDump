@@ -114,7 +114,7 @@ class MainDecrypt():
         out_path = args.out_path
 
         if not os.path.exists(db_path):
-            print("[-] 数据库路径不存在")
+            print(f"[-] 数据库路径不存在：{db_path}")
             return
 
         if not os.path.exists(out_path):

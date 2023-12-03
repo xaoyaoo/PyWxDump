@@ -78,14 +78,17 @@ def get_info_filePath(wxid="all"):
         winreg.CloseKey(key)
         w_dir = value
     except Exception as e:
-        w_dir = "MyDocument:"
-
-    if w_dir == "MyDocument:":
-        profile = os.path.expanduser("~")
-        msg_dir = os.path.join(profile, "Documents", "WeChat Files")
-    else:
-        msg_dir = os.path.join(w_dir, "WeChat Files")
-
+        # 获取文档实际目录
+        try:
+            # 打开注册表路径
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+            documents_path = winreg.QueryValueEx(key, "Personal")[0]# 读取文档实际目录路径
+            winreg.CloseKey(key) # 关闭注册表
+            w_dir = documents_path
+        except Exception as e:
+            profile = os.path.expanduser("~")
+            w_dir = os.path.join(profile, "Documents")
+    msg_dir = os.path.join(w_dir, "WeChat Files")
     if wxid == "all" and os.path.exists(msg_dir):
         return msg_dir
 
