@@ -1,110 +1,16 @@
 # -*- coding: utf-8 -*-#
 # -------------------------------------------------------------------------------
-# Name:         get_wx_decrypted_db.py
+# Name:         merge_db.py
 # Description:  
 # Author:       xaoyaoo
-# Date:         2023/08/25
+# Date:         2023/12/03
 # -------------------------------------------------------------------------------
-import argparse
 import os
-import re
 import shutil
 import sqlite3
-# import sys
-import winreg
-
-# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-try:
-    from decrypted.decrypt import decrypt
-except ImportError:
-    from .decrypt import decrypt
 
 
-
-# 开始获取微信数据库
-def get_wechat_db():
-    try:
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Tencent\WeChat", 0, winreg.KEY_READ)
-        value, _ = winreg.QueryValueEx(key, "FileSavePath")
-        winreg.CloseKey(key)
-        w_dir = value
-    except Exception as e:
-        try:
-            w_dir = "MyDocument:"
-        except Exception as e:
-            print("读取注册表错误:", str(e))
-            return str(e)
-
-    if w_dir == "MyDocument:":
-        profile = os.path.expanduser("~")
-        msg_dir = os.path.join(profile, "Documents", "WeChat Files")
-    else:
-        msg_dir = os.path.join(w_dir, "WeChat Files")
-    if not os.path.exists(msg_dir):
-        return FileNotFoundError("目录不存在")
-    user_dirs = {}  # wx用户目录
-    files = os.listdir(msg_dir)
-    for file_name in files:
-        if file_name == "All Users" or file_name == "Applet" or file_name == "WMPF":
-            continue
-        user_dirs[file_name] = os.path.join(msg_dir, file_name)
-
-    # 获取数据库路径
-    for user, user_dir in user_dirs.items():
-        Media_p = []
-        Micro_p = []
-        FTS_p = []
-        Sns_p = []
-        Msg = []
-        Emotion_p = []
-        for root, dirs, files in os.walk(user_dir):
-            for file_name in files:
-                if re.match(r".*MediaMSG.*\.db$", file_name):
-                    src_path = os.path.join(root, file_name)
-                    Media_p.append(src_path)
-                elif re.match(r".*MicroMsg.*\.db$", file_name):
-                    src_path = os.path.join(root, file_name)
-                    Micro_p.append(src_path)
-                elif re.match(r".*FTSMSG.*\.db$", file_name):
-                    src_path = os.path.join(root, file_name)
-                    FTS_p.append(src_path)
-                elif re.match(r".*MSG.*\.db$", file_name):
-                    src_path = os.path.join(root, file_name)
-                    Msg.append(src_path)
-                elif re.match(r".*Sns.*\.db$", file_name):
-                    src_path = os.path.join(root, file_name)
-                    Sns_p.append(src_path)
-                elif re.match(r".*Emotion.*\.db$", file_name):
-                    src_path = os.path.join(root, file_name)
-                    Emotion_p.append(src_path)
-        Media_p.sort()
-        Msg.sort()
-        Micro_p.sort()
-        # FTS_p.sort()
-        user_dirs[user] = {"MicroMsg": Micro_p, "Msg": Msg, "MediaMSG": Media_p, "Sns": Sns_p, "Emotion": Emotion_p}
-    return user_dirs
-
-
-# 解密所有数据库 paths（文件） 到 decrypted_path（目录）
-def all_decrypt(keys, paths, decrypted_path):
-    decrypted_paths = []
-
-    for key in keys:
-        for path in paths:
-
-            name = os.path.basename(path)  # 文件名
-            dtp = os.path.join(decrypted_path, name)  # 解密后的路径
-            if not decrypt(key, path, dtp):
-                break
-            decrypted_paths.append(dtp)
-        else:  # for循环正常结束，没有break
-            break  # 跳出while循环
-    else:
-        return False  # while循环正常结束，没有break 解密失败
-    return decrypted_paths
-
-
-def merge_copy_msg_db(db_path, save_path):
+def merge_copy_db(db_path, save_path):
     if isinstance(db_path, list) and len(db_path) == 1:
         db_path = db_path[0]
     if not os.path.exists(db_path):
@@ -112,7 +18,7 @@ def merge_copy_msg_db(db_path, save_path):
     shutil.move(db_path, save_path)
 
 
-# 合并相同名称的数据库
+# 合并相同名称的数据库 MSG0-MSG9.db
 def merge_msg_db(db_path: list, save_path: str, CreateTime: int = 0):  # CreateTime: 从这个时间开始的消息 10位时间戳
 
     merged_conn = sqlite3.connect(save_path)
@@ -252,64 +158,3 @@ def merge_media_msg_db(db_path: list, save_path: str):
 
     merged_conn.close()
     return save_path
-
-
-if __name__ == '__main__':
-    # 创建命令行参数解析器
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-k", "--key", help="解密密钥", nargs="+", required=True)
-
-    # 解析命令行参数
-    args = parser.parse_args()
-
-    # 检查是否缺少必要参数，并抛出错误
-    if not args.key:
-        raise ValueError("缺少必要的命令行参数！请提供密钥。")
-
-    # 从命令行参数获取值
-    keys = args.key
-
-    decrypted_ROOT = os.path.join(os.getcwd(), "decrypted")
-
-    if keys is None:
-        print("keys is None")
-        exit(0)
-    if isinstance(keys, str):
-        keys = [keys]
-
-    user_dirs = get_wechat_db()
-    for user, db_path in user_dirs.items():  # 遍历用户
-        MicroMsgPaths = db_path["MicroMsg"]
-        MsgPaths = db_path["Msg"]
-        MediaMSGPaths = db_path["MediaMSG"]
-        # FTSMSGPaths = db_path["FTSMSG"]
-        SnsPaths = db_path["Sns"]
-        EmotionPaths = db_path["Emotion"]
-
-        decrypted_path_tmp = os.path.join(decrypted_ROOT, user, "tmp")  # 解密后的目录
-        if not os.path.exists(decrypted_path_tmp):
-            os.makedirs(decrypted_path_tmp)
-
-        MicroMsgDecryptPaths = all_decrypt(keys, MicroMsgPaths, decrypted_path_tmp)
-        MsgDecryptPaths = all_decrypt(keys, MsgPaths, decrypted_path_tmp)
-        MediaMSGDecryptPaths = all_decrypt(keys, MediaMSGPaths, decrypted_path_tmp)
-        SnsDecryptPaths = all_decrypt(keys, SnsPaths, decrypted_path_tmp)
-        EmotionDecryptPaths = all_decrypt(keys, EmotionPaths, decrypted_path_tmp)
-
-        # 合并数据库
-        decrypted_path = os.path.join(decrypted_ROOT, user)  # 解密后的目录
-
-        MicroMsgDbPath = os.path.join(decrypted_path, "MicroMsg.db")
-        MsgDbPath = os.path.join(decrypted_path, "MSG_all.db")
-        MediaMSGDbPath = os.path.join(decrypted_path, "MediaMSG_all.db")
-        SnsDbPath = os.path.join(decrypted_path, "Sns_all.db")
-        EmmotionDbPath = os.path.join(decrypted_path, "Emotion_all.db")
-
-        merge_copy_msg_db(MicroMsgDecryptPaths, MicroMsgDbPath)
-        merge_msg_db(MsgDecryptPaths, MsgDbPath, 0)
-        merge_media_msg_db(MediaMSGDecryptPaths, MediaMSGDbPath)
-        merge_copy_msg_db(SnsDecryptPaths, SnsDbPath)
-        merge_copy_msg_db(EmotionDecryptPaths, EmmotionDbPath)
-
-        shutil.rmtree(decrypted_path_tmp)  # 删除临时文件
-        print(f"解密完成：{user}, {decrypted_path}")

@@ -13,6 +13,7 @@ import pymem
 from win32com.client import Dispatch
 import psutil
 import sys
+from typing import List, Union
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
@@ -181,28 +182,63 @@ def read_info(version_list, is_logging=False):
 
     return result
 
+def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = None, wxid: Union[List[str], str] = None,
+                  is_logging: bool = False):
+    if not msg_dir:
+        msg_dir = get_info_filePath(wxid="all")
 
-if __name__ == "__main__":
-    import argparse
+    if not os.path.exists(msg_dir):
+        error = f"[-] 目录不存在: {msg_dir}"
+        if is_logging: print(error)
+        return error
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--vlfile", type=str, help="手机号", required=False)
-    parser.add_argument("--vldict", type=str, help="微信昵称", required=False)
+    user_dirs = {}  # wx用户目录
+    files = os.listdir(msg_dir)
+    if wxid:  # 如果指定wxid
+        if isinstance(wxid, str):
+            wxid = wxid.split(";")
+        for file_name in files:
+            if file_name in wxid:
+                user_dirs[os.path.join(msg_dir, file_name)] = os.path.join(msg_dir, file_name)
+    else:  # 如果未指定wxid
+        for file_name in files:
+            if file_name == "All Users" or file_name == "Applet" or file_name == "WMPF":
+                continue
+            user_dirs[os.path.join(msg_dir, file_name)] = os.path.join(msg_dir, file_name)
 
-    args = parser.parse_args()
+    if isinstance(require_list, str):
+        require_list = require_list.split(";")
 
-    # 读取微信各版本偏移
-    if args.vlfile:
-        VERSION_LIST_PATH = args.vlfile
-        with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
-            VERSION_LIST = json.load(f)
-    if args.vldict:
-        VERSION_LIST = json.loads(args.vldict)
+    # generate pattern
+    if "all" in require_list:
+        pattern = {"all": re.compile(r".*\.db$")}
+    elif isinstance(require_list, list):
+        pattern = {}
+        for require in require_list:
+            pattern[require] = re.compile(r"%s.*\.db$" % require)
+    else:
+        error = f"[-] 参数错误: {require_list}"
+        if is_logging: print(error)
+        return error
 
-    if not args.vlfile and not args.vldict:
-        VERSION_LIST_PATH = "../version_list.json"
+    # 获取数据库路径
+    for user, user_dir in user_dirs.items():  # 遍历用户目录
+        user_dirs[user] = {n: [] for n in pattern.keys()}
+        for root, dirs, files in os.walk(user_dir):
+            for file_name in files:
+                for n, p in pattern.items():
+                    if p.match(file_name):
+                        src_path = os.path.join(root, file_name)
+                        user_dirs[user][n].append(src_path)
 
-        with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
-            VERSION_LIST = json.load(f)
+    if is_logging:
+        for user, user_dir in user_dirs.items():
+            print(f"[+] user_path: {user}")
+            for n, paths in user_dir.items():
+                print(f"    {n}:")
+                for path in paths:
+                    print(f"        {path.replace(user, '')}")
+        print("-" * 32)
+        print(f"[+] 共 {len(user_dirs)} 个微信账号")
 
-    result = read_info(VERSION_LIST, True)  # 读取微信信息
+    return user_dirs
