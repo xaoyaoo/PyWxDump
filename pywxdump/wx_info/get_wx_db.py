@@ -34,7 +34,7 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
         msg_dir = os.path.join(w_dir, "WeChat Files")
 
     if not os.path.exists(msg_dir):
-        error = "[-] 目录不存在"
+        error = f"[-] 目录不存在: {msg_dir}"
         if is_logging: print(error)
         return error
 
@@ -63,7 +63,7 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
         for require in require_list:
             pattern[require] = re.compile(r"%s.*\.db$" % require)
     else:
-        error = "[-] 参数错误"
+        error = f"[-] 参数错误: {require_list}"
         if is_logging: print(error)
         return error
 

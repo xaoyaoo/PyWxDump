@@ -237,7 +237,9 @@ class MainAll():
             wxid = user.get("wxid", None)
 
             WxDbPath = get_wechat_db('all', None, wxid=wxid, is_logging=True)  # 获取微信数据库路径
-
+            if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
+                print(WxDbPath)
+                return
             wxdbpaths = [path for user_dir in WxDbPath.values() for paths in user_dir.values() for path in paths]
             if len(wxdbpaths) == 0:
                 print("[-] 未获取到数据库路径")
