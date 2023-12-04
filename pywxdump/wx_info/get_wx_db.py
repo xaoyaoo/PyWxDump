@@ -24,10 +24,15 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
             try:
                 # 打开注册表路径
                 key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                                     r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
+                                     r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
                 documents_path = winreg.QueryValueEx(key, "Personal")[0]  # 读取文档实际目录路径
                 winreg.CloseKey(key)  # 关闭注册表
-                w_dir = documents_path
+                documents_paths = os.path.split(documents_path)
+                if "%" in documents_paths[0]:
+                    w_dir = os.environ.get(documents_paths[0].replace("%", ""))
+                    w_dir = os.path.join(w_dir, os.path.join(*documents_paths[1:]))
+                else:
+                    w_dir = documents_path
             except Exception as e:
                 profile = os.path.expanduser("~")
                 w_dir = os.path.join(profile, "Documents")
