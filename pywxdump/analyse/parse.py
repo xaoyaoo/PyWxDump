@@ -153,7 +153,7 @@ def decompress_CompressContent(data):
     """
     if data is None or not isinstance(data, bytes):
         return None
-    dst = lz4.block.decompress(compress_content, uncompressed_size=len(compress_content) << 8)
+    dst = lz4.block.decompress(data, uncompressed_size=len(data) << 8)
     dst.decode().replace('\x00', '')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
     uncompressed_data = dst.encode()
     return uncompressed_data
