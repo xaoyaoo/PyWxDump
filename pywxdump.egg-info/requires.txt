@@ -1,0 +1,10 @@
+psutil
+pycryptodomex
+pywin32
+pymem
+silk-python
+pyaudio
+requests
+pillow
+pyahocorasick
+flask

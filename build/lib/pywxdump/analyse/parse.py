@@ -43,7 +43,7 @@ def parse_xml_string(xml_string):
         result = {}
 
         # 解析当前元素的属性
-        if element is None or element.attrib is None: #有时可能会遇到没有属性，要处理下
+        if element is None or element.attrib is None:
             return result
         for key, value in element.attrib.items():
             result[key] = value
@@ -153,7 +153,7 @@ def decompress_CompressContent(data):
     """
     if data is None or not isinstance(data, bytes):
         return None
-    dst = lz4.block.decompress(data, uncompressed_size=len(data) << 8)
+    dst = lz4.block.decompress(compress_content, uncompressed_size=len(compress_content) << 8)
     dst.decode().replace('\x00', '')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
     uncompressed_data = dst.encode()
     return uncompressed_data
@@ -244,15 +244,15 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
         wordcloud_img = wordcloud1.to_image()
         wordcloud_img.show()
 
-def read_BytesExtra(bytes_extra):
-    if bytes_extra is None:
-        return None
-    try:
-        deserialize_data, message_type = blackboxprotobuf.decode_message(bytes_extra)
-        return deserialize_data
-    except Exception as e:
-        # print(f"can not decode bytes_extra:{e}")
-        return None
+
+def read_BytesExtra(data):
+    if data[0:2] == '0x':
+        data = data[2:]
+    data = bytes.fromhex(data)
+    print(data)
+    print('*' * 50)
+    print(data.decode('utf-8', errors='ignore'))
+
 
 if __name__ == '__main__':
     data = ''
