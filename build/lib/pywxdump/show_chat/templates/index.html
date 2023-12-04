@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天记录显示</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/4.5.3/css/bootstrap.min.css">
+    <style>
+        .left-area {
+            background-color: #f2f2f2;
+            height: 100vh;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3 left-area">
+            <div style="height:100vh; overflow-y: auto;">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">名称</th>
+                        <th scope="col">数量</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                    <tr id="{{ user.username }}">
+                        <td style="display: none;">
+                            <username id="username1">{{user.username}}</username>
+                            <nickname id="nickname1">{{user.nickname}}</nickname>
+                            <remark id="remark1">{{user.remark}}</remark>
+                            <chat_count id="chat_count1">{{user.chat_count}}</chat_count>
+                        </td>
+                        <td>
+                            {% if user.remark not in [None, '']%}
+                            {{user.remark}}
+                            {% else %}
+                            {{user.nickname}}
+                            {% endif %}
+                        </td>
+                        <td>{{user.chat_count}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-9 right-area">
+            <div id="topdiv" class="row" style="background-color: #ccdcef;  max-height: 120px;display: none;">
+                <div class="col-3">
+                    账号：<span id="username" style="color: #2f6006;word-wrap: break-word;"></span>
+                </div>
+                <div class="col-4">
+                    昵称：<span id="nickname" style="color: #4a5905;word-wrap: break-word;"></span>
+                </div>
+                <div class="col-3">
+                    备注：<span id="remark" style="color: #b66a2f;word-wrap: break-word;"></span>
+                </div>
+                <div class="col-2">
+                    消息数：<span id="chat_count" style="color: #f6062a;"></span>
+                </div>
+            </div>
+
+            <div id="pagination" class="row"
+                 style="background-color: #ccdcef; max-height: 120px; display: flex; align-items: center; display: none;">
+                <div class="col-9" style="display: flex;">
+
+                    <label class="page-link">
+                        <a id="pre_page" class="" href="#">上一页</a>&nbsp;
+                        <a id="next_page" class="" href="#">下一页</a>
+                        &nbsp; &nbsp; &nbsp;
+
+                        <input id="ipt_go" type="number" min="1" max="1000"
+                               style="width: 80px; margin-right: 10px;"/>/<a id="all_pages"></a>&nbsp;
+                        <a id="goButton" href="#">跳转</a></label>
+
+                </div>
+                <div class="col-3" style="display: flex; justify-content: flex-end;">
+                    <button id="btn_export" type="button" class="btn btn-primary">导出</button>
+                </div>
+            </div>
+
+
+            <div class="init-right-area"
+                 style="background-color: #e6e6e6; height: 100vh; display: grid; place-items: center; ">
+                <h2 style="text-align: center">欢迎使用<a href="https://github.com/xaoyaoo/PyWxDump.git">PyWxDump</a>聊天记录查看工具!
+                </h2>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://cdn.staticfile.org/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+<script>
+    var globalUsername = '';  // 全局变量
+    var globalNickname = '';  // 全局变量
+    var globalRemark = '';  // 全局变量
+    var globalChatCount = 0;  // 全局变量
+
+    var globalLimit = 100;  // 全局变量
+    var globalPages = Math.ceil(globalChatCount / globalLimit);  // 全局变量
+    var globalCurrentPage = globalPages;  // 全局变量
+
+    // 发送请求并更新右侧区域内容
+    var request_function = function (url) {
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        })
+            .then(response => response.text())
+            .then(data => {
+                document.querySelector('.init-right-area').style = '';
+                document.querySelector('.init-right-area').innerHTML = '';  // 清空右侧区域内容
+                document.querySelector('.init-right-area').innerHTML = data;  // 更新右侧区域内容
+
+                document.getElementById('topdiv').style.display = "";
+                document.getElementById('username').innerHTML = globalUsername
+                document.getElementById('nickname').innerHTML = globalNickname;
+                document.getElementById('remark').innerHTML = globalRemark;
+                document.getElementById('chat_count').innerHTML = globalChatCount;
+
+                document.getElementById('pagination').style.display = 'flex';
+                document.getElementById('ipt_go').max = globalPages;
+                document.getElementById('ipt_go').value =globalCurrentPage;
+                document.getElementById('all_pages').innerHTML = globalPages;
+            });
+    };
+
+    // 为每行添加点击事件监听器
+    document.querySelectorAll('.left-area tbody tr').forEach(function (row) {
+        row.addEventListener('click', function () {
+            globalUsername = row.id;  // 获取用户名
+            globalNickname = row.querySelector('#nickname1').innerHTML;  // 获取昵称
+            globalRemark = row.querySelector('#remark1').innerHTML;  // 获取备注
+            globalChatCount = row.querySelector('#chat_count1').innerHTML;  // 获取消息数
+
+            globalLimit = 100;  // 设置全局变量
+            globalPages = Math.ceil(globalChatCount / globalLimit);  // 设置全局变量
+            globalCurrentPage = globalPages;  // 设置全局变量
+
+
+            var requestUrl = '/get_chat_data?username=' + encodeURIComponent(globalUsername) + '&page=' + globalCurrentPage + '&limit=' + globalLimit;
+            // 发送请求并更新右侧区域内容
+            request_function(requestUrl);
+        })
+        ;
+    });
+    // 上一页按钮点击事件
+    document.getElementById('pre_page').addEventListener('click', function () {
+        if (globalCurrentPage > 1) {
+            globalCurrentPage -= 1;
+            var requestUrl = '/get_chat_data?username=' + encodeURIComponent(globalUsername) + '&page=' + globalCurrentPage + '&limit=' + globalLimit;
+            // 发送请求并更新右侧区域内容
+            request_function(requestUrl);
+        }
+    });
+
+    // 下一页按钮点击事件
+    document.getElementById('next_page').addEventListener('click', function () {
+        if (globalCurrentPage < globalPages) {
+            globalCurrentPage += 1;
+            var requestUrl = '/get_chat_data?username=' + encodeURIComponent(globalUsername) + '&page=' + globalCurrentPage + '&limit=' + globalLimit;
+            // 发送请求并更新右侧区域内容
+            request_function(requestUrl);
+        }
+    });
+
+    // 跳转按钮点击事件
+    document.getElementById('goButton').addEventListener('click', function () {
+        var page = document.getElementById('ipt_go').value;
+        if (page > 0 && page <= globalPages) {
+            globalCurrentPage = page;
+            var requestUrl = '/get_chat_data?username=' + encodeURIComponent(globalUsername) + '&page=' + globalCurrentPage + '&limit=' + globalLimit;
+            // 发送请求并更新右侧区域内容
+            request_function(requestUrl);
+        }
+    });
+
+    // 导出按钮点击事件
+    document.getElementById('btn_export').addEventListener('click', function () {
+        var requestUrl = '/export_chat_data?username=' + encodeURIComponent(globalUsername);
+        window.open(requestUrl);
+    });
+
+</script>
+
+</body>
+</html>

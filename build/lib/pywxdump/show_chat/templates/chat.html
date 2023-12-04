@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>chat</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        img {
+            max-width: 400px;
+        }
+    </style>
+
+</head>
+<body>
+<div>
+    <div class="row" style="background-color: #d3eed3">
+        <div style="overflow-y: auto;height:90vh;">
+            <table class="table">
+                <tbody>
+                {% for msg in msgs %}
+                <tr id="{{ msg.MsgSvrID }}">
+                    {% if msg.is_sender == 1 %}
+                    <div style="background-color: #f3e9c1;">
+
+                        <label style="color:#A13A50">[发][{{msg.type_name}}] {{msg.CreateTime}}</label><br>
+
+                        {% if msg.type_name == '语音' %}
+                        <audio controls>
+                            <source src="{{msg.content.src}}" type="audio/wav">
+                        </audio>
+                        {% elif msg.type_name == '图片' %}
+                        <img src="{{msg.content.src}}" alt="{{msg.content.msg}}" style="{{msg.content.style}}"/>
+                        {% elif msg.type_name == '动画表情' %}
+                        <img src="{{msg.content.src}}" alt="{{msg.content.msg}}" style="{{msg.content.style}}"/>
+                        {% else %}
+                        <p>{{msg.content.msg}}</p>
+                        {% endif %}
+
+                    </div>
+                    {% else %}
+                    <div style="background-color: #d3eed3">
+                        <label style="color:#f54f71">[收][{{msg.type_name}}] {{msg.CreateTime}}</label><br>
+
+                        {% if msg.type_name == '语音' %}
+                        <audio controls>
+                            <source src="{{msg.content.src}}" type="audio/wav">
+                        </audio>
+                        {% elif msg.type_name == '图片' %}
+                        <img src="{{msg.content.src}}" alt="{{msg.content.msg}}" style="{{msg.content.style}}"/>
+                        {% elif msg.type_name == '动画表情' %}
+                        <img src="{{msg.content.src}}" alt="{{msg.content.msg}}" style="{{msg.content.style}}"/>
+                        {% else %}
+                        <p>{{msg.content.msg}}</p>
+                        {% endif %}
+
+                    </div>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

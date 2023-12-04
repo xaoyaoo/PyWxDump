@@ -43,7 +43,7 @@ def parse_xml_string(xml_string):
         result = {}
 
         # 解析当前元素的属性
-        if element is None or element.attrib is None: #有时可能会遇到没有属性，要处理下
+        if element is None or element.attrib is None:
             return result
         for key, value in element.attrib.items():
             result[key] = value
@@ -246,15 +246,13 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
 
 
 def read_BytesExtra(data):
-    if bytes_extra is None:
-        return None
-    deserialize_data = None
-    try:
-        deserialize_data, message_type = blackboxprotobuf.decode_message(bytes_extra)
-    except Exception as e:
-        print(f"can not decode bytes_extra:{e}")
-        return None
-    return deserialize_data
+    if data[0:2] == '0x':
+        data = data[2:]
+    data = bytes.fromhex(data)
+    print(data)
+    print('*' * 50)
+    print(data.decode('utf-8', errors='ignore'))
+
 
 if __name__ == '__main__':
     data = ''
