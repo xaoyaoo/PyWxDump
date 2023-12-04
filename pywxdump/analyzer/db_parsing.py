@@ -147,55 +147,13 @@ def decompress_CompressContent(data):
     """
     if data is None or not isinstance(data, bytes):
         return None
-    i = 0
-    uncompressed_data = []
-
-    while i < len(data):
-        # 读取第一个字节
-        byte1 = data[i]
-        # 从高四位得到无匹配的明文长度Lh
-        Lh = byte1 >> 4
-        Li = byte1 & 0x0F  # 从低四位得到匹配的数据长度Li
-        if Lh == 0x0f:
-            # 继续读取下一个字节L1
-            i = i + 1
-            L1 = data[i]
-            Lh = L1 + 0x0f
-
-            while data[i] == 0xFF:
-                # 继续读取下一个字节，并累加
-                i = i + 1
-                Lh += data[i]
-        i += 1
-        uncompressed_data.extend(data[i:i + Lh])
-        i = i + Lh
-
-        # 读取匹配的偏移量Offset
-        bias = data[i:i + 2]
-        offset = int.from_bytes(bias, byteorder='little')
-        i = i + 2
-
-        # 读取匹配的数据长度Li
-        if Li != 0x0F:
-            # 实际的匹配压缩长度即为Li = Li + 4
-            Li += 4
-        else:
-            # 从偏移量后面的可选匹配长度区域读取一个字节M1
-            M1 = data[i]
-            Li += M1
-            while M1 == 0xFF:
-                # 继续读取下一个字节M2
-                i += 1
-                M1 = data[i]
-                Li += M1
-            Li += 4
-        # 复制匹配的数据到解压缩数据缓冲区
-        uncompressed_data.extend(uncompressed_data[-offset:-offset + Li])
-        # break
-
-    # 转换为字符串
-    uncompressed_data = bytes(uncompressed_data)  # .decode('utf-8')
-    return uncompressed_data
+    import lz4.block
+    try:
+        uncompressed_data = lz4.block.decompress(data, uncompressed_size=len(data) << 8).decode('utf-8',
+                                                                                                errors='ignore')
+        return uncompressed_data
+    except Exception as e:
+        return None
 
 
 def read_audio_buf(buf_data, is_play=False, is_wave=False, rate=24000):
@@ -284,18 +242,26 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
         wordcloud_img.show()
 
 
-def read_BytesExtra(data):
-    if data[0:2] == '0x':
-        data = data[2:]
-    data = bytes.fromhex(data)
-    print(data)
-    print('*' * 50)
-    print(data.decode('utf-8', errors='ignore'))
+def read_BytesExtra(BytesExtra):
+    import blackboxprotobuf
+
+    if BytesExtra is None or not isinstance(BytesExtra, bytes):
+        return None
+    try:
+        deserialize_data, message_type = blackboxprotobuf.decode_message(BytesExtra)
+        return deserialize_data
+    except Exception as e:
+        return None
 
 
 if __name__ == '__main__':
-    data = ''
-    read_BytesExtra(data)
-    print('*' * 50)
-    data2 = ''
-    read_BytesExtra(data2)
+    DB = sqlite3.connect(r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db")
+    cursor = DB.cursor()
+    sql = "select MsgSvrID,BytesExtra from MSG where BytesExtra is not null and StrTalker='24724392255@chatroom' order by CreateTime desc limit 10"
+    DBdata = cursor.execute(sql).fetchall()
+    for i in DBdata:
+        MsgSvrID, BytesExtra = i
+        data = read_BytesExtra(BytesExtra)
+        # 提取特定键的信息
+        print(MsgSvrID,"\n",data)
+        print("-" * 64)
