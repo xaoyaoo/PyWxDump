@@ -245,16 +245,15 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
         wordcloud_img.show()
 
 
-def read_BytesExtra(data):
+def read_BytesExtra(bytes_extra):
     if bytes_extra is None:
         return None
-    deserialize_data = None
     try:
         deserialize_data, message_type = blackboxprotobuf.decode_message(bytes_extra)
+        return deserialize_data
     except Exception as e:
-        print(f"can not decode bytes_extra:{e}")
+        # print(f"can not decode bytes_extra:{e}")
         return None
-    return deserialize_data
 
 if __name__ == '__main__':
     data = ''
