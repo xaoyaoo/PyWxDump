@@ -1,2 +1,0 @@
-[console_scripts]
-wxdump = pywxdump.command:console_run
