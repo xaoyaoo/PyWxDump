@@ -251,6 +251,23 @@ class BiasAddr:
         key, bais = verify_key(maybe_key, wx_db_path)
         return bais
 
+    def test(self):
+        phone_type1 = "iphone\x00"
+        phone_type2 = "android\x00"
+        Regex = re.compile(r"^[a-zA-Z0-9_]+$")
+        # 内存搜索
+        module = pymem.process.module_from_name(self.pm.process_handle, self.module_name)
+        print(hex(module.lpBaseOfDll))
+        phone_type1_bias = self.pm.pattern_scan_module(phone_type1.encode(), self.module_name, return_multiple=True)
+        phone_type2_bias = self.pm.pattern_scan_module(phone_type2.encode(), self.module_name, return_multiple=True)
+        phone_type_bias = phone_type1_bias + phone_type2_bias
+        print(len(phone_type1_bias))
+        for i in phone_type_bias[::-1]:
+            for j in range(i, i - 1000, -16):
+                a = get_info_without_key(self.process_handle, j, 32)
+                if Regex.match(a) and len(a) >= 6:
+                    print(a)
+
     def run(self, logging_path=False, version_list_path=None):
         if not self.get_process_handle()[0]:
             return None
@@ -263,6 +280,8 @@ class BiasAddr:
         key_bias = self.get_key_bias2(self.db_path, account_bias) if key_bias <= 0 and self.db_path else key_bias
 
         rdata = {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
+        print(rdata)
+        self.test()
         if version_list_path and os.path.exists(version_list_path):
             with open(version_list_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -277,3 +296,17 @@ class BiasAddr:
             print("{版本号:昵称,账号,手机号,邮箱,KEY}")
             print(rdata)
         return rdata
+
+
+def get_info_without_key(h_process, address, n_size=64):
+    array = ctypes.create_string_buffer(n_size)
+    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
+    array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
+    text = array.decode('utf-8', errors='ignore')
+    return text.strip() if text.strip() != "" else "None"
+
+
+if __name__ == '__main__':
+    account, mobile, name, key, db_path = "test", "test", "test", "0000", "test"
+    bias_addr = BiasAddr(account, mobile, name, key, db_path)
+    bias_addr.run()
