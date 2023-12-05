@@ -52,19 +52,31 @@ def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
 
 
 def get_info_wxid(h_process):
+    # find_num = 1000
+    # addrs = pattern_scan_all(h_process, br'\\FileStorage', return_multiple=True, find_num=find_num)
+    # wxids = []
+    # for addr in addrs:
+    #     array = ctypes.create_string_buffer(33)
+    #     if ReadProcessMemory(h_process, void_p(addr - 21), array, 33, 0) == 0: return "None"
+    #     array = bytes(array)  # .decode('utf-8', errors='ignore')
+    #     array = array.split(br'\FileStorage')[0]
+    #     for part in [b'}', b'\x7f', b'\\']:
+    #         if part in array:
+    #             array = array.split(part)[1]
+    #             wxids.append(array.decode('utf-8', errors='ignore'))
+    #             break
+    # wxid = max(wxids, key=wxids.count) if wxids else "None"
+
     find_num = 100
-    addrs = pattern_scan_all(h_process, br'\\FileStorage', return_multiple=True, find_num=find_num)
+    addrs = pattern_scan_all(h_process, br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
     wxids = []
     for addr in addrs:
-        array = ctypes.create_string_buffer(33)
-        if ReadProcessMemory(h_process, void_p(addr - 21), array, 33, 0) == 0: return "None"
-        array = bytes(array)  # .decode('utf-8', errors='ignore')
-        array = array.split(br'\FileStorage')[0]
-        for part in [b'}', b'\x7f', b'\\']:
-            if part in array:
-                array = array.split(part)[1]
-                wxids.append(array.decode('utf-8', errors='ignore'))
-                break
+        array = ctypes.create_string_buffer(80)
+        if ReadProcessMemory(h_process, void_p(addr - 30), array, 80, 0) == 0: return "None"
+        array = bytes(array)  # .split(b"\\")[0]
+        array = array.split(b"\\Msg")[0]
+        array = array.split(b"\\")[-1]
+        wxids.append(array.decode('utf-8', errors='ignore'))
     wxid = max(wxids, key=wxids.count) if wxids else "None"
     return wxid
 
