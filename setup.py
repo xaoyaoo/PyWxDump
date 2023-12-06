@@ -16,6 +16,8 @@ install_requires = [
     "pillow",
     "pyahocorasick",
     "flask",
+    "lz4",
+    "blackboxprotobuf",
 ]
 
 setup(
