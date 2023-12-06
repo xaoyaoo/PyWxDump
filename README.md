@@ -13,48 +13,6 @@
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 [![Publish](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml/badge.svg)](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml)
 
-<details>
-<summary><strong>更新日志(点击展开)：</strong></summary>
-
-* 2023.12.03 增加分析聊天记录的功能，生成词云、绘制折线图等
-* 2023.12.03 修复部分bug,更改获取wx文件夹方式 [#34](https://github.com/xaoyaoo/PyWxDump/issues/34)
-* 2023.12.01 为exe添加图标
-* 2023.11.30 优化命令行界面
-* 2023.11.29 添加异形wxid获取方式，添加用户路径自动获取，重建说明文档，对新手更友好
-* 2023.11.28 修改wxid获取方式，修复部分bug
-* 2023.11.27 解决相对导入包的问题,完善错误提示
-* 2023.11.25 聊天记录查看工具bootstrap更换国内cdn
-* 2023.11.22 添加all命令中解密错误数据日志写入文件,修复部分bug
-* 2023.11.16 增加聊天记录导出为html
-* 2023.11.15 添加test文件，添加自动构建可执行文件的脚本,添加版本描述
-* 2023.11.15 [v2.2.5变化较大]重构解密脚本的返回值，重构命令行参数
-* 2023.11.15 修复无法获取wxid的bug
-* 2023.11.14 修复部分bug
-* 2023.11.11 添加聊天记录解析，查看工具,修复部分bug
-* 2023.11.10 修复wxdump wx_db命令行参数错误 [#19](https://github.com/xaoyaoo/PyWxDump/issues/19)
-* 2023.11.08 增加3.9.8.15版本支持
-* 2023.10.31 修复3.9.2.*版本无法正常运行
-* 2023.10.28 添加自动发布到pypi的github action
-* 2023.10.28 修复3.9.5.91版本的偏移
-* 2023.10.24 add auto get bias addr ,not need input key or wx folder path.
-* 2023.10.17 add LICENSE
-* 2023.10.16 添加"3.9.7.15"版本的偏移[#12](https://github.com/xaoyaoo/PyWxDump/issues/12)
-  ,感谢@[GentlemanII](https://github.com/GentlemanII)
-* 2023.10.15 将整个项目作为包安装，增加命令行统一操作
-* 2023.10.14 整体重构项目，优化代码，增加命令行统一操作
-* 2023.10.11 添加"3.9.5.81"版本的偏移[#10](https://github.com/xaoyaoo/PyWxDump/issues/10)
-  ,感谢@[sv3nbeast](https://github.com/sv3nbeast)
-* 2023.10.09 获取key基址偏移可以根据微信文件夹获取，不需要输入key
-* 2023.10.09 优化代码，删减没必要代码，重新修改获取基址代码，加快运行速度（需要安装新的库 pymem）
-* 2023.10.07 修改获取基址内存搜索方式，防止进入死循环
-* 2023.10.07 增加了3.9.7.29版本的偏移地址
-* 2023.10.06 增加命令行解密数据库
-* 2023.09.28 增加了数据库部分解析
-* 2023.09.15 增加了3.9.7.25版本的偏移地址
-
-</details>
-
-
 **更新计划【由于家里有事，这些计划(除8、9、10)将会在12.30号前统一更新】**
 
 * 1.每个人聊天记录分析，生成词云。
@@ -69,31 +27,6 @@
 * 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了
 
 注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
-
-<details>
-<summary>贡献代码方法(点击展开)：</summary>
-
-
-提交拉取请求（Pull Request），请按照以下步骤进行操作：
-
-1. Fork 仓库：首先，在项目的 GitHub 页面上点击 "Fork" 按钮，将项目的代码仓库 fork 到你自己的 GitHub 账号下。
-2. 克隆仓库：在你自己的 GitHub 账号下找到 fork 后的项目，点击 `Clone or download`按钮，获取仓库的 URL。然后在本地使用 Git
-   命令克隆仓库到你的电脑上：`git clone 仓库的URL`
-3. 创建分支：在本地仓库中创建一个新的分支，用于进行你的修改：`git checkout -b 你的分支名`
-4. 进行修改：在新创建的分支中进行你需要的修改，包括修复错误、改进现有功能或添加新功能。
-5. 提交修改：使用 `git add` 和 `git commit` 命令将修改提交到本地仓库中：
-   ```
-   git add .
-   git commit -m "提交信息"
-   ```
-6. 推送分支：使用 `git push` 命令将你的本地分支推送到你的 GitHub 仓库中：`git push origin 你的分支名`
-7. 提交拉取请求：在你的 GitHub 仓库页面上切换到你刚刚推送的分支，点击 "New pull request"
-   按钮，填写一些说明信息，然后点击 `Create pull request`
-   按钮，即可提交拉取请求。
-8. 等待审核：等待项目维护者审核你的拉取请求，如果通过审核，你的修改将会被合并到项目的主分支中
-9. 接着你就可以在右边的`contributors`中看到你的名字了。
-
-</details>
 
 欢迎加入交流qq群：577704006 or
 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
@@ -122,11 +55,6 @@
 * （7）支持微信多开场景，获取多用户信息等
 * （8）微信需要登录状态才能获取数据库密钥
 * （9）支持导出聊天记录为html,备份微信聊天记录,方便查看
-
-**版本差异**
-
-1. 版本 < 3.7.0.30 只运行不登录能获取个人信息，登录后可以获取数据库密钥
-2. 版本 > 3.7.0.30 只运行不登录不能获取个人信息，登录后都能获取
 
 **利用场景**
 
@@ -182,15 +110,7 @@ PyWxDump
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 常见问题请参考[FAQ](./doc/FAQ.md)
-
-<details>
-<summary>提交issues方法(点击展开)</summary>
-
-[![image](https://github.com/xaoyaoo/PyWxDump/assets/37209452/22d15ea6-05d6-4f30-8b24-04a51a59d56d)](https://github.com/xaoyaoo/PyWxDump/issues)
-[![image](https://github.com/xaoyaoo/PyWxDump/assets/37209452/9bdc2961-694a-4104-a1c7-05403220c0fe)](https://github.com/xaoyaoo/PyWxDump/issues)
-[![image](https://github.com/xaoyaoo/PyWxDump/assets/37209452/be1d8913-5a6e-4fff-9fcd-00edb33d255b)](https://github.com/xaoyaoo/PyWxDump/issues)
-
-</details>
+* 更新日志请参考[CHANGELOG](./doc/CHANGELOG.md)
 
 <details>
 <summary><strong>Star History(click to expand)</strong></summary>
@@ -201,214 +121,7 @@ PyWxDump
 
 # 二、使用说明
 
-## 1. 安装
-
-### 1.1 从pypi安装(安装稳定版)
-
-```shell script
-pip install -U pywxdump
-```
-
-### 1.2 从源码安装(安装最新版)
-
-<details>
-<summary>点击展开</summary>
-
-```shell script
-pip install -U git+git://github.com/xaoyaoo/PyWxDump.git
-```
-
-或
-
-```shell script
-git clone https://github.com/xaoyaoo/PyWxDump.git
-cd PyWxDump
-python -m pip install -U .
-```
-
-</details>
-
-### 1.3 使用可执行文件exe
-
-<details>
-<summary>点击展开</summary>
-
-* 1.下载[release](https://github.com/xaoyaoo/PyWxDump/releases)中的exe文件
-* 2.或者自行打包，打包脚本见： [build_exe.py](./tests/build_exe.py)
-
-```shell
-cd tests
-python build_exe.py
-```
-
-</details>
-
-## 2. 使用
-
-### 2.1 命令行
-
-激活虚拟环境后（如果有的话），在项目根目录下运行：
-
-```shell script
-wxdump 模式 [参数]
-#  运行模式(mode):
-#    bias      获取微信基址偏移
-#    info      获取微信信息
-#    db_path   获取微信文件夹路径
-#    decrypt   解密微信数据库
-#    dbshow    聊天记录查看
-#    export    聊天记录导出为html
-#    all       获取微信信息，解密微信数据库，查看聊天记录
-```
-
-*示例*
-
-<details>
-<summary>点击展开示例</summary>
-
-以下是示例命令：
-
-##### 获取微信基址偏移
-
-```bash
-pywxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--version_list_path <微信版本偏移文件路径>]
-```
-
-##### 获取微信信息
-
-```bash
-pywxdump info [--version_list_path <微信版本偏移文件路径>]
-```
-
-##### 获取微信文件夹路径
-
-```bash
-pywxdump db_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
-```
-
-##### 解密微信数据库
-
-```bash
-pywxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路径>]
-```
-
-##### 查看聊天记录
-
-```bash
-pywxdump dbshow -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
-```
-
-##### 导出聊天记录为 HTML
-
-```bash
-pywxdump export -u <微信账号> -o <导出路径> -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
-```
-
-##### 获取微信信息、解密数据库、查看聊天记录，一条命令搞定，开放端口5000，浏览器访问查看聊天记录（支持局域网其他机器访问）
-
-```bash
-pywxdump all
-```
-
-</details>
-
-### 2.2 python API
-
-*import调用示例*
-
-<details>
-<summary>点击展开示例</summary>
-
-```python
-# 单独使用各模块，返回值一般为字典，参数参考命令行
-from pywxdump import *
-
-# ************************************************************************************************ #
-# 获取微信基址偏移
-args = {
-    "mode": "bias",
-    "mobile": "13800138000",  # 手机号
-    "name": "微信昵称",  # 微信昵称
-    "account": "微信账号",  # 微信账号
-    "key": "密钥",  # 密钥（可选）
-    "db_path": "已登录账号的微信文件夹路径",  # 微信文件夹路径（可选）
-    "version_list_path": "微信版本偏移文件路径"  # 微信版本偏移文件路径（可选）
-}
-bias_addr = BiasAddr(args["account"], args["mobile"], args["name"], args["key"], args["db_path"])
-result = bias_addr.run(True, args["version_list_path"])
-# ************************************************************************************************ #
-# 获取微信信息
-wx_info = read_info(VERSION_LIST, True)
-
-# 获取微信文件夹路径
-args = {
-    "mode": "db_path",
-    "require_list": "all",  # 需要的数据库名称（可选）
-    "wx_files": "WeChat Files",  # 'WeChat Files'路径（可选）
-    "wxid": "wxid_",  # wxid_，用于确认用户文件夹（可选）
-}
-user_dirs = get_wechat_db(args["require_list"], args["wx_files"], args["wxid"], True)
-# ************************************************************************************************ #
-# 解密微信数据库
-args = {
-    "mode": "decrypt",
-    "key": "密钥",  # 密钥
-    "db_path": "数据库路径(目录or文件)",  # 数据库路径
-    "out_path": "/path/to/decrypted"  # 输出路径（必须是目录）[默认为当前路径下decrypted文件夹]
-}
-result = batch_decrypt(args["key"], args["db_path"], args["out_path"], True)
-# ************************************************************************************************ #
-# 查看聊天记录
-args = {
-    "mode": "dbshow",
-    "msg_path": "解密后的 MSG.db 的路径",  # 解密后的 MSG.db 的路径
-    "micro_path": "解密后的 MicroMsg.db 的路径",  # 解密后的 MicroMsg.db 的路径
-    "media_path": "解密后的 MediaMSG.db 的路径",  # 解密后的 MediaMSG.db 的路径
-    "filestorage_path": "文件夹FileStorage的路径"  # 文件夹 FileStorage 的路径（用于显示图片）
-}
-from flask import Flask, request, jsonify, render_template, g
-import logging
-
-app = Flask(__name__, template_folder='./show_chat/templates')
-app.logger.setLevel(logging.ERROR)
-
-
-@app.before_request
-def before_request():
-    g.MSG_ALL_db_path = args["msg_path"]
-    g.MicroMsg_db_path = args["micro_path"]
-    g.MediaMSG_all_db_path = args["media_path"]
-    g.FileStorage_path = args["filestorage_path"]
-    g.USER_LIST = get_user_list(args["msg_path"], args["micro_path"])
-
-
-app.register_blueprint(app_show_chat)
-print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
-app.run(debug=False)
-# ************************************************************************************************ #
-# 导出聊天记录为 HTML
-args = {
-    "mode": "export",
-    "username": "微信账号",  # 微信账号（聊天对象账号）
-    "outpath": "/path/to/export",  # 导出路径
-    "msg_path": "解密后的 MSG.db 的路径",  # 解密后的 MSG.db 的路径
-    "micro_path": "解密后的 MicroMsg.db 的路径",  # 解密后的 MicroMsg.db 的路径
-    "media_path": "解密后的 MediaMSG.db 的路径",  # 解密后的 MediaMSG.db 的路径
-    "filestorage_path": "文件夹FileStorage的路径"  # 文件夹 FileStorage 的路径（用于显示图片）
-}
-export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], args["media_path"],
-       args["filestorage_path"])
-```
-
-</details>
-
-更多使用方法参考[tests](./tests)文件夹下的[test_*.py](./tests/)文件
-
-### 2.3 可执行文件exe
-
-进入exe文件所在目录，运行： `wxdump.exe 模式 [参数]`，方法同[命令行](#21-命令行)
-
-### 2.4 其他说明
+详细使用说明见[UserGuide.md](./doc/UserGuide.md)
 
 【注】:
 

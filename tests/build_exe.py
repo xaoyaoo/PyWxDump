@@ -56,7 +56,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='pywxdump',
+          name='wxdump',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -78,7 +78,7 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='pywxdump')
+               name='wxdump')
 
 '''
 # 创建文件夹
