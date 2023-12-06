@@ -18,6 +18,7 @@ install_requires = [
     "flask",
     "lz4",
     "blackboxprotobuf",
+    "lxml"
 ]
 
 setup(

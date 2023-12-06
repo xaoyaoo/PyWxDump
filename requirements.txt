@@ -12,3 +12,4 @@ flask
 pyahocorasick
 blackboxprotobuf
 lz4
+lxml
