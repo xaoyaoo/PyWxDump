@@ -99,7 +99,7 @@ class BiasAddr:
         self.mobile = mobile.encode("utf-8")
         self.name = name.encode("utf-8")
         self.key = bytes.fromhex(key) if key else b""
-        self.db_path = db_path if os.path.exists(db_path) else ""
+        self.db_path = db_path if db_path and os.path.exists(db_path) else ""
 
         self.process_name = "WeChat.exe"
         self.module_name = "WeChatWin.dll"
@@ -280,8 +280,8 @@ class BiasAddr:
         key_bias = self.get_key_bias2(self.db_path, account_bias) if key_bias <= 0 and self.db_path else key_bias
 
         rdata = {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
-        print(rdata)
-        self.test()
+        # print(rdata)
+        # self.test()
         if version_list_path and os.path.exists(version_list_path):
             with open(version_list_path, "r", encoding="utf-8") as f:
                 data = json.load(f)

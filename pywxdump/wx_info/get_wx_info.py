@@ -8,6 +8,7 @@
 import json
 import ctypes
 import os
+import re
 import winreg
 import pymem
 from win32com.client import Dispatch
@@ -75,6 +76,7 @@ def get_info_filePath(wxid="all"):
         value, _ = winreg.QueryValueEx(key, "FileSavePath")
         winreg.CloseKey(key)
         w_dir = value
+        print(0, w_dir)
     except Exception as e:
         # 获取文档实际目录
         try:
@@ -87,13 +89,19 @@ def get_info_filePath(wxid="all"):
             if "%" in documents_paths[0]:
                 w_dir = os.environ.get(documents_paths[0].replace("%", ""))
                 w_dir = os.path.join(w_dir, os.path.join(*documents_paths[1:]))
+                print(1, w_dir)
             else:
                 w_dir = documents_path
+                print(2, w_dir)
         except Exception as e:
-            profile = os.path.expanduser("~")
+            profile = os.environ.get("USERPROFILE")  # 获取用户目录
             w_dir = os.path.join(profile, "Documents")
+            print(3, w_dir)
+    if w_dir == "MyDocument:":
+        profile = os.environ.get("USERPROFILE")
+        w_dir = os.path.join(profile, "Documents")
     msg_dir = os.path.join(w_dir, "WeChat Files")
-
+    print(msg_dir)
     if wxid == "all" and os.path.exists(msg_dir):
         return msg_dir
 
@@ -241,3 +249,9 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
         print(f"[+] 共 {len(user_dirs)} 个微信账号")
 
     return user_dirs
+
+
+if __name__ == '__main__':
+    with open("version_list.json", "r", encoding="utf-8") as f:
+        version_list = json.load(f)
+    read_info(version_list, is_logging=True)

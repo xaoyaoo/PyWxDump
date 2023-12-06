@@ -47,7 +47,7 @@ setup(
     install_requires=install_requires,
     entry_points={
         'console_scripts': [
-            'wxdump = pywxdump.command:console_run',
+            'wxdump = pywxdump.cli:console_run',
         ],
     },
     setup_requires=['wheel']
