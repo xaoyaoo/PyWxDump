@@ -205,23 +205,3 @@ def encrypt(key: str, db_path, out_path):
             enFile.write(encrypted)
 
     return True, [db_path, out_path, key]
-
-
-if __name__ == '__main__':
-    # 创建命令行参数解析器
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-k", "--key", type=str, help="密钥", required=True)
-    parser.add_argument("-i", "--db_path", type=str, help="数据库路径(目录or文件)", required=True)
-    parser.add_argument("-o", "--out_path", type=str,
-                        help="输出路径(必须是目录),输出文件为 out_path/de_{original_name}", required=True)
-
-    # 解析命令行参数
-    args = parser.parse_args()
-
-    # 从命令行参数获取值
-    key = args.key
-    db_path = args.db_path
-    out_path = args.out_path
-
-    # 调用 decrypt 函数，并传入参数
-    result = batch_decrypt(key, db_path, out_path, is_logging=True)
