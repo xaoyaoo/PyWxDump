@@ -78,6 +78,7 @@
 * 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 常见问题请参考[FAQ](./doc/FAQ.md)
 * 更新日志请参考[CHANGELOG](./doc/CHANGELOG.md)
+* [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
 
 <details>
 <summary><strong>Star History(click to expand)</strong></summary>
