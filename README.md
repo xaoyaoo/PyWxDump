@@ -55,7 +55,7 @@
 </details>
 
 
-**更新计划**
+**更新计划【由于家里有事，这些计划(除8、9、1)将会在12.30号前统一更新】**
 
 * 1.每个人聊天记录分析，生成词云。
 * 2.分析每个人每天的聊天数量，生成折线图（天-聊天数量）
@@ -179,6 +179,7 @@ PyWxDump
   请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
+* 常见问题请参考[FAQ](./doc/FAQ.md)
 
 <details>
 <summary>提交issues方法(点击展开)</summary>
