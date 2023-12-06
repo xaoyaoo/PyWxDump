@@ -175,98 +175,66 @@ class BiasAddr:
         result = self.search_memory_value(key, self.module_name)
         return result
 
-    def get_key_bias2(self, wx_db_path, account_bias=0):
-        wx_db_path = os.path.join(wx_db_path, "Msg", "MicroMsg.db")
-        if not os.path.exists(wx_db_path):
-            return 0
+    def get_key_bias2(self, wx_db_path):
 
-        def get_maybe_key(mem_data):
-            min_addr = 0xffffffffffffffffffffffff
-            max_addr = 0
-            for module1 in pm.list_modules():
-                if module1.lpBaseOfDll < min_addr:
-                    min_addr = module1.lpBaseOfDll
-                if module1.lpBaseOfDll > max_addr:
-                    max_addr = module1.lpBaseOfDll + module1.SizeOfImage
+        addr_len = get_exe_bit(self.exe_path) // 8
+        db_path = wx_db_path
 
-            maybe_key = []
-            for i in range(0, len(mem_data), self.address_len):
-                addr = mem_data[i:i + self.address_len]
-                addr = int.from_bytes(addr, byteorder='little')
-                # 去掉不可能的地址
-                if min_addr < addr < max_addr:
-                    key = read_key(addr)
-                    if key == b"":
-                        continue
-                    maybe_key.append([key, i])
-            return maybe_key
+        def read_key_bytes(h_process, address, address_len=8):
+            array = ctypes.create_string_buffer(address_len)
+            if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
+            address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
+            key = ctypes.create_string_buffer(32)
+            if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
+            key_bytes = bytes(key)
+            return key_bytes
 
-        def read_key(addr):
-            key = ctypes.create_string_buffer(35)
-            if ReadProcessMemory(pm.process_handle, void_p(addr - 1), key, 35, 0) == 0:
-                return b""
-
-            if b"\x00\x00" in key.raw[1:33]:
-                return b""
-
-            if b"\x00\x00" == key.raw[33:35] and b"\x90" == key.raw[0:1]:
-                return key.raw[1:33]
-            return b""
-
-        def verify_key(keys, wx_db_path):
+        def verify_key(key, wx_db_path):
+            KEY_SIZE = 32
+            DEFAULT_PAGESIZE = 4096
+            DEFAULT_ITER = 64000
             with open(wx_db_path, "rb") as file:
                 blist = file.read(5000)
             salt = blist[:16]
+            byteKey = hashlib.pbkdf2_hmac("sha1", key, salt, DEFAULT_ITER, KEY_SIZE)
             first = blist[16:DEFAULT_PAGESIZE]
+
             mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
+            mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
+            hash_mac = hmac.new(mac_key, first[:-32], hashlib.sha1)
+            hash_mac.update(b'\x01\x00\x00\x00')
 
-            with multiprocessing.Pool(processes=8) as pool:
-                results = [pool.apply_async(validate_key, args=(key, salt, first, mac_salt)) for key, i in keys[-1::-1]]
-                results = [p.get() for p in results]
-                for i, result in enumerate(results[-1::-1]):
-                    if result:
-                        return keys[i]
-                return b"", 0
+            if hash_mac.digest() != first[-32:-12]:
+                return False
+            return True
 
-        module_name = "WeChatWin.dll"
-        pm = self.pm
-        module = pymem.process.module_from_name(pm.process_handle, module_name)
-        start_addr = module.lpBaseOfDll
-        size = module.SizeOfImage
-
-        if account_bias > 1:
-            maybe_key = []
-            for i in [0x24, 0x40]:
-                addr = start_addr + account_bias - i
-                mem_data = pm.read_bytes(addr, self.address_len)
-                key = read_key(int.from_bytes(mem_data, byteorder='little'))
-                if key != b"":
-                    maybe_key.append([key, addr - start_addr])
-            key, bais = verify_key(maybe_key, wx_db_path)
-            if bais != 0:
-                return bais
-
-        mem_data = pm.read_bytes(start_addr, size)
-        maybe_key = get_maybe_key(mem_data)
-        key, bais = verify_key(maybe_key, wx_db_path)
-        return bais
-
-    def test(self):
         phone_type1 = "iphone\x00"
         phone_type2 = "android\x00"
-        Regex = re.compile(r"^[a-zA-Z0-9_]+$")
-        # 内存搜索
-        module = pymem.process.module_from_name(self.pm.process_handle, self.module_name)
-        print(hex(module.lpBaseOfDll))
-        phone_type1_bias = self.pm.pattern_scan_module(phone_type1.encode(), self.module_name, return_multiple=True)
-        phone_type2_bias = self.pm.pattern_scan_module(phone_type2.encode(), self.module_name, return_multiple=True)
-        phone_type_bias = phone_type1_bias + phone_type2_bias
-        print(len(phone_type1_bias))
-        for i in phone_type_bias[::-1]:
-            for j in range(i, i - 1000, -16):
-                a = get_info_without_key(self.process_handle, j, 32)
-                if Regex.match(a) and len(a) >= 6:
-                    print(a)
+        phone_type3 = "ipad\x00"
+
+        pm = pymem.Pymem("WeChat.exe")
+        module_name = "WeChatWin.dll"
+
+        MicroMsg_path = os.path.join(db_path, "MSG", "MicroMsg.db")
+
+        module = pymem.process.module_from_name(pm.process_handle, module_name)
+
+        type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module, return_multiple=True)
+        type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module, return_multiple=True)
+        type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module, return_multiple=True)
+        print(len(type1_addrs), len(type2_addrs), len(type3_addrs))
+        type_addrs = type1_addrs if len(type1_addrs) >= 2 else type2_addrs if len(
+            type2_addrs) >= 2 else type3_addrs if len(type3_addrs) >= 2 else "None"
+        if type_addrs == "None":
+            return 0
+        for i in type_addrs[::-1]:
+            for j in range(i, i - 2000, -addr_len):
+                key_bytes = read_key_bytes(pm.process_handle, j, addr_len)
+                if key_bytes == "None":
+                    continue
+                if verify_key(key_bytes, MicroMsg_path):
+                    return j - module.lpBaseOfDll
+        return 0
 
     def run(self, logging_path=False, version_list_path=None):
         if not self.get_process_handle()[0]:
@@ -277,11 +245,10 @@ class BiasAddr:
         key_bias = 0
         key_bias = self.get_key_bias1()
         key_bias = self.search_key(self.key) if key_bias <= 0 and self.key else key_bias
-        key_bias = self.get_key_bias2(self.db_path, account_bias) if key_bias <= 0 and self.db_path else key_bias
+        key_bias = self.get_key_bias2(self.db_path) if key_bias <= 0 and self.db_path else key_bias
 
         rdata = {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
-        # print(rdata)
-        # self.test()
+
         if version_list_path and os.path.exists(version_list_path):
             with open(version_list_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -307,6 +274,6 @@ def get_info_without_key(h_process, address, n_size=64):
 
 
 if __name__ == '__main__':
-    account, mobile, name, key, db_path = "test", "test", "test", "0000", "test"
+    account, mobile, name, key, db_path = "test", "test", "test",None, r"test"
     bias_addr = BiasAddr(account, mobile, name, key, db_path)
-    bias_addr.run()
+    bias_addr.run(logging_path=True)

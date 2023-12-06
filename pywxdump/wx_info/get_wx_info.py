@@ -5,6 +5,8 @@
 # Author:       xaoyaoo
 # Date:         2023/08/21
 # -------------------------------------------------------------------------------
+import hmac
+import hashlib
 import json
 import ctypes
 import os
@@ -18,6 +20,41 @@ from typing import List, Union
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
+
+
+# 获取exe文件的位数
+def get_exe_bit(file_path):
+    """
+    获取 PE 文件的位数: 32 位或 64 位
+    :param file_path:  PE 文件路径(可执行文件)
+    :return: 如果遇到错误则返回 64
+    """
+    try:
+        with open(file_path, 'rb') as f:
+            dos_header = f.read(2)
+            if dos_header != b'MZ':
+                print('get exe bit error: Invalid PE file')
+                return 64
+            # Seek to the offset of the PE signature
+            f.seek(60)
+            pe_offset_bytes = f.read(4)
+            pe_offset = int.from_bytes(pe_offset_bytes, byteorder='little')
+
+            # Seek to the Machine field in the PE header
+            f.seek(pe_offset + 4)
+            machine_bytes = f.read(2)
+            machine = int.from_bytes(machine_bytes, byteorder='little')
+
+            if machine == 0x14c:
+                return 32
+            elif machine == 0x8664:
+                return 64
+            else:
+                print('get exe bit error: Unknown architecture: %s' % hex(machine))
+                return 64
+    except IOError:
+        print('get exe bit error: File not found or cannot be opened')
+        return 64
 
 
 # 读取内存中的字符串(非key部分)
@@ -54,21 +91,6 @@ def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
 
 
 def get_info_wxid(h_process):
-    # find_num = 1000
-    # addrs = pattern_scan_all(h_process, br'\\FileStorage', return_multiple=True, find_num=find_num)
-    # wxids = []
-    # for addr in addrs:
-    #     array = ctypes.create_string_buffer(33)
-    #     if ReadProcessMemory(h_process, void_p(addr - 21), array, 33, 0) == 0: return "None"
-    #     array = bytes(array)  # .decode('utf-8', errors='ignore')
-    #     array = array.split(br'\FileStorage')[0]
-    #     for part in [b'}', b'\x7f', b'\\']:
-    #         if part in array:
-    #             array = array.split(part)[1]
-    #             wxids.append(array.decode('utf-8', errors='ignore'))
-    #             break
-    # wxid = max(wxids, key=wxids.count) if wxids else "None"
-
     find_num = 100
     addrs = pattern_scan_all(h_process, br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
     wxids = []
@@ -91,7 +113,6 @@ def get_info_filePath(wxid="all"):
         value, _ = winreg.QueryValueEx(key, "FileSavePath")
         winreg.CloseKey(key)
         w_dir = value
-        print(0, w_dir)
     except Exception as e:
         # 获取文档实际目录
         try:
@@ -107,16 +128,13 @@ def get_info_filePath(wxid="all"):
                 print(1, w_dir)
             else:
                 w_dir = documents_path
-                print(2, w_dir)
         except Exception as e:
             profile = os.environ.get("USERPROFILE")  # 获取用户目录
             w_dir = os.path.join(profile, "Documents")
-            print(3, w_dir)
     if w_dir == "MyDocument:":
         profile = os.environ.get("USERPROFILE")
         w_dir = os.path.join(profile, "Documents")
     msg_dir = os.path.join(w_dir, "WeChat Files")
-    print(msg_dir)
     if wxid == "all" and os.path.exists(msg_dir):
         return msg_dir
 
@@ -124,15 +142,60 @@ def get_info_filePath(wxid="all"):
     return filePath if os.path.exists(filePath) else "None"
 
 
-# 读取内存中的key
-def get_key(h_process, address, address_len=8):
-    array = ctypes.create_string_buffer(address_len)
-    if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
-    address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
-    key = ctypes.create_string_buffer(32)
-    if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
-    key_string = bytes(key).hex()
-    return key_string
+def get_key(db_path, addr_len):
+    def read_key_bytes(h_process, address, address_len=8):
+        array = ctypes.create_string_buffer(address_len)
+        if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
+        address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
+        key = ctypes.create_string_buffer(32)
+        if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
+        key_bytes = bytes(key)
+        return key_bytes
+
+    def verify_key(key, wx_db_path):
+        KEY_SIZE = 32
+        DEFAULT_PAGESIZE = 4096
+        DEFAULT_ITER = 64000
+        with open(wx_db_path, "rb") as file:
+            blist = file.read(5000)
+        salt = blist[:16]
+        byteKey = hashlib.pbkdf2_hmac("sha1", key, salt, DEFAULT_ITER, KEY_SIZE)
+        first = blist[16:DEFAULT_PAGESIZE]
+
+        mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
+        mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
+        hash_mac = hmac.new(mac_key, first[:-32], hashlib.sha1)
+        hash_mac.update(b'\x01\x00\x00\x00')
+
+        if hash_mac.digest() != first[-32:-12]:
+            return False
+        return True
+
+    phone_type1 = "iphone\x00"
+    phone_type2 = "android\x00"
+    phone_type3 = "ipad\x00"
+
+    pm = pymem.Pymem("WeChat.exe")
+    module_name = "WeChatWin.dll"
+
+    MicroMsg_path = os.path.join(db_path, "MSG", "MicroMsg.db")
+
+    type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module_name, return_multiple=True)
+    type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module_name, return_multiple=True)
+    type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module_name, return_multiple=True)
+    type_addrs = type1_addrs if len(type1_addrs) == 2 else type2_addrs if len(type2_addrs) == 2 else type3_addrs if len(
+        type3_addrs) == 2 else "None"
+    if type_addrs == "None":
+        return "None"
+    for i in type_addrs[::-1]:
+        for j in range(i, i - 2000, -addr_len):
+            key_bytes = read_key_bytes(pm.process_handle, j, addr_len)
+            if key_bytes == "None":
+                continue
+            if verify_key(key_bytes, MicroMsg_path):
+                return key_bytes.hex()
+
+    return "None"
 
 
 # 读取微信信息(account,mobile,name,mail,wxid,key)
@@ -177,17 +240,18 @@ def read_info(version_list, is_logging=False):
         account__baseaddr = wechat_base_address + bias_list[1]
         mobile_baseaddr = wechat_base_address + bias_list[2]
         mail_baseaddr = wechat_base_address + bias_list[3]
-        key_baseaddr = wechat_base_address + bias_list[4]
+        # key_baseaddr = wechat_base_address + bias_list[4]
 
-        addrLen = 4 if tmp_rd['version'] in ["3.9.2.23", "3.9.2.26"] else 8
+        addrLen = get_exe_bit(process.exe()) // 8
 
         tmp_rd['account'] = get_info_without_key(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
         tmp_rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
         tmp_rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
         tmp_rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
+
         tmp_rd['wxid'] = get_info_wxid(Handle)
-        tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid'])
-        tmp_rd['key'] = get_key(Handle, key_baseaddr, addrLen) if bias_list[4] != 0 else "None"
+        tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid']) if tmp_rd['wxid'] != "None" else "None"
+        tmp_rd['key'] = get_key(tmp_rd['filePath'], addrLen) if tmp_rd['filePath'] != "None" else "None"
         result.append(tmp_rd)
 
     if is_logging:
@@ -267,6 +331,6 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
 
 
 if __name__ == '__main__':
-    with open("version_list.json", "r", encoding="utf-8") as f:
+    with open("../version_list.json", "r", encoding="utf-8") as f:
         version_list = json.load(f)
     read_info(version_list, is_logging=True)
