@@ -26,7 +26,7 @@
 * 9.增加获取实时聊天记录的功能
 * 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了
 
-#### 如有问题，请先查看：[FAQ](./doc/FAQ.md) 是否有答案。
+#### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案。
 
 注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
 
@@ -74,12 +74,12 @@
 
 * 项目地址：https://github.com/xaoyaoo/PyWxDump
 * 目前只在windows下测试过，mac、linux下可能会存在问题。
-* 如发现[version_list.json](pywxdump/version_list.json)缺失或错误,
+* 如发现[version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json)缺失或错误,
   请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
-* 常见问题请参考[FAQ](./doc/FAQ.md)
-* 更新日志请参考[CHANGELOG](./doc/CHANGELOG.md)
+* 常见问题请参考[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md)
+* 更新日志请参考[CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
 
 <details>
@@ -91,12 +91,12 @@
 
 # 二、使用说明
 
-详细使用说明见[UserGuide.md](./doc/UserGuide.md)
+详细使用说明见[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
 
 【注】:
 
-* 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)（该方法可用`wxdump bias`命令代替，现仅用作学习原理）
-* 关于数据库解析，参考[wx数据库简述.md](doc/wx数据库简述.md)
+* 关于基址使用cheat engine获取，参考[CE获取基址.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE获取基址.md)（该方法可用`wxdump bias`命令代替，现仅用作学习原理）
+* 关于数据库解析，参考[wx数据库简述.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/wx数据库简述.md)
 
 # 三、免责声明（非常重要！！！！！！！）
 
