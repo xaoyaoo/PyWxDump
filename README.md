@@ -92,7 +92,7 @@
 
 【注】:
 
-* 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)（该方法一般可用`wxdump bias`命令代替，仅用作学习原理）
+* 关于基址使用cheat engine获取，参考[CE获取基址.md](doc/CE获取基址.md)（该方法可用`wxdump bias`命令代替，现仅用作学习原理）
 * 关于数据库解析，参考[wx数据库简述.md](doc/wx数据库简述.md)
 
 # 三、免责声明（非常重要！！！！！！！）
