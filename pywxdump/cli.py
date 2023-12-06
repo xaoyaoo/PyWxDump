@@ -126,6 +126,45 @@ class MainDecrypt():
         return result
 
 
+class MainMerge():
+    def init_parses(self, parser):
+        self.mode = "merge"
+        # 添加 'decrypt' 子命令解析器
+        sb_merge = parser.add_parser(self.mode, help="合并微信数据库(MSG.db or MediaMSG.db)")
+        sb_merge.add_argument("-t", "--dbtype", type=str, help="数据库类型(可选值)：[msg,media]", required=True, metavar="")
+        sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True, metavar="")
+        sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
+                              help="输出路径(必须是目录)[默认为当前路径下decrypted文件夹]", required=False,
+                              metavar="")
+        return sb_merge
+
+    def run(self, args):
+        # 从命令行参数获取值
+        dbtype = args.dbtype
+        db_path = args.db_path
+        out_path = args.out_path
+
+        db_path = db_path.split(",")
+        for i in db_path:
+            if not os.path.exists(i):
+                print(f"[-] 数据库路径不存在：{i}")
+                return
+
+        if not os.path.exists(out_path):
+            os.makedirs(out_path)
+            print(f"[+] 创建输出文件夹：{out_path}")
+
+        if dbtype == "msg":
+            result = merge_msg_db(db_path, out_path)
+        elif dbtype == "media":
+            result = merge_media_msg_db(db_path, out_path)
+        else:
+            print(f"[-] 未知数据库类型：{dbtype}")
+            return
+
+        return result
+
+
 class MainShowChatRecords():
     def init_parses(self, parser):
         self.mode = "dbshow"
@@ -362,6 +401,11 @@ def console_run():
     main_decrypt = MainDecrypt()
     sb_decrypt = main_decrypt.init_parses(subparsers)
     modes[main_decrypt.mode] = main_decrypt
+
+    # 添加 'merge' 子命令解析器
+    main_merge = MainMerge()
+    sb_merge = main_merge.init_parses(subparsers)
+    modes[main_merge.mode] = main_merge
 
     # 添加 '' 子命令解析器
     main_show_chat_records = MainShowChatRecords()
