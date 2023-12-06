@@ -53,19 +53,31 @@ def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
 
 
 def get_info_wxid(h_process):
+    # find_num = 1000
+    # addrs = pattern_scan_all(h_process, br'\\FileStorage', return_multiple=True, find_num=find_num)
+    # wxids = []
+    # for addr in addrs:
+    #     array = ctypes.create_string_buffer(33)
+    #     if ReadProcessMemory(h_process, void_p(addr - 21), array, 33, 0) == 0: return "None"
+    #     array = bytes(array)  # .decode('utf-8', errors='ignore')
+    #     array = array.split(br'\FileStorage')[0]
+    #     for part in [b'}', b'\x7f', b'\\']:
+    #         if part in array:
+    #             array = array.split(part)[1]
+    #             wxids.append(array.decode('utf-8', errors='ignore'))
+    #             break
+    # wxid = max(wxids, key=wxids.count) if wxids else "None"
+
     find_num = 100
-    addrs = pattern_scan_all(h_process, br'\\FileStorage', return_multiple=True, find_num=find_num)
+    addrs = pattern_scan_all(h_process, br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
     wxids = []
     for addr in addrs:
-        array = ctypes.create_string_buffer(33)
-        if ReadProcessMemory(h_process, void_p(addr - 21), array, 33, 0) == 0: return "None"
-        array = bytes(array)  # .decode('utf-8', errors='ignore')
-        array = array.split(br'\FileStorage')[0]
-        for part in [b'}', b'\x7f', b'\\']:
-            if part in array:
-                array = array.split(part)[1]
-                wxids.append(array.decode('utf-8', errors='ignore'))
-                break
+        array = ctypes.create_string_buffer(80)
+        if ReadProcessMemory(h_process, void_p(addr - 30), array, 80, 0) == 0: return "None"
+        array = bytes(array)  # .split(b"\\")[0]
+        array = array.split(b"\\Msg")[0]
+        array = array.split(b"\\")[-1]
+        wxids.append(array.decode('utf-8', errors='ignore'))
     wxid = max(wxids, key=wxids.count) if wxids else "None"
     return wxid
 
@@ -82,13 +94,14 @@ def get_info_filePath(wxid="all"):
         # 获取文档实际目录
         try:
             # 打开注册表路径
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
-            documents_path = winreg.QueryValueEx(key, "Personal")[0]# 读取文档实际目录路径
-            winreg.CloseKey(key) # 关闭注册表
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                 r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
+            documents_path = winreg.QueryValueEx(key, "Personal")[0]  # 读取文档实际目录路径
+            winreg.CloseKey(key)  # 关闭注册表
             documents_paths = os.path.split(documents_path)
             if "%" in documents_paths[0]:
-                w_dir = os.environ.get(documents_paths[0].replace("%",""))
-                w_dir = os.path.join(w_dir,os.path.join(*documents_paths[1:]))
+                w_dir = os.environ.get(documents_paths[0].replace("%", ""))
+                w_dir = os.path.join(w_dir, os.path.join(*documents_paths[1:]))
             else:
                 w_dir = documents_path
         except Exception as e:
@@ -181,6 +194,7 @@ def read_info(version_list, is_logging=False):
         print("=" * 32)
 
     return result
+
 
 def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = None, wxid: Union[List[str], str] = None,
                   is_logging: bool = False):
