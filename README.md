@@ -64,41 +64,7 @@
 4. 自行备份(日常备份自己留存)
 5. 等等...............
 
-## 3. 项目结构
-
-<details>
-<summary>点击展开</summary>
-
-```
-PyWxDump
-├─ pywxdump                        # 项目代码,存放各个模块
-│  ├─ analyse                     # 解析数据库
-│  │  └─ parse.py                     # 解析数据库脚本，可以解析语音、图片、聊天记录等
-│  ├─ bias_addr                   # 获取偏移地址
-│  │  └─ get_bias_addr.py             # 获取偏移地址脚本
-│  ├─ decrypted                   # 解密数据库
-│  │  ├─ decrypt.py                   # 解密数据库脚本
-│  │  └─ get_wx_decrypted_db.py       # 直接读取当前登录微信的数据库，解密后保存到当前目录下的decrypted文件夹中
-│  ├─ wx_info                     # 获取微信基本信息
-│  │  ├─ get_wx_info.py               # 获取微信基本信息脚本
-│  │  └─ get_wx_db.py                 # 获取本地所有的微信相关数据库
-│  ├─ show_records                # 显示聊天记录
-│  │  ├─ main_window.py               # 显示聊天记录的窗口
-│  │  └─ templates                    # 显示聊天记录的html模板
-│  ├─ command.py                  # 命令行入口
-│  └─ version_list.json           # 微信版本列表 (十进制)按顺序代表：微信昵称、微信账号、微信手机号、微信邮箱（默认0）、微信KEY、微信原始ID（wxid_******）
-├─ doc                        # 项目文档
-│  ├─ python1.0_README.md         # python1.0版本的README
-│  ├─ wx数据库简述.md               # wx数据库简述
-│  └─ CE获取基址.md                 # CE获取基址
-├─ README.md              
-├─ setup.py                   # 安装脚本
-└─ requirements.txt
-```
-
-</details>
-
-## 4. 其他
+## 3. 其他
 
 [PyWxDump](https://github.com/xaoyaoo/PyWxDump)是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)
 的经过重构python语言版本，同时添加了一些新的功能。

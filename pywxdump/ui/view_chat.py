@@ -11,7 +11,7 @@ import os
 import json
 import time
 import hashlib
-from pywxdump.analyse import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
+from pywxdump.analyzer import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
 
 from flask import Flask, request, render_template, g, Blueprint
 

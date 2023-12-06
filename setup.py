@@ -29,18 +29,15 @@ setup(
     url="https://github.com/xaoyaoo/PyWxDump",
     license='MIT',
 
-    packages=['pywxdump', 'pywxdump.bias_addr', 'pywxdump.wx_info', 'pywxdump.decrypted', 'pywxdump.analyse',
-              'pywxdump.show_chat'],
+    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_info', 'pywxdump.analyzer'],
     package_dir={'pywxdump': 'pywxdump',
-                 'pywxdump.bias_addr': 'pywxdump/bias_addr',
                  'pywxdump.wx_info': 'pywxdump/wx_info',
-                 'pywxdump.decrypted': 'pywxdump/decrypted',
-                 'pywxdump.analyse': 'pywxdump/analyse',
-                 'pywxdump.show_chat': 'pywxdump/show_chat'
+                 'pywxdump.analyzer': 'pywxdump/analyzer',
+                 'pywxdump.ui': 'pywxdump/ui',
                  },
 
     package_data={
-        'pywxdump': ['version_list.json', 'show_chat/templates/*']
+        'pywxdump': ['version_list.json', 'ui/templates/*']
     },
     classifiers=[
         "Programming Language :: Python :: 3",
