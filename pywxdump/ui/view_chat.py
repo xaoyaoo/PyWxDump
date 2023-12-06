@@ -6,12 +6,13 @@
 # Date:         2023/11/10
 # -------------------------------------------------------------------------------
 import base64
+import re
 import sqlite3
 import os
 import json
 import time
 import hashlib
-from pywxdump.analyzer import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
+from pywxdump.analyzer import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string, read_BytesExtra
 
 from flask import Flask, request, render_template, g, Blueprint
 
@@ -24,28 +25,33 @@ def get_md5(s):
 
 def get_user_list(MSG_ALL_db_path, MicroMsg_db_path):
     users = []
+
     # 连接 MSG_ALL.db 数据库，并执行查询
     db1 = sqlite3.connect(MSG_ALL_db_path)
     cursor1 = db1.cursor()
     cursor1.execute("SELECT StrTalker, COUNT(*) AS ChatCount FROM MSG GROUP BY StrTalker ORDER BY ChatCount DESC")
     result = cursor1.fetchall()
 
+    dict_user_count = {}
+    # 将结果转换为字典
     for row in result:
-        # 获取用户名、昵称、备注和聊天记录数量
-        db2 = sqlite3.connect(MicroMsg_db_path)
-        cursor2 = db2.cursor()
-        cursor2.execute("SELECT UserName, NickName, Remark FROM Contact WHERE UserName=?", (row[0],))
-        result2 = cursor2.fetchone()
-        if result2:
-            username, nickname, remark = result2
-            chat_count = row[1]
+        dict_user_count[row[0]] = row[1]
 
-            # 拼接四列数据为元组
-            row_data = {"username": username, "nickname": nickname, "remark": remark, "chat_count": chat_count,
-                        "isChatRoom": username.startswith("@chatroom")}
-            users.append(row_data)
-        cursor2.close()
-        db2.close()
+    db2 = sqlite3.connect(MicroMsg_db_path)
+    cursor2 = db2.cursor()
+    cursor2.execute("SELECT UserName, NickName, Remark FROM Contact;")
+    result2 = cursor2.fetchall()
+    for row in result2:
+        username, nickname, remark = row
+        # 拼接四列数据为元组
+        row_data = {"username": username, "nickname": nickname, "remark": remark,
+                    "chat_count": dict_user_count.get(username, 0),
+                    "isChatRoom": username.startswith("@chatroom")}
+        users.append(row_data)
+
+    users.sort(key=lambda x: x["chat_count"], reverse=True)  # 按照聊天记录数量排序
+    cursor2.close()
+    db2.close()
     cursor1.close()
     db1.close()
     return users
@@ -94,7 +100,7 @@ def load_base64_img_data(start_time, end_time, username_md5, FileStorage_path):
 
 
 def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_ALL_db_path, MediaMSG_all_db_path,
-                      FileStorage_path):
+                      FileStorage_path, USER_LIST):
     username = user_list.get("username", "")
     username_md5 = get_md5(username)
     type_name_dict = {
@@ -116,7 +122,7 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
     cursor1 = db1.cursor()
 
     cursor1.execute(
-        "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent FROM MSG WHERE StrTalker=? ORDER BY CreateTime ASC LIMIT ?,?",
+        "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra FROM MSG WHERE StrTalker=? ORDER BY CreateTime ASC LIMIT ?,?",
         (selected_talker, start_index, page_size))
     result1 = cursor1.fetchall()
 
@@ -127,7 +133,7 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
 
     data = []
     for row in result1:
-        localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent = row
+        localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra = row
         CreateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(CreateTime))
 
         type_name = type_name_dict.get(Type, {}).get(SubType, "未知")
@@ -172,8 +178,28 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
 
         else:
             content["msg"] = StrContent
+        talker = "未知"
+        if IsSender == 1:
+            talker = "我"
+        else:
+            if StrTalker.endswith("@chatroom"):
+                bytes_extra = read_BytesExtra(BytesExtra)
+                if bytes_extra:
+                    try:
+                        matched_string = bytes_extra['3'][0]['2'].decode('utf-8', errors='ignore')
+                        talker_dicts = list(filter(lambda x: x["username"] == matched_string, USER_LIST))
+                        if len(talker_dicts) > 0:
+                            talker_dict = talker_dicts[0]
+                            room_username = talker_dict.get("username", "")
+                            room_nickname = talker_dict.get("nickname", "")
+                            room_remark = talker_dict.get("remark", "")
+                            talker = room_remark if room_remark else room_nickname if room_nickname else room_username
+                        else:
+                            talker = matched_string
+                    except:
+                        pass
 
-        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender,
+        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
                     "content": content, "CreateTime": CreateTime}
         data.append(row_data)
     return data
@@ -221,7 +247,9 @@ app_show_chat.debug = False
 @app_show_chat.route('/')
 def index():
     g.USER_LIST = get_user_list(g.MSG_ALL_db_path, g.MicroMsg_db_path)
-    return render_template("index.html", users=g.USER_LIST)
+    # 只去前面500个有聊天记录的用户
+    USER_LIST = g.USER_LIST[:500]
+    return render_template("index.html", users=USER_LIST)
 
 
 # 获取聊天记录
@@ -240,7 +268,7 @@ def get_chat_data():
         page_size = limit
 
         data = load_chat_records(username, start_index, page_size, user, g.MSG_ALL_db_path, g.MediaMSG_all_db_path,
-                                 g.FileStorage_path)
+                                 g.FileStorage_path, g.USER_LIST)
         return render_template("chat.html", msgs=data)
     else:
         return "error"

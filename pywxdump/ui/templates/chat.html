@@ -22,7 +22,7 @@
                     {% if msg.is_sender == 1 %}
                     <div style="background-color: #f3e9c1;">
 
-                        <label style="color:#A13A50">[发][{{msg.type_name}}] {{msg.CreateTime}}</label><br>
+                        <label style="color:#A13A50">[{{msg.talker}}][{{msg.type_name}}] {{msg.CreateTime}}</label><br>
 
                         {% if msg.type_name == '语音' %}
                         <audio controls>
@@ -39,7 +39,7 @@
                     </div>
                     {% else %}
                     <div style="background-color: #d3eed3">
-                        <label style="color:#f54f71">[收][{{msg.type_name}}] {{msg.CreateTime}}</label><br>
+                        <label style="color:#f54f71">[{{msg.talker}}][{{msg.type_name}}] {{msg.CreateTime}}</label><br>
 
                         {% if msg.type_name == '语音' %}
                         <audio controls>

@@ -194,7 +194,6 @@ def get_key(db_path, addr_len):
                 continue
             if verify_key(key_bytes, MicroMsg_path):
                 return key_bytes.hex()
-
     return "None"
 
 
@@ -326,7 +325,6 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
                     print(f"        {path.replace(user, '')}")
         print("-" * 32)
         print(f"[+] 共 {len(user_dirs)} 个微信账号")
-
     return user_dirs
 
 

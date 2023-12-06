@@ -153,11 +153,13 @@ def decompress_CompressContent(data):
     """
     if data is None or not isinstance(data, bytes):
         return None
-
-    dst = lz4.block.decompress(data, uncompressed_size=len(data) << 8)
-    dst.decode().replace('\x00', '')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
-    uncompressed_data = dst.encode('utf-8', errors='ignore')
-    return uncompressed_data
+    try:
+        dst = lz4.block.decompress(data, uncompressed_size=len(data) << 8)
+        dst.decode().replace(b'\x00', '')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
+        uncompressed_data = dst.decode('utf-8', errors='ignore')
+        return uncompressed_data
+    except Exception as e:
+        return data.decode('utf-8', errors='ignore')
 
 
 def read_audio_buf(buf_data, is_play=False, is_wave=False, rate=24000):
@@ -257,13 +259,13 @@ def read_BytesExtra(BytesExtra):
 
 
 if __name__ == '__main__':
-    DB = sqlite3.connect(r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db")
+    DB = sqlite3.connect(r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\hwfWxMsg\MSG_all.db")
     cursor = DB.cursor()
-    sql = "select MsgSvrID,BytesExtra from MSG where BytesExtra is not null and StrTalker='24724392255@chatroom' order by CreateTime desc limit 10"
+    sql = "select MsgSvrID,CompressContent from MSG where MSG.MsgSvrID=5379391128928795712"
     DBdata = cursor.execute(sql).fetchall()
     for i in DBdata:
-        MsgSvrID, BytesExtra = i
-        data = read_BytesExtra(BytesExtra)
+        MsgSvrID, CompressContent = i
+        data = decompress_CompressContent(CompressContent)
         # 提取特定键的信息
         print(MsgSvrID,"\n",data)
         print("-" * 64)
