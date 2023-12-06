@@ -153,9 +153,10 @@ def decompress_CompressContent(data):
     """
     if data is None or not isinstance(data, bytes):
         return None
+
     dst = lz4.block.decompress(data, uncompressed_size=len(data) << 8)
     dst.decode().replace('\x00', '')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
-    uncompressed_data = dst.encode()
+    uncompressed_data = dst.encode('utf-8', errors='ignore')
     return uncompressed_data
 
 
@@ -244,19 +245,25 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
         wordcloud_img = wordcloud1.to_image()
         wordcloud_img.show()
 
-def read_BytesExtra(bytes_extra):
-    if bytes_extra is None:
+
+def read_BytesExtra(BytesExtra):
+    if BytesExtra is None or not isinstance(BytesExtra, bytes):
         return None
     try:
-        deserialize_data, message_type = blackboxprotobuf.decode_message(bytes_extra)
+        deserialize_data, message_type = blackboxprotobuf.decode_message(BytesExtra)
         return deserialize_data
     except Exception as e:
-        # print(f"can not decode bytes_extra:{e}")
         return None
 
+
 if __name__ == '__main__':
-    data = ''
-    read_BytesExtra(data)
-    print('*' * 50)
-    data2 = ''
-    read_BytesExtra(data2)
+    DB = sqlite3.connect(r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db")
+    cursor = DB.cursor()
+    sql = "select MsgSvrID,BytesExtra from MSG where BytesExtra is not null and StrTalker='24724392255@chatroom' order by CreateTime desc limit 10"
+    DBdata = cursor.execute(sql).fetchall()
+    for i in DBdata:
+        MsgSvrID, BytesExtra = i
+        data = read_BytesExtra(BytesExtra)
+        # 提取特定键的信息
+        print(MsgSvrID,"\n",data)
+        print("-" * 64)

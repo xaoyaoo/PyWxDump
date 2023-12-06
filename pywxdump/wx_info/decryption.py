@@ -12,7 +12,6 @@
 # 为了保证数据部分长度是16字节即AES块大小的整倍数，每一页的末尾将填充一段空字节，使得保留字段的长度为48字节。
 # 综上，加密文件结构为第一页4KB数据前16字节为盐值，紧接着4032字节数据，再加上16字节IV和20字节HMAC以及12字节空字节；而后的页均是4048字节长度的加密数据段和48字节的保留段。
 # -------------------------------------------------------------------------------
-
 import argparse
 import hmac
 import hashlib
@@ -206,23 +205,3 @@ def encrypt(key: str, db_path, out_path):
             enFile.write(encrypted)
 
     return True, [db_path, out_path, key]
-
-
-if __name__ == '__main__':
-    # 创建命令行参数解析器
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-k", "--key", type=str, help="密钥", required=True)
-    parser.add_argument("-i", "--db_path", type=str, help="数据库路径(目录or文件)", required=True)
-    parser.add_argument("-o", "--out_path", type=str,
-                        help="输出路径(必须是目录),输出文件为 out_path/de_{original_name}", required=True)
-
-    # 解析命令行参数
-    args = parser.parse_args()
-
-    # 从命令行参数获取值
-    key = args.key
-    db_path = args.db_path
-    out_path = args.out_path
-
-    # 调用 decrypt 函数，并传入参数
-    result = batch_decrypt(key, db_path, out_path, is_logging=True)

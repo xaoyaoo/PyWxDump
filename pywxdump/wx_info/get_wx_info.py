@@ -8,11 +8,13 @@
 import json
 import ctypes
 import os
+import re
 import winreg
 import pymem
 from win32com.client import Dispatch
 import psutil
 import sys
+from typing import List, Union
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
@@ -89,24 +91,32 @@ def get_info_filePath(wxid="all"):
         value, _ = winreg.QueryValueEx(key, "FileSavePath")
         winreg.CloseKey(key)
         w_dir = value
+        print(0, w_dir)
     except Exception as e:
         # 获取文档实际目录
         try:
             # 打开注册表路径
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
-            documents_path = winreg.QueryValueEx(key, "Personal")[0]# 读取文档实际目录路径
-            winreg.CloseKey(key) # 关闭注册表
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                 r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
+            documents_path = winreg.QueryValueEx(key, "Personal")[0]  # 读取文档实际目录路径
+            winreg.CloseKey(key)  # 关闭注册表
             documents_paths = os.path.split(documents_path)
             if "%" in documents_paths[0]:
-                w_dir = os.environ.get(documents_paths[0].replace("%",""))
-                w_dir = os.path.join(w_dir,os.path.join(*documents_paths[1:]))
+                w_dir = os.environ.get(documents_paths[0].replace("%", ""))
+                w_dir = os.path.join(w_dir, os.path.join(*documents_paths[1:]))
+                print(1, w_dir)
             else:
                 w_dir = documents_path
+                print(2, w_dir)
         except Exception as e:
-            profile = os.path.expanduser("~")
+            profile = os.environ.get("USERPROFILE")  # 获取用户目录
             w_dir = os.path.join(profile, "Documents")
+            print(3, w_dir)
+    if w_dir == "MyDocument:":
+        profile = os.environ.get("USERPROFILE")
+        w_dir = os.path.join(profile, "Documents")
     msg_dir = os.path.join(w_dir, "WeChat Files")
-
+    print(msg_dir)
     if wxid == "all" and os.path.exists(msg_dir):
         return msg_dir
 
@@ -194,27 +204,69 @@ def read_info(version_list, is_logging=False):
     return result
 
 
-if __name__ == "__main__":
-    import argparse
+def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = None, wxid: Union[List[str], str] = None,
+                  is_logging: bool = False):
+    if not msg_dir:
+        msg_dir = get_info_filePath(wxid="all")
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--vlfile", type=str, help="手机号", required=False)
-    parser.add_argument("--vldict", type=str, help="微信昵称", required=False)
+    if not os.path.exists(msg_dir):
+        error = f"[-] 目录不存在: {msg_dir}"
+        if is_logging: print(error)
+        return error
 
-    args = parser.parse_args()
+    user_dirs = {}  # wx用户目录
+    files = os.listdir(msg_dir)
+    if wxid:  # 如果指定wxid
+        if isinstance(wxid, str):
+            wxid = wxid.split(";")
+        for file_name in files:
+            if file_name in wxid:
+                user_dirs[os.path.join(msg_dir, file_name)] = os.path.join(msg_dir, file_name)
+    else:  # 如果未指定wxid
+        for file_name in files:
+            if file_name == "All Users" or file_name == "Applet" or file_name == "WMPF":
+                continue
+            user_dirs[os.path.join(msg_dir, file_name)] = os.path.join(msg_dir, file_name)
 
-    # 读取微信各版本偏移
-    if args.vlfile:
-        VERSION_LIST_PATH = args.vlfile
-        with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
-            VERSION_LIST = json.load(f)
-    if args.vldict:
-        VERSION_LIST = json.loads(args.vldict)
+    if isinstance(require_list, str):
+        require_list = require_list.split(";")
 
-    if not args.vlfile and not args.vldict:
-        VERSION_LIST_PATH = "../version_list.json"
+    # generate pattern
+    if "all" in require_list:
+        pattern = {"all": re.compile(r".*\.db$")}
+    elif isinstance(require_list, list):
+        pattern = {}
+        for require in require_list:
+            pattern[require] = re.compile(r"%s.*\.db$" % require)
+    else:
+        error = f"[-] 参数错误: {require_list}"
+        if is_logging: print(error)
+        return error
 
-        with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
-            VERSION_LIST = json.load(f)
+    # 获取数据库路径
+    for user, user_dir in user_dirs.items():  # 遍历用户目录
+        user_dirs[user] = {n: [] for n in pattern.keys()}
+        for root, dirs, files in os.walk(user_dir):
+            for file_name in files:
+                for n, p in pattern.items():
+                    if p.match(file_name):
+                        src_path = os.path.join(root, file_name)
+                        user_dirs[user][n].append(src_path)
 
-    result = read_info(VERSION_LIST, True)  # 读取微信信息
+    if is_logging:
+        for user, user_dir in user_dirs.items():
+            print(f"[+] user_path: {user}")
+            for n, paths in user_dir.items():
+                print(f"    {n}:")
+                for path in paths:
+                    print(f"        {path.replace(user, '')}")
+        print("-" * 32)
+        print(f"[+] 共 {len(user_dirs)} 个微信账号")
+
+    return user_dirs
+
+
+if __name__ == '__main__':
+    with open("version_list.json", "r", encoding="utf-8") as f:
+        version_list = json.load(f)
+    read_info(version_list, is_logging=True)

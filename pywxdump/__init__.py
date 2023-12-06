@@ -5,13 +5,10 @@
 # Author:       xaoyaoo
 # Date:         2023/10/14
 # -------------------------------------------------------------------------------
-from .bias_addr.get_bias_addr import BiasAddr
-from .wx_info.get_wx_info import read_info
-from .wx_info.get_wx_db import get_wechat_db
-from .decrypted.decrypt import batch_decrypt, decrypt,encrypt
-from .decrypted.get_wx_decrypted_db import all_decrypt, merge_copy_msg_db, merge_msg_db, merge_media_msg_db
-from .analyse.parse import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio, parse_xml_string
-from .show_chat import app_show_chat, get_user_list, export
+from .wx_info import BiasAddr,read_info, get_wechat_db,encrypt,batch_decrypt,decrypt
+from .wx_info import  merge_copy_db, merge_msg_db, merge_media_msg_db
+from .analyzer.db_parsing import read_img_dat, read_emoji, decompress_CompressContent, read_audio_buf, read_audio, parse_xml_string
+from .ui import app_show_chat, get_user_list, export
 
 import os,json
 
