@@ -10,3 +10,5 @@ requests
 pillow
 flask
 pyahocorasick
+blackboxprotobuf
+lz4

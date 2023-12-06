@@ -10,7 +10,7 @@ import time
 from collections import Counter
 import pandas as pd
 
-from pywxdump.analyse import parse_xml_string
+from .db_parsing import parse_xml_string
 
 
 def read_msgs(MSG_path, selected_talker=None, start_time=time.time() * 3600 * 24 * 365, end_time=time.time()):
