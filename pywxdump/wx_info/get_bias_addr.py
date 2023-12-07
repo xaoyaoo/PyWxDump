@@ -222,7 +222,6 @@ class BiasAddr:
         type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module, return_multiple=True)
         type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module, return_multiple=True)
         type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module, return_multiple=True)
-        print(len(type1_addrs), len(type2_addrs), len(type3_addrs))
         type_addrs = type1_addrs if len(type1_addrs) >= 2 else type2_addrs if len(
             type2_addrs) >= 2 else type3_addrs if len(type3_addrs) >= 2 else "None"
         if type_addrs == "None":

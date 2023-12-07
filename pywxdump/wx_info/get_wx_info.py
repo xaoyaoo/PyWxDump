@@ -183,8 +183,9 @@ def get_key(db_path, addr_len):
     type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module_name, return_multiple=True)
     type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module_name, return_multiple=True)
     type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module_name, return_multiple=True)
-    type_addrs = type1_addrs if len(type1_addrs) == 2 else type2_addrs if len(type2_addrs) == 2 else type3_addrs if len(
-        type3_addrs) == 2 else "None"
+    type_addrs = type1_addrs if len(type1_addrs) >= 2 else type2_addrs if len(type2_addrs) >= 2 else type3_addrs if len(
+        type3_addrs) >= 2 else "None"
+    print(type_addrs)
     if type_addrs == "None":
         return "None"
     for i in type_addrs[::-1]:
@@ -329,6 +330,5 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
 
 
 if __name__ == '__main__':
-    with open("../version_list.json", "r", encoding="utf-8") as f:
-        version_list = json.load(f)
-    read_info(version_list, is_logging=True)
+    from pywxdump import VERSION_LIST
+    read_info(VERSION_LIST, is_logging=True)
