@@ -184,7 +184,7 @@ def get_key(db_path, addr_len):
     type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module_name, return_multiple=True)
     type_addrs = type1_addrs if len(type1_addrs) >= 2 else type2_addrs if len(type2_addrs) >= 2 else type3_addrs if len(
         type3_addrs) >= 2 else "None"
-    print(type_addrs)
+    # print(type_addrs)
     if type_addrs == "None":
         return "None"
     for i in type_addrs[::-1]:
