@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-#
 # -------------------------------------------------------------------------------
-# Name:         getwxinfo.py
+# Name:         simplify_wx_info.py
 # Description:  
 # Author:       xaoyaoo
-# Date:         2023/08/21
+# Date:         2023/12/07
 # -------------------------------------------------------------------------------
 import hmac
 import hashlib
 import ctypes
 import os
-import re
 import winreg
 import pymem
-from win32com.client import Dispatch
 import psutil
 import sys
-from typing import List, Union
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
@@ -54,15 +51,6 @@ def get_exe_bit(file_path):
     except IOError:
         print('get exe bit error: File not found or cannot be opened')
         return 64
-
-
-# 读取内存中的字符串(非key部分)
-def get_info_without_key(h_process, address, n_size=64):
-    array = ctypes.create_string_buffer(n_size)
-    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
-    array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
-    text = array.decode('utf-8', errors='ignore')
-    return text.strip() if text.strip() != "" else "None"
 
 
 def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
@@ -200,10 +188,9 @@ def get_key(db_path, addr_len):
 
 
 # 读取微信信息(account,mobile,name,mail,wxid,key)
-def read_info(version_list, is_logging=False):
+def read_info(is_logging=False):
     wechat_process = []
     result = []
-    error = ""
     for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
         if process.name() == 'WeChat.exe':
             wechat_process.append(process)
@@ -217,39 +204,9 @@ def read_info(version_list, is_logging=False):
         tmp_rd = {}
 
         tmp_rd['pid'] = process.pid
-        tmp_rd['version'] = Dispatch("Scripting.FileSystemObject").GetFileVersion(process.exe())
-
-        wechat_base_address = 0
-        for module in process.memory_maps(grouped=False):
-            if module.path and 'WeChatWin.dll' in module.path:
-                wechat_base_address = int(module.addr, 16)
-                break
-        if wechat_base_address == 0:
-            error = f"[-] WeChat WeChatWin.dll Not Found"
-            if is_logging: print(error)
-            return error
+        # tmp_rd['version'] = Dispatch("Scripting.FileSystemObject").GetFileVersion(process.exe())
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
-
-        bias_list = version_list.get(tmp_rd['version'], None)
-        if not isinstance(bias_list, list) or len(bias_list) <= 4:
-            error = f"[-] WeChat Current Version Is Not Supported(maybe not get account,mobile,name,mail)"
-            if is_logging: print(error)
-            tmp_rd['account'] = "None"
-            tmp_rd['mobile'] = "None"
-            tmp_rd['name'] = "None"
-            tmp_rd['mail'] = "None"
-        else:
-            name_baseaddr = wechat_base_address + bias_list[0]
-            account__baseaddr = wechat_base_address + bias_list[1]
-            mobile_baseaddr = wechat_base_address + bias_list[2]
-            mail_baseaddr = wechat_base_address + bias_list[3]
-            # key_baseaddr = wechat_base_address + bias_list[4]
-
-            tmp_rd['account'] = get_info_without_key(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
-            tmp_rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
-            tmp_rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
-            tmp_rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
 
         addrLen = get_exe_bit(process.exe()) // 8
 
@@ -268,72 +225,8 @@ def read_info(version_list, is_logging=False):
                     print(f"[+] {k:>8}: {v}")
                 print(end="-" * 32 + "\n" if i != len(result) - 1 else "")
         print("=" * 32)
-
     return result
 
 
-def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = None, wxid: Union[List[str], str] = None,
-                  is_logging: bool = False):
-    if not msg_dir:
-        msg_dir = get_info_filePath(wxid="all")
-
-    if not os.path.exists(msg_dir):
-        error = f"[-] 目录不存在: {msg_dir}"
-        if is_logging: print(error)
-        return error
-
-    user_dirs = {}  # wx用户目录
-    files = os.listdir(msg_dir)
-    if wxid:  # 如果指定wxid
-        if isinstance(wxid, str):
-            wxid = wxid.split(";")
-        for file_name in files:
-            if file_name in wxid:
-                user_dirs[os.path.join(msg_dir, file_name)] = os.path.join(msg_dir, file_name)
-    else:  # 如果未指定wxid
-        for file_name in files:
-            if file_name == "All Users" or file_name == "Applet" or file_name == "WMPF":
-                continue
-            user_dirs[os.path.join(msg_dir, file_name)] = os.path.join(msg_dir, file_name)
-
-    if isinstance(require_list, str):
-        require_list = require_list.split(";")
-
-    # generate pattern
-    if "all" in require_list:
-        pattern = {"all": re.compile(r".*\.db$")}
-    elif isinstance(require_list, list):
-        pattern = {}
-        for require in require_list:
-            pattern[require] = re.compile(r"%s.*\.db$" % require)
-    else:
-        error = f"[-] 参数错误: {require_list}"
-        if is_logging: print(error)
-        return error
-
-    # 获取数据库路径
-    for user, user_dir in user_dirs.items():  # 遍历用户目录
-        user_dirs[user] = {n: [] for n in pattern.keys()}
-        for root, dirs, files in os.walk(user_dir):
-            for file_name in files:
-                for n, p in pattern.items():
-                    if p.match(file_name):
-                        src_path = os.path.join(root, file_name)
-                        user_dirs[user][n].append(src_path)
-
-    if is_logging:
-        for user, user_dir in user_dirs.items():
-            print(f"[+] user_path: {user}")
-            for n, paths in user_dir.items():
-                print(f"    {n}:")
-                for path in paths:
-                    print(f"        {path.replace(user, '')}")
-        print("-" * 32)
-        print(f"[+] 共 {len(user_dirs)} 个微信账号")
-    return user_dirs
-
-
 if __name__ == '__main__':
-    from pywxdump import VERSION_LIST
-
-    read_info(VERSION_LIST, is_logging=True)
+    read_info(is_logging=True)

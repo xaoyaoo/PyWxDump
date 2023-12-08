@@ -216,7 +216,7 @@ def export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorag
     for i in range(0, chatCount, page_size):
         start_index = i
         data = load_chat_records(username, start_index, page_size, user, MSG_ALL_db_path, MediaMSG_all_db_path,
-                                 FileStorage_path)
+                                 FileStorage_path, [user])
         if len(data) == 0:
             break
         save_path = os.path.join(outpath, f"{name_save}_{int(i / page_size)}.html")
