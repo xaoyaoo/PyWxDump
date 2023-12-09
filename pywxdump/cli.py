@@ -131,11 +131,11 @@ class MainMerge():
         self.mode = "merge"
         # 添加 'decrypt' 子命令解析器
         sb_merge = parser.add_parser(self.mode, help="[测试功能]合并微信数据库(MSG.db or MediaMSG.db)")
-        sb_merge.add_argument("-t", "--dbtype", type=str, help="数据库类型(可选值)：[msg,media]", required=True, metavar="")
         sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True, metavar="")
         sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
                               help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]", required=False,
                               metavar="")
+        sb_merge.add_argument("-t", "--dbtype", type=str, help="数据库类型(可选值)：[msg,media]", required=False, metavar="")
         return sb_merge
 
     def run(self, args):
@@ -150,17 +150,20 @@ class MainMerge():
                 print(f"[-] 数据库路径不存在：{i}")
                 return
 
-        if not os.path.exists(out_path):
+        if (not out_path.endswith(".db")) and (not os.path.exists(out_path)):
             os.makedirs(out_path)
             print(f"[+] 创建输出文件夹：{out_path}")
 
+        print(f"[*] 合并中...（用时较久，耐心等待）")
+
         if dbtype == "msg":
-            result = merge_msg_db(db_path, out_path)
+            result = merge_db(db_path, out_path)
         elif dbtype == "media":
-            result = merge_media_msg_db(db_path, out_path)
+            result = merge_db(db_path, out_path)
         else:
             print(f"[-] 未知数据库类型：{dbtype}")
             return
+        print(f"[+] 合并完成：{result}")
 
         return result
 

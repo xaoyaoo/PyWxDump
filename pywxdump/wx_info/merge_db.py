@@ -8,6 +8,7 @@
 import os
 import shutil
 import sqlite3
+import time
 
 
 def merge_copy_db(db_path, save_path):
@@ -163,4 +164,103 @@ def merge_media_msg_db(db_path: list, save_path: str):
         conn_part.close()
 
     merged_conn.close()
+    return save_path
+
+
+def attach_databases(connection, databases):
+    """
+    将多个数据库附加到给定的SQLite连接。
+    参数：
+    -连接：SQLite连接
+    -数据库：包含数据库别名和文件路径的词典
+    """
+    cursor = connection.cursor()
+    for alias, file_path in databases.items():
+        attach_command = f"ATTACH DATABASE '{file_path}' AS {alias};"
+        cursor.execute(attach_command)
+    connection.commit()
+
+
+def execute_sql(connection, sql, params=None):
+    """
+    执行给定的SQL语句，返回结果。
+    参数：
+        - connection： SQLite连接
+        - sql：要执行的SQL语句
+        - params：SQL语句中的参数
+    """
+    cursor = connection.cursor()
+    if params:
+        cursor.execute(sql, params)
+    else:
+        cursor.execute(sql)
+    return cursor.fetchall()
+
+
+def merge_db(db_paths, save_path="merge.db"):
+    if os.path.isdir(save_path):
+        save_path = os.path.join(save_path, f"merge_{int(time.time())}.db")
+
+    if isinstance(db_paths, list):
+        # alias, file_path
+        databases = {f"MSG{i}": db_path for i, db_path in enumerate(db_paths)}
+    elif isinstance(db_paths, str):
+        databases = {"MSG": db_paths}
+    else:
+        raise TypeError("db_paths 类型错误")
+
+    # 连接 MSG_ALL.db 数据库，并执行查询
+    if len(databases) > 1:
+        db = sqlite3.connect(":memory:")
+        attach_databases(db, databases)
+    else:
+        db = sqlite3.connect(list(databases.values())[0])
+
+    outdb = sqlite3.connect(save_path)
+    out_cursor = outdb.cursor()
+    # 将MSG_db_paths中的数据合并到out_db_path中
+    for alias in databases:
+        # 获取表名
+        sql = f"SELECT name FROM {alias}.sqlite_master WHERE type='table' ORDER BY name;"
+        tables = execute_sql(db, sql)
+        for table in tables:
+            table = table[0]
+            if table == "sqlite_sequence":
+                continue
+            # 获取表中的数据
+            sql = f"SELECT * FROM {alias}.{table}"
+            data = execute_sql(db, sql)
+            if len(data) < 1:
+                continue
+            # 获取表中的字段名
+            sql = f"PRAGMA table_info({table})"
+            columns = execute_sql(db, sql)
+            columns = [i[1] for i in columns]
+            if len(columns) < 1:
+                continue
+            # 检测表是否存在
+            sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'"
+            out_cursor.execute(sql)
+            if len(out_cursor.fetchall()) < 1:
+                # 创建表
+                sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(columns)})"
+                out_cursor.execute(sql)
+
+                # 创建包含 NULL 值比较的 UNIQUE 索引
+                index_name = f"{table}_unique_index"
+                coalesce_columns = ','.join(f"COALESCE({column}, '')" for column in columns)  # 将 NULL 值转换为 ''
+                sql = f"CREATE UNIQUE INDEX IF NOT EXISTS {index_name} ON {table} ({coalesce_columns})"
+                out_cursor.execute(sql)
+
+            # 插入数据
+            sql = f"INSERT OR IGNORE INTO {table} VALUES ({','.join(['?'] * len(columns))})"
+            out_cursor.executemany(sql, data)
+            outdb.commit()
+    outdb.close()
+
+    # 断开数据库连接
+    if len(databases) > 1:
+        for alias in databases:
+            db.execute(f"DETACH DATABASE {alias}")
+        db.close()
     return save_path
