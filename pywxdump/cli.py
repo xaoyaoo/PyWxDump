@@ -134,7 +134,7 @@ class MainMerge():
         sb_merge.add_argument("-t", "--dbtype", type=str, help="数据库类型(可选值)：[msg,media]", required=True, metavar="")
         sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True, metavar="")
         sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
-                              help="输出路径(必须是目录)[默认为当前路径下decrypted文件夹]", required=False,
+                              help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]", required=False,
                               metavar="")
         return sb_merge
 
