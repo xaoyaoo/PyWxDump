@@ -130,7 +130,7 @@ class MainMerge():
     def init_parses(self, parser):
         self.mode = "merge"
         # 添加 'decrypt' 子命令解析器
-        sb_merge = parser.add_parser(self.mode, help="合并微信数据库(MSG.db or MediaMSG.db)")
+        sb_merge = parser.add_parser(self.mode, help="[测试功能]合并微信数据库(MSG.db or MediaMSG.db)")
         sb_merge.add_argument("-t", "--dbtype", type=str, help="数据库类型(可选值)：[msg,media]", required=True, metavar="")
         sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True, metavar="")
         sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
