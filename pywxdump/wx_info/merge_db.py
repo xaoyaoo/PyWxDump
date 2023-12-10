@@ -167,20 +167,6 @@ def merge_media_msg_db(db_path: list, save_path: str):
     return save_path
 
 
-def attach_databases(connection, databases):
-    """
-    将多个数据库附加到给定的SQLite连接。
-    参数：
-    -连接：SQLite连接
-    -数据库：包含数据库别名和文件路径的词典
-    """
-    cursor = connection.cursor()
-    for alias, file_path in databases.items():
-        attach_command = f"ATTACH DATABASE '{file_path}' AS {alias};"
-        cursor.execute(attach_command)
-    connection.commit()
-
-
 def execute_sql(connection, sql, params=None):
     """
     执行给定的SQL语句，返回结果。
@@ -213,13 +199,6 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
         databases = {"MSG": db_paths}
     else:
         raise TypeError("db_paths 类型错误")
-
-    # # 连接 MSG_ALL.db 数据库，并执行查询
-    # if len(databases) > 1:
-    #     db = sqlite3.connect(":memory:")
-    #     attach_databases(db, databases)
-    # else:
-    #     db = sqlite3.connect(list(databases.values())[0])
 
     outdb = sqlite3.connect(save_path)
     out_cursor = outdb.cursor()
@@ -270,10 +249,5 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
             outdb.commit()
     outdb.close()
 
-    # 断开数据库连接
-    # if len(databases) > 1:
-    #     for alias in databases:
-    #         db.execute(f"DETACH DATABASE {alias}")
-    #     db.close()
     return save_path
 
