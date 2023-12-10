@@ -11,16 +11,16 @@
 * 1.打开微信电脑版，登录微信
 * 2.进入下载的exe文件所在目录
 * 3.按住shift键，同时鼠标右键，选择“在此处打开命令窗口”，或者“在此处打开powershell窗口”
-* 4.在命令窗口中输入`./wxdump.exe`，按回车键
+* 4.将文件夹中的exe文件拖动到命令窗口中，回车键确认 命令窗口会显示 `"C:\Users\...\wxdump.exe"` 这样的字样，表示已经成功输入命令
 * 5.接着根据提示输入参数，回车键确认
-eg:
+eg: （`"C:\Users\...\wxdump.exe"` 为第4步中拖动到窗口中显示的内容。）
 
 ```shell script
-./wxdump.exe info # 获取微信信息
-./wxdump.exe decrypt -k "密钥" -i "数据库路径(目录or文件)" # 解密微信数据库,引号必须在英文状态下输入
-./wxdump.exe dbshow -msg "解密后的 MSG.db 的路径" -micro "解密后的 MicroMsg.db 的路径" -media "解密后的 MediaMSG.db 的路径" # 接着打开浏览器访问 http://127.0.0.1:5000/ 查看聊天记录
-./wxdump.exe export -u "微信账号" -o "导出路径" -msg "解密后的 MSG.db 的路径" -micro "解密后的 MicroMsg.db 的路径" -media "解密后的 MediaMSG.db 的路径" # 导出聊天记录为html
-./wxdump.exe all # 获取微信信息，解密微信数据库，查看聊天记录
+"C:\Users\...\wxdump.exe" info # 获取微信信息
+"C:\Users\...\wxdump.exe" decrypt -k "密钥" -i "数据库路径(目录or文件)" # 解密微信数据库,引号必须在英文状态下输入
+"C:\Users\...\wxdump.exe" dbshow -msg "解密后的 MSG.db 的路径" -micro "解密后的 MicroMsg.db 的路径" -media "解密后的 MediaMSG.db 的路径" # 接着打开浏览器访问 http://127.0.0.1:5000/ 查看聊天记录
+"C:\Users\...\wxdump.exe" export -u "微信账号" -o "导出路径" -msg "解密后的 MSG.db 的路径" -micro "解密后的 MicroMsg.db 的路径" -media "解密后的 MediaMSG.db 的路径" # 导出聊天记录为html
+"C:\Users\...\wxdump.exe" all # 获取微信信息，解密微信数据库，查看聊天记录
 ```
 
 * 6.查看聊天记录后，按`ctrl+c`退出
