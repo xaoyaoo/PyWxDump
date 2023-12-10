@@ -176,6 +176,7 @@ def execute_sql(connection, sql, params=None):
         - params：SQL语句中的参数
     """
     try:
+        # connection.text_factory = bytes
         cursor = connection.cursor()
         if params:
             cursor.execute(sql, params)
@@ -183,9 +184,19 @@ def execute_sql(connection, sql, params=None):
             cursor.execute(sql)
         return cursor.fetchall()
     except Exception as e:
-        print(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********")
-        return None
-
+        try:
+            connection.text_factory = bytes
+            cursor = connection.cursor()
+            if params:
+                cursor.execute(sql, params)
+            else:
+                cursor.execute(sql)
+            rdata = cursor.fetchall()
+            connection.text_factory = str
+            return rdata
+        except Exception as e:
+            print(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********")
+            return None
 
 
 def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
@@ -216,6 +227,7 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
             # 获取表中的字段名
             sql = f"PRAGMA table_info({table})"
             columns = execute_sql(db, sql)
+            # col_type = {(i[1], i[2]) for i in columns}
             columns = [i[1] for i in columns]
             if not columns or len(columns) < 1:
                 continue
@@ -225,6 +237,14 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
             out_cursor.execute(sql)
             if len(out_cursor.fetchall()) < 1:
                 # 创建表
+                # # 拼接创建表的SQL语句
+                # column_definitions = []
+                # for column in col_type:
+                #     column_name = column[0]
+                #     column_type = column[1]
+                #     column_definition = f"{column_name} {column_type}"
+                #     column_definitions.append(column_definition)
+                # sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(column_definitions)})"
                 sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(columns)})"
                 out_cursor.execute(sql)
 
@@ -248,6 +268,5 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
             out_cursor.executemany(sql, src_data)
             outdb.commit()
     outdb.close()
-
     return save_path
 
