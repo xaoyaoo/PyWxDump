@@ -132,6 +132,7 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
     img_md5_data = load_base64_img_data(result1[0][7], result1[-1][7], username_md5, FileStorage_path)  # 获取图片的base64数据
 
     data = []
+    room_username_count = {}
     for row in result1:
         localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra = row
         CreateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(CreateTime))
@@ -198,6 +199,8 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
                             talker = matched_string
                     except:
                         pass
+            else:
+                talker = user_list.get("remark", user_list.get("nickname", user_list.get("username", "")))
 
         row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
                     "content": content, "CreateTime": CreateTime}

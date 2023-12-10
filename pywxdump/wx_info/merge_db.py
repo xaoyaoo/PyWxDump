@@ -197,7 +197,8 @@ def execute_sql(connection, sql, params=None):
     return cursor.fetchall()
 
 
-def merge_db(db_paths, save_path="merge.db"):
+
+def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
     if os.path.isdir(save_path):
         save_path = os.path.join(save_path, f"merge_{int(time.time())}.db")
 
@@ -209,35 +210,33 @@ def merge_db(db_paths, save_path="merge.db"):
     else:
         raise TypeError("db_paths 类型错误")
 
-    # 连接 MSG_ALL.db 数据库，并执行查询
-    if len(databases) > 1:
-        db = sqlite3.connect(":memory:")
-        attach_databases(db, databases)
-    else:
-        db = sqlite3.connect(list(databases.values())[0])
+    # # 连接 MSG_ALL.db 数据库，并执行查询
+    # if len(databases) > 1:
+    #     db = sqlite3.connect(":memory:")
+    #     attach_databases(db, databases)
+    # else:
+    #     db = sqlite3.connect(list(databases.values())[0])
 
     outdb = sqlite3.connect(save_path)
     out_cursor = outdb.cursor()
     # 将MSG_db_paths中的数据合并到out_db_path中
     for alias in databases:
+        db = sqlite3.connect(databases[alias])
         # 获取表名
-        sql = f"SELECT name FROM {alias}.sqlite_master WHERE type='table' ORDER BY name;"
+        sql = f"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
         tables = execute_sql(db, sql)
         for table in tables:
             table = table[0]
             if table == "sqlite_sequence":
                 continue
-            # 获取表中的数据
-            sql = f"SELECT * FROM {alias}.{table}"
-            data = execute_sql(db, sql)
-            if len(data) < 1:
-                continue
+
             # 获取表中的字段名
             sql = f"PRAGMA table_info({table})"
             columns = execute_sql(db, sql)
             columns = [i[1] for i in columns]
-            if len(columns) < 1:
+            if not columns or len(columns) < 1:
                 continue
+
             # 检测表是否存在
             sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'"
             out_cursor.execute(sql)
@@ -252,15 +251,25 @@ def merge_db(db_paths, save_path="merge.db"):
                 sql = f"CREATE UNIQUE INDEX IF NOT EXISTS {index_name} ON {table} ({coalesce_columns})"
                 out_cursor.execute(sql)
 
+            # 获取表中的数据
+            if "CreateTime" in columns and CreateTime > 0:
+                sql = f"SELECT * FROM {table} WHERE CreateTime>? ORDER BY CreateTime"
+                src_data = execute_sql(db, sql, (CreateTime,))
+            else:
+                sql = f"SELECT * FROM {table}"
+                src_data = execute_sql(db, sql)
+            if not src_data or len(src_data) < 1:
+                continue
             # 插入数据
             sql = f"INSERT OR IGNORE INTO {table} VALUES ({','.join(['?'] * len(columns))})"
-            out_cursor.executemany(sql, data)
+            out_cursor.executemany(sql, src_data)
             outdb.commit()
     outdb.close()
 
     # 断开数据库连接
-    if len(databases) > 1:
-        for alias in databases:
-            db.execute(f"DETACH DATABASE {alias}")
-        db.close()
+    # if len(databases) > 1:
+    #     for alias in databases:
+    #         db.execute(f"DETACH DATABASE {alias}")
+    #     db.close()
     return save_path
+
