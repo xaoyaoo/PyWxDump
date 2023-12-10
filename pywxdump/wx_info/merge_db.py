@@ -189,12 +189,16 @@ def execute_sql(connection, sql, params=None):
         - sql：要执行的SQL语句
         - params：SQL语句中的参数
     """
-    cursor = connection.cursor()
-    if params:
-        cursor.execute(sql, params)
-    else:
-        cursor.execute(sql)
-    return cursor.fetchall()
+    try:
+        cursor = connection.cursor()
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        return cursor.fetchall()
+    except Exception as e:
+        print(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********")
+        return None
 
 
 
