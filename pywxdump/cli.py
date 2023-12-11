@@ -7,6 +7,7 @@
 # -------------------------------------------------------------------------------
 import argparse
 import importlib.metadata
+import os
 import sys
 
 from pywxdump import *
@@ -131,23 +132,30 @@ class MainMerge():
         self.mode = "merge"
         # 添加 'decrypt' 子命令解析器
         sb_merge = parser.add_parser(self.mode, help="[测试功能]合并微信数据库(MSG.db or MediaMSG.db)")
-        sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True, metavar="")
+        sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True,
+                              metavar="")
         sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
-                              help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]", required=False,
+                              help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]",
+                              required=False,
                               metavar="")
         return sb_merge
 
     def run(self, args):
         # 从命令行参数获取值
-        dbtype = args.dbtype
         db_path = args.db_path
         out_path = args.out_path
 
         db_path = db_path.split(",")
+        db_path = [i.strip() for i in db_path]
+        dbpaths = []
         for i in db_path:
-            if not os.path.exists(i):
+            if not os.path.exists(i):  # 判断路径是否存在
                 print(f"[-] 数据库路径不存在：{i}")
                 return
+            if os.path.isdir(i):  # 如果是文件夹，则获取文件夹下所有的db文件
+                dbpaths += [os.path.join(i, j) for j in os.listdir(i) if j.endswith(".db")]
+            else:  # 如果是文件，则直接添加
+                dbpaths.append(i)
 
         if (not out_path.endswith(".db")) and (not os.path.exists(out_path)):
             os.makedirs(out_path)
@@ -155,7 +163,7 @@ class MainMerge():
 
         print(f"[*] 合并中...（用时较久，耐心等待）")
 
-        result = merge_db(db_path, out_path)
+        result = merge_db(dbpaths, out_path)
 
         print(f"[+] 合并完成：{result}")
         return result
