@@ -135,7 +135,6 @@ class MainMerge():
         sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
                               help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]", required=False,
                               metavar="")
-        sb_merge.add_argument("-t", "--dbtype", type=str, help="数据库类型(可选值)：[msg,media]", required=False, metavar="")
         return sb_merge
 
     def run(self, args):
@@ -156,15 +155,9 @@ class MainMerge():
 
         print(f"[*] 合并中...（用时较久，耐心等待）")
 
-        if dbtype == "msg":
-            result = merge_db(db_path, out_path)
-        elif dbtype == "media":
-            result = merge_db(db_path, out_path)
-        else:
-            print(f"[-] 未知数据库类型：{dbtype}")
-            return
-        print(f"[+] 合并完成：{result}")
+        result = merge_db(db_path, out_path)
 
+        print(f"[+] 合并完成：{result}")
         return result
 
 
