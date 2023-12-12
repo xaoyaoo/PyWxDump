@@ -200,6 +200,13 @@ def execute_sql(connection, sql, params=None):
 
 
 def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
+    """
+    合并数据库 会忽略主键以及重复的行。
+    :param db_paths:
+    :param save_path:
+    :param CreateTime:
+    :return:
+    """
     if os.path.isdir(save_path):
         save_path = os.path.join(save_path, f"merge_{int(time.time())}.db")
 
@@ -223,12 +230,13 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
             table = table[0]
             if table == "sqlite_sequence":
                 continue
-
             # 获取表中的字段名
             sql = f"PRAGMA table_info({table})"
             columns = execute_sql(db, sql)
-            # col_type = {(i[1], i[2]) for i in columns}
-            columns = [i[1] for i in columns]
+            col_type = {
+                (i[1] if isinstance(i[1], str) else i[1].decode(), i[2] if isinstance(i[2], str) else i[2].decode()) for
+                i in columns}
+            columns = [i[1] if isinstance(i[1], str) else i[1].decode() for i in columns]
             if not columns or len(columns) < 1:
                 continue
 
@@ -237,15 +245,15 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
             out_cursor.execute(sql)
             if len(out_cursor.fetchall()) < 1:
                 # 创建表
-                # # 拼接创建表的SQL语句
-                # column_definitions = []
-                # for column in col_type:
-                #     column_name = column[0]
-                #     column_type = column[1]
-                #     column_definition = f"{column_name} {column_type}"
-                #     column_definitions.append(column_definition)
-                # sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(column_definitions)})"
-                sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(columns)})"
+                # 拼接创建表的SQL语句
+                column_definitions = []
+                for column in col_type:
+                    column_name = column[0] if isinstance(column[0], str) else column[0].decode()
+                    column_type = column[1] if isinstance(column[1], str) else column[1].decode()
+                    column_definition = f"{column_name} {column_type}"
+                    column_definitions.append(column_definition)
+                sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(column_definitions)})"
+                # sql = f"CREATE TABLE IF NOT EXISTS {table} ({','.join(columns)})"
                 out_cursor.execute(sql)
 
                 # 创建包含 NULL 值比较的 UNIQUE 索引
@@ -256,17 +264,16 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0):
 
             # 获取表中的数据
             if "CreateTime" in columns and CreateTime > 0:
-                sql = f"SELECT * FROM {table} WHERE CreateTime>? ORDER BY CreateTime"
+                sql = f"SELECT {','.join([i[0] for i in col_type])} FROM {table} WHERE CreateTime>? ORDER BY CreateTime"
                 src_data = execute_sql(db, sql, (CreateTime,))
             else:
-                sql = f"SELECT * FROM {table}"
+                sql = f"SELECT {','.join([i[0] for i in col_type])} FROM {table}"
                 src_data = execute_sql(db, sql)
             if not src_data or len(src_data) < 1:
                 continue
             # 插入数据
-            sql = f"INSERT OR IGNORE INTO {table} VALUES ({','.join(['?'] * len(columns))})"
+            sql = f"INSERT OR IGNORE INTO {table} ({','.join([i[0] for i in col_type])}) VALUES ({','.join(['?'] * len(columns))})"
             out_cursor.executemany(sql, src_data)
             outdb.commit()
     outdb.close()
     return save_path
-
