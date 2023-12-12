@@ -200,7 +200,7 @@ def read_audio(MsgSvrID, is_play=False, is_wave=False, DB_PATH: str = "", rate=2
 
     DB = sqlite3.connect(DB_PATH)
     cursor = DB.cursor()
-    sql = "select Buf from Media where Reserved0='{}'".format(MsgSvrID)
+    sql = "select Buf from Media where Reserved0={}".format(MsgSvrID)
     DBdata = cursor.execute(sql).fetchall()
 
     if len(DBdata) == 0:
