@@ -23,6 +23,7 @@
 * 8.增加企业微信的支持
 * 9.增加获取实时聊天记录的功能
 * 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了
+* 11.增加好友的信息获取
 
 #### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案。
 
