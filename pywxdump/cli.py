@@ -326,9 +326,9 @@ class MainAll():
                     out_dbs.append(ret1[1])
             print("-" * 32)
             print(
-                "[-] " + f"共 {len(errors)} 个文件解密失败(可能原因:非当前登录用户数据库;非加密数据库),详见{out_path}下‘解密失败.txt’;")
+                "[-] " + f"警告：共 {len(errors)} 个文件未解密(可能原因:非当前登录用户数据库;非加密数据库),详见{out_path}下‘未解密.txt’;")
             # print("; ".join([f'"{wxdbpaths[i]}"' for i in errors]))
-            with open(os.path.join(out_path, "解密失败.txt"), "w", encoding="utf-8") as f:
+            with open(os.path.join(out_path, "未解密.txt"), "w", encoding="utf-8") as f:
                 f.write("\n".join([f'{i}' for i in errors]))
             print("=" * 32)
 
