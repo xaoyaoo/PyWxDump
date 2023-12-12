@@ -128,8 +128,8 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
 
     cursor1.close()
     db1.close()
-
-    img_md5_data = load_base64_img_data(result1[0][7], result1[-1][7], username_md5, FileStorage_path)  # 获取图片的base64数据
+    # 获取图片的base64数据
+    img_md5_data = load_base64_img_data(result1[0][7], result1[-1][7], username_md5, FileStorage_path)  if len(result1) > 0 else {}
 
     data = []
     room_username_count = {}
