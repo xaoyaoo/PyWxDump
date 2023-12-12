@@ -216,7 +216,7 @@ class MainShowChatRecords():
         app.register_blueprint(app_show_chat)
 
         print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
-        app.run(debug=False)
+        app.run(host='0.0.0.0', port=5000, debug=False)
 
 
 class MainExportChatRecords():
