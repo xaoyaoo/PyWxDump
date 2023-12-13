@@ -259,7 +259,7 @@ def read_BytesExtra(BytesExtra):
 
 
 if __name__ == '__main__':
-    DB = sqlite3.connect(r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\hwfWxMsg\MSG_all.db")
+    DB = sqlite3.connect(r"")
     cursor = DB.cursor()
     sql = "select MsgSvrID,CompressContent from MSG where MSG.MsgSvrID=5379391128928795712"
     DBdata = cursor.execute(sql).fetchall()
