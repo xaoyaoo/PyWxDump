@@ -17,8 +17,8 @@ import lz4.block
 import blackboxprotobuf
 
 from PIL import Image
-#import xml.etree.ElementTree as ET
-import lxml.etree as ET #这个模块更健壮些，微信XML格式有时有非标格式，会导致xml.etree.ElementTree处理失败
+# import xml.etree.ElementTree as ET
+import lxml.etree as ET  # 这个模块更健壮些，微信XML格式有时有非标格式，会导致xml.etree.ElementTree处理失败
 
 
 def get_md5(data):
@@ -43,7 +43,7 @@ def parse_xml_string(xml_string):
         result = {}
 
         # 解析当前元素的属性
-        if element is None or element.attrib is None: #有时可能会遇到没有属性，要处理下
+        if element is None or element.attrib is None:  # 有时可能会遇到没有属性，要处理下
             return result
         for key, value in element.attrib.items():
             result[key] = value
@@ -70,7 +70,7 @@ def parse_xml_string(xml_string):
         return None
     try:
         parser = ET.XMLParser(recover=True)  # 有时微信的聊天记录里面，会冒出来xml格式不对的情况，这里把parser设置成忽略错误
-        root = ET.fromstring(xml_string,parser)
+        root = ET.fromstring(xml_string, parser)
     except Exception as e:
         return xml_string
     return parse_xml(root)
@@ -257,15 +257,3 @@ def read_BytesExtra(BytesExtra):
     except Exception as e:
         return None
 
-
-if __name__ == '__main__':
-    DB = sqlite3.connect(r"")
-    cursor = DB.cursor()
-    sql = "select MsgSvrID,CompressContent from MSG where MSG.MsgSvrID=5379391128928795712"
-    DBdata = cursor.execute(sql).fetchall()
-    for i in DBdata:
-        MsgSvrID, CompressContent = i
-        data = decompress_CompressContent(CompressContent)
-        # 提取特定键的信息
-        print(MsgSvrID,"\n",data)
-        print("-" * 64)
