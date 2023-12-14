@@ -36,8 +36,8 @@
 
 <div>
 <a href="https://s.xaoyo.top/gOLUDl">
-  <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qq.png" alt="QQ群" title="加入QQ群" height="280"></a>
-  <img align="right" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="280">
+  <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qq.png" alt="QQ群" title="加入QQ群" height="300"></a>
+  <img align="right" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="300">
 </div>
 
 # 一、项目介绍
