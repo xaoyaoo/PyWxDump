@@ -24,15 +24,21 @@
 * 9.增加获取实时聊天记录的功能
 * 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了
 * 11.增加好友的信息获取
-
-#### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案。
+* 12.备份后的聊天记录，恢复到微信中
 
 注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
 
-欢迎加入交流qq群：577704006 or
-点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
+欢迎加入交流qq群：577704006 or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
 
-<a href="https://s.xaoyo.top/gOLUDl"><img src="./doc/qq.png" alt="QQ群" title="加入QQ群" height="280"></a>
+### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案。
+
+### 如果是小白，请关注公众号：`逍遥之芯` (右边二维码) ，回复：`PyWxDump` 获取使用教程。
+
+<div>
+<a href="https://s.xaoyo.top/gOLUDl">
+  <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qq.png" alt="QQ群" title="加入QQ群" height="280"></a>
+  <img align="right" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="280">
+</div>
 
 # 一、项目介绍
 
@@ -94,7 +100,8 @@
 
 【注】:
 
-* 关于基址使用cheat engine获取，参考[CE获取基址.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE获取基址.md)（该方法可用`wxdump bias`命令代替，现仅用作学习原理）
+* 关于基址使用cheat engine获取，参考[CE获取基址.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE获取基址.md)
+  （该方法可用`wxdump bias`命令代替，现仅用作学习原理）
 * 关于数据库解析，参考[wx数据库简述.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/wx数据库简述.md)
 
 # 三、免责声明（非常重要！！！！！！！）
