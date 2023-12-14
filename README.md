@@ -13,32 +13,6 @@
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 [![Publish](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml/badge.svg)](https://github.com/xaoyaoo/PyWxDump/actions/workflows/publish.yml)
 
-**更新计划【由于家里有事，这些计划(除8、9、10)将会在12.30号前统一更新】**
-
-* 1.每个人聊天记录分析，生成词云。
-* 2.分析每个人每天的聊天数量，生成折线图（天-聊天数量）
-* 3.分析不同的人的月聊天数量，年聊天数量，生成折线图
-* 4.生成年度可视化报告
-* 5.创建GUI图形界面，方便使用
-* 8.增加企业微信的支持
-* 9.增加获取实时聊天记录的功能
-* 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了
-* 11.增加好友的信息获取
-* 12.备份后的聊天记录，恢复到微信中
-
-注: 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
-
-欢迎加入交流qq群：577704006 or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
-
-### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案，或者关注公众号回复: `FAQ`。
-
-### 如果是小白，请关注公众号：`逍遥之芯` (右边二维码) ，回复：`PyWxDump` 获取使用教程。
-
-<div>
-<a href="https://s.xaoyo.top/gOLUDl">
-  <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qq.png" alt="QQ群" title="加入QQ群" height="300"></a>
-  <img align="right" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="300">
-</div>
 
 # 一、项目介绍
 
@@ -72,7 +46,34 @@
 4. 自行备份(日常备份自己留存)
 5. 等等...............
 
-## 3. 其他
+## 3. 更新计划【由于家里有事，这些计划(除8、9、10)将会在12.30号前统一更新】**
+
+* 1.每个人聊天记录分析，生成词云。
+* 2.分析每个人每天的聊天数量，生成折线图（天-聊天数量）
+* 3.分析不同的人的月聊天数量，年聊天数量，生成折线图
+* 4.生成年度可视化报告
+* 5.创建GUI图形界面，方便使用
+* 8.增加企业微信的支持
+* 9.增加获取实时聊天记录的功能
+* 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了
+* 11.增加好友的信息获取
+* 12.备份后的聊天记录，恢复到微信中
+
+## 4. 其他
+
+* 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
+
+欢迎加入qq交流群：577704006 or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
+
+### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案，或者关注公众号回复: `FAQ`。
+
+### 如果是小白，请关注公众号：`逍遥之芯` (右边二维码) ，回复：`PyWxDump` 获取图文教程。
+
+<div>
+<a href="https://s.xaoyo.top/gOLUDl">
+  <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qq.png" alt="QQ群" title="加入QQ群" height="300"></a>
+  <img align="right" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="300">
+</div>
 
 [PyWxDump](https://github.com/xaoyaoo/PyWxDump)是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)
 的经过重构python语言版本，同时添加了一些新的功能。
@@ -96,7 +97,7 @@
 
 # 二、使用说明
 
-详细使用说明见[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
+* 详细使用说明见[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
 
 【注】:
 
