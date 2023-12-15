@@ -2,15 +2,14 @@
 
 ### 一、怎么下载/怎么安装？
 
-  方法一：进入链接[releases](https://github.com/xaoyaoo/PyWxDump/releases)下载最新版本exe文件
+方法一：进入链接[releases](https://github.com/xaoyaoo/PyWxDump/releases)下载最新版本exe文件
 
-  方法二：（本地安装有python环境）使用pip安装
-    ```
-    pip install PyWxDump
-    ```
+方法二：（本地安装有python环境）使用pip安装
+```
+pip install PyWxDump
+```
 
 ### 二、怎么使用
-
 
 1. 打开微信电脑版，登录微信
 2. 进入下载的exe文件所在目录,使用pip安装，跳过此步
@@ -24,7 +23,6 @@
 
 ### 四、刚打开就闪退的问题
 
-
 1. 请检查是否由cmd或powershell打开，不要直接双击exe文件
 2. 如果使用方法二安装，请检查是否已经安装了python环境（如果使用pip安装，命令行直接输入wxdump即可）
 3. 如果使用方法二安装，检查是否将python安装目录添加到了环境变量中，如果没有，请添加
@@ -36,7 +34,7 @@
 
 ### 六、如何为PyWxDump贡献代码（提交pr）
 
-  提交拉取请求（Pull Request），请按照以下步骤进行操作：
+提交拉取请求（Pull Request），请按照以下步骤进行操作：
 
 1. Fork 仓库：首先，在项目的 GitHub 页面上点击 "Fork" 按钮，将项目的代码仓库 fork 到你自己的 GitHub 账号下。
 2. 克隆仓库：在你自己的 GitHub 账号下找到 fork 后的项目，点击 `Clone or download`按钮，获取仓库的 URL。然后在本地使用 Git
@@ -105,3 +103,21 @@
 
 1. 数据库是一个文件，里面存储了微信的聊天记录、好友信息、群信息等等 ，以.db结尾的文件就是数据库文件，这种数据库文件叫做sqlite数据库
 2. 位置：打开微信电脑版，登录微信，打开设置，选择文件管理，点打开文件夹，进入MSG文件夹，就是这个文件夹就是微信数据库目录
+
+### 十六、导出的decrypted文件夹里面的内容是什么东西，哪些是重要要，它与Multi目录下的是又是什么关系，Multi目录里面没有MicroMsg
+
+1. `decrypted`文件夹里面的内容是解密后的数据库，对应的是微信数据库目录下的文件（都是相对路径）
+2. `Multi`目录下的是微信数据目录下`Msg`下`Multi`内的数据库解密后的相对路径
+3. `decrypted`根目录下的`MicroMsg`是微信数据目录下`Msg`下`MicroMsg`的数据库解密后的相对路径
+4. `Multi`目录下的`MSG0`-`MSG5`是微信数据目录下`Msg`下`Multi`内的数据库解密后的相对路径
+5. `Multi`目录下的`de_MediaMsg0`~`de_MediaMsg5`是微信数据目录下`Msg`下`Multi`内的`MediaMsg0`的数据库解密后的相对路径
+
+### 十七、MSG0~4是什么关系 应该怎么选择用哪一个
+
+1. `MSG0`~`MSG5`是微信聊天记录不同时间段下的数据库，`MSG0`是最旧的，`MSG5`是最新的
+2. `MediaMsg0`~`MediaMsg5`是微信聊天记录不同时间段下的数据库，`MediaMsg0`是最旧的，`MediaMsg5`是最新的
+3. 一般来说，如果想看最新的聊天记录，就选择`MSG5`和`MediaMsg5`，如果想看最旧的聊天记录，就选择`MSG0`和`MediaMsg0`，如果想看中间的聊天记录，就选择`MSG1`~`MSG4`和`MediaMsg1`~`MediaMsg4`
+
+### 十八、qq交流群：577704006 or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl) 密码
+
+1433223

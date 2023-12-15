@@ -234,4 +234,6 @@ export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], 
 
 详见[更新日志](./CHANGELOG.md)
 
+### 5. 其他
 
+qq群密码：请查看[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 
