@@ -107,11 +107,6 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 * 极简版使用说明[pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
 
-```shell
-pip install pywxdump-mini # 或者下载exe文件（7.5M），地址 https://github.com/xaoyaoo/pywxdumpmini/releases
-wxinfo # 查看微信信息 包含key wxid filepath
-```
-
 【注】:
 
 * 关于基址使用cheat engine获取，参考[CE获取基址.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE获取基址.md)
