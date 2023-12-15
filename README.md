@@ -53,6 +53,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 * （8）微信需要登录状态才能获取数据库密钥
 * （9）支持导出聊天记录为html,备份微信聊天记录,方便查看
 * （10）合并多个数据库，方便查看
+* （11）增加极简版pywxdump
 
 **利用场景**
 
@@ -103,6 +104,13 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 # 二、使用说明
 
 * 详细使用说明见[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
+
+* 极简版使用说明[pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
+
+```shell
+pip install pywxdump-mini # 或者下载exe文件（7.5M），地址 https://github.com/xaoyaoo/pywxdumpmini/releases
+wxinfo # 查看微信信息 包含key wxid filepath
+```
 
 【注】:
 
