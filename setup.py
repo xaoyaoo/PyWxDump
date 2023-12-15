@@ -3,34 +3,23 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.3.12"
+version = "2.3.19"
 
 install_requires = [
-    "pywxdump[all]"
+    "psutil",
+    "pycryptodomex",
+    "pywin32",
+    "pymem",
+    "silk-python",
+    "pyaudio",
+    "requests",
+    "pillow",
+    "pyahocorasick",
+    "flask",
+    "lz4",
+    "blackboxprotobuf",
+    "lxml"
 ]
-
-extras_require = {
-    "mini": [
-        "psutil",
-        "pymem",
-        "hashlib",
-    ],
-    "all": [
-        "psutil",
-        "pycryptodomex",
-        "pywin32",
-        "pymem",
-        "silk-python",
-        "pyaudio",
-        "requests",
-        "pillow",
-        "pyahocorasick",
-        "flask",
-        "lz4",
-        "blackboxprotobuf",
-        "lxml"
-    ]
-}
 
 setup(
     name="pywxdump",
@@ -57,9 +46,8 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8, <4',
+    python_requires='>=3.6, <4',
     install_requires=install_requires,
-    extras_require=extras_require,
     entry_points={
         'console_scripts': [
             'wxdump = pywxdump.cli:console_run',
