@@ -20,7 +20,9 @@
 
 ### 如果是小白，请关注公众号：`逍遥之芯` (右边二维码) ，回复：`PyWxDump` 获取图文教程。
 
-qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。 （因为qq群将满，所以进群需要密码，密码请查看[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)）
+qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。 
+
+（因为qq群将满，所以进群需要密码，密码请查看[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)）
 
 <div>
 <a href="https://s.xaoyo.top/gOLUDl">
