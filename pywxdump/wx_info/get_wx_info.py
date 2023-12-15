@@ -239,16 +239,6 @@ def read_info(version_list, is_logging=False):
         tmp_rd['pid'] = process.pid
         tmp_rd['version'] = Dispatch("Scripting.FileSystemObject").GetFileVersion(process.exe())
 
-        wechat_base_address = 0
-        for module in process.memory_maps(grouped=False):
-            if module.path and 'WeChatWin.dll' in module.path:
-                wechat_base_address = int(module.addr, 16)
-                break
-        if wechat_base_address == 0:
-            error = f"[-] WeChat WeChatWin.dll Not Found"
-            if is_logging: print(error)
-            return error
-
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
 
         bias_list = version_list.get(tmp_rd['version'], None)
@@ -260,6 +250,16 @@ def read_info(version_list, is_logging=False):
             tmp_rd['name'] = "None"
             tmp_rd['mail'] = "None"
         else:
+            wechat_base_address = 0
+            for module in process.memory_maps(grouped=False):
+                if module.path and 'WeChatWin.dll' in module.path:
+                    wechat_base_address = int(module.addr, 16)
+                    break
+            if wechat_base_address == 0:
+                error = f"[-] WeChat WeChatWin.dll Not Found"
+                if is_logging: print(error)
+                # return error
+
             name_baseaddr = wechat_base_address + bias_list[0]
             account__baseaddr = wechat_base_address + bias_list[1]
             mobile_baseaddr = wechat_base_address + bias_list[2]

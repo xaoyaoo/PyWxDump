@@ -95,14 +95,28 @@ def get_info_wxid(h_process):
 def get_info_filePath(wxid="all"):
     if not wxid:
         return "None"
+    w_dir = "MyDocument:"
+    is_w_dir = False
+
     try:
-        user_profile = os.environ.get("USERPROFILE")
-        path_3ebffe94 = os.path.join(user_profile, "AppData", "Roaming", "Tencent", "WeChat", "All Users", "config",
-                                     "3ebffe94.ini")
-        with open(path_3ebffe94, "r", encoding="utf-8") as f:
-            w_dir = f.read()
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Tencent\WeChat", 0, winreg.KEY_READ)
+        value, _ = winreg.QueryValueEx(key, "FileSavePath")
+        winreg.CloseKey(key)
+        w_dir = value
+        is_w_dir = True
     except Exception as e:
         w_dir = "MyDocument:"
+
+    if not is_w_dir:
+        try:
+            user_profile = os.environ.get("USERPROFILE")
+            path_3ebffe94 = os.path.join(user_profile, "AppData", "Roaming", "Tencent", "WeChat", "All Users", "config",
+                                         "3ebffe94.ini")
+            with open(path_3ebffe94, "r", encoding="utf-8") as f:
+                w_dir = f.read()
+            is_w_dir = True
+        except Exception as e:
+            w_dir = "MyDocument:"
 
     if w_dir == "MyDocument:":
         try:
@@ -131,7 +145,7 @@ def get_info_filePath(wxid="all"):
     return filePath if os.path.exists(filePath) else "None"
 
 
-def get_key(db_path, addr_len):
+def get_key(pid, db_path, addr_len):
     def read_key_bytes(h_process, address, address_len=8):
         array = ctypes.create_string_buffer(address_len)
         if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
@@ -164,7 +178,7 @@ def get_key(db_path, addr_len):
     phone_type2 = "android\x00"
     phone_type3 = "ipad\x00"
 
-    pm = pymem.Pymem("WeChat.exe")
+    pm = pymem.Pymem(pid)
     module_name = "WeChatWin.dll"
 
     MicroMsg_path = os.path.join(db_path, "MSG", "MicroMsg.db")
@@ -172,11 +186,17 @@ def get_key(db_path, addr_len):
     type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module_name, return_multiple=True)
     type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module_name, return_multiple=True)
     type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module_name, return_multiple=True)
-    type_addrs = type1_addrs if len(type1_addrs) >= 2 else type2_addrs if len(type2_addrs) >= 2 else type3_addrs if len(
-        type3_addrs) >= 2 else "None"
-    # print(type_addrs)
-    if type_addrs == "None":
-        return "None"
+
+    # print(type1_addrs, type2_addrs, type3_addrs)
+
+    type_addrs = []
+    if len(type1_addrs) >= 2: type_addrs += type1_addrs
+    if len(type2_addrs) >= 2: type_addrs += type2_addrs
+    if len(type3_addrs) >= 2: type_addrs += type3_addrs
+    if len(type_addrs) == 0: return "None"
+
+    type_addrs.sort()  # 从小到大排序
+
     for i in type_addrs[::-1]:
         for j in range(i, i - 2000, -addr_len):
             key_bytes = read_key_bytes(pm.process_handle, j, addr_len)
@@ -212,8 +232,9 @@ def read_info(is_logging=False):
 
         tmp_rd['wxid'] = get_info_wxid(Handle)
         tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid']) if tmp_rd['wxid'] != "None" else "None"
-        tmp_rd['key'] = get_key(tmp_rd['filePath'], addrLen) if tmp_rd['filePath'] != "None" else "None"
+        tmp_rd['key'] = get_key(tmp_rd['pid'], tmp_rd['filePath'], addrLen) if tmp_rd['filePath'] != "None" else "None"
         result.append(tmp_rd)
+
 
     if is_logging:
         print("=" * 32)
