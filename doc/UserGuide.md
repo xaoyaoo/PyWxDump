@@ -69,14 +69,15 @@ python build_exe.py
 
 ```shell script
 wxdump 模式 [参数]
-#  运行模式(mode):
-#    bias      获取微信基址偏移
-#    info      获取微信信息
-#    db_path   获取微信文件夹路径
-#    decrypt   解密微信数据库
-#    dbshow    聊天记录查看
-#    export    聊天记录导出为html
-#    all       获取微信信息，解密微信数据库，查看聊天记录
+#  mode           运行模式:
+#    bias         获取微信基址偏移
+#    info         获取微信信息
+#    db_path      获取微信文件夹路径
+#    decrypt      解密微信数据库
+#    merge        [测试功能]合并微信数据库(MSG.db or MediaMSG.db)
+#    dbshow       聊天记录查看
+#    export       聊天记录导出为html
+#    all          获取微信信息，解密微信数据库，查看聊天记录
 ```
 
 *示例*

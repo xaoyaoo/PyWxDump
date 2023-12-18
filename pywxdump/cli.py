@@ -10,6 +10,7 @@ import os
 import sys
 
 from pywxdump import *
+import pywxdump
 
 wxdump_ascii = r"""
 ██████╗ ██╗   ██╗██╗    ██╗██╗  ██╗██████╗ ██╗   ██╗███╗   ███╗██████╗ 
@@ -352,19 +353,14 @@ class MainAll():
             args.filestorage_path = FileStorage_path
             MainShowChatRecords().run(args)
 
-try:
-    import importlib.metadata as importlib
-except ImportError:
-    import importlib_metadata as importlib
-PYWXDUMP_VERSION = importlib.version('pywxdump')
-
+PYWXDUMP_VERSION = pywxdump.__version__
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def format_help(self):
         # 首先显示软件简介
         # 定义软件简介文本并进行格式化
         line_len = 70
-        PYWXDUMP_VERSION = importlib.version('pywxdump')
+        PYWXDUMP_VERSION = pywxdump.__version__
         wxdump_line = '\n'.join([f'\033[36m{line:^{line_len}}\033[0m' for line in wxdump_ascii.split('\n') if line])
         first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^{line_len}}\033[0m'
         brief = 'PyWxDump功能：获取账号信息、解密数据库、查看聊天记录、导出聊天记录为html等'
@@ -381,7 +377,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
 def console_run():
     # 创建命令行参数解析器
     parser = CustomArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    PYWXDUMP_VERSION = importlib.version('pywxdump')
+    PYWXDUMP_VERSION = pywxdump.__version__
     parser.add_argument('-V', '--version', action='version', version=f"PyWxDump v{PYWXDUMP_VERSION}")
 
     # 添加子命令解析器

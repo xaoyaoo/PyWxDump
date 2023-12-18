@@ -3,7 +3,14 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = "2.3.22"
+# 读取版本号 pywxdump/__init__.py 中的 __version__
+with open("pywxdump/__init__.py", "r", encoding="utf-8") as f:
+    for line in f.readlines():
+        if line.startswith("__version__"):
+            version = line.split("=")[-1].strip().strip("\"'")
+            break
+    else:
+        raise RuntimeError("version not found")
 
 install_requires = [
     "psutil",
