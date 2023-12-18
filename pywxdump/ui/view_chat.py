@@ -129,7 +129,8 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
     cursor1.close()
     db1.close()
     # 获取图片的base64数据
-    img_md5_data = load_base64_img_data(result1[0][7], result1[-1][7], username_md5, FileStorage_path)  if len(result1) > 0 else {}
+    # img_md5_data = load_base64_img_data(result1[0][7], result1[-1][7], username_md5, FileStorage_path) if len(
+    #     result1) > 0 else {}
 
     data = []
     room_username_count = {}
@@ -170,12 +171,21 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
             content["src"] = src
         elif Type == 3 and SubType == 0:  # 图片
             xml_content = parse_xml_string(StrContent)
-            md5 = xml_content.get("img", {}).get("md5", "")
-            if md5:
-                content["src"] = img_md5_data.get(md5, "")
+            BytesExtra = read_BytesExtra(BytesExtra)
+            BytesExtra =str(BytesExtra)
+            match = re.search(r"MsgAttach(.*?)'", BytesExtra)
+            if match:
+                img_path = match.group(0).replace("'", "")
+                print(FileStorage_path)
+                print(img_path)
+                img_path = os.path.join(FileStorage_path, img_path)
+                fomt, md5, out_bytes = read_img_dat(img_path)
+                out_bytes = base64.b64encode(out_bytes).decode("utf-8")
+                content["src"] = f"data:{fomt};base64,{out_bytes}"
             else:
                 content["src"] = ""
             content["msg"] = "图片"
+
 
         else:
             content["msg"] = StrContent

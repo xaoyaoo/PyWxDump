@@ -278,6 +278,7 @@ class MainAll():
                 print("[-] 未获取到密钥")
                 return
             wxid = user.get("wxid", None)
+            filePath = user.get("filePath", None)
 
             WxDbPath = get_wechat_db('all', None, wxid=wxid, is_logging=True)  # 获取微信数据库路径
             if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
@@ -336,8 +337,7 @@ class MainAll():
                 print("[-] 未获取到解密后的数据库路径")
                 return
 
-            user_path = out_dbs[0].split("MSG")
-            FileStorage_path = os.path.join(user_path[0], "FileStorage")
+            FileStorage_path = os.path.join(filePath, "FileStorage") if filePath else "FileStorage"
 
             # 查看聊天记录
             MSGDB = [i for i in out_dbs if "de_MSG" in i]

@@ -118,6 +118,15 @@ pip install PyWxDump
 2. `MediaMsg0`~`MediaMsg5`是微信聊天记录不同时间段下的数据库，`MediaMsg0`是最旧的，`MediaMsg5`是最新的
 3. 一般来说，如果想看最新的聊天记录，就选择`MSG5`和`MediaMsg5`，如果想看最旧的聊天记录，就选择`MSG0`和`MediaMsg0`，如果想看中间的聊天记录，就选择`MSG1`~`MSG4`和`MediaMsg1`~`MediaMsg4`
 
-### 十八、qq交流群：577704006 or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl) 密码
+### 十八、如何合并数据库文件？
 
-1433223
+使用命令`wxdump.exe merge`，然后根据提示输入参数，回车键确认。
+eg：`wxdump.exe merge -i "C:\Users\user\Desktop\decrypted\MSG0.db,C:\Users\user\Desktop\decrypted\MSG1.db,C:\Users\user\Desktop\decrypted\MSG2.db" -o "C:\Users\user\Desktop\decrypted\merge.db"`
+
+### 十八、qq交流群密码
+
+相信你看到这里，已经可以自己解决所有问题了。
+
+如果实在还有疑问，更加建议提交issues。
+
+如果还是想添加qq群，那么关注公众号：`逍遥之芯`，回复`qq群密码`即可获取qq群密码。（因为qq群又快满了，群主又没钱买vip，所以只能这样了）

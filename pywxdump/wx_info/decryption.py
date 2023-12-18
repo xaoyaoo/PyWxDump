@@ -12,7 +12,6 @@
 # 为了保证数据部分长度是16字节即AES块大小的整倍数，每一页的末尾将填充一段空字节，使得保留字段的长度为48字节。
 # 综上，加密文件结构为第一页4KB数据前16字节为盐值，紧接着4032字节数据，再加上16字节IV和20字节HMAC以及12字节空字节；而后的页均是4048字节长度的加密数据段和48字节的保留段。
 # -------------------------------------------------------------------------------
-import argparse
 import hmac
 import hashlib
 import os
@@ -171,6 +170,7 @@ def encrypt(key: str, db_path, out_path):
     :param out_path:  加密后的数据库输出路径(必须是文件)
     :return:
     """
+    import subprocess
     if not os.path.exists(db_path) or not os.path.isfile(db_path):
         return False, f"[-] db_path:'{db_path}' File not found!"
     if not os.path.exists(os.path.dirname(out_path)):
@@ -178,30 +178,4 @@ def encrypt(key: str, db_path, out_path):
 
     if len(key) != 64:
         return False, f"[-] key:'{key}' Len Error!"
-
-    password = bytes.fromhex(key.strip())
-    with open(db_path, "rb") as file:
-        blist = file.read()
-
-    salt = os.urandom(16)  # 生成随机盐值
-    byteKey = hashlib.pbkdf2_hmac("sha1", password, salt, DEFAULT_ITER, KEY_SIZE)
-
-    # 计算消息认证码
-    mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
-    mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
-    hash_mac = hmac.new(mac_key, blist[:-32], hashlib.sha1)
-    hash_mac.update(b'\x01\x00\x00\x00')
-    mac_digest = hash_mac.digest()
-
-    newblist = [blist[i:i + DEFAULT_PAGESIZE] for i in range(DEFAULT_PAGESIZE, len(blist), DEFAULT_PAGESIZE)]
-
-    with open(out_path, "wb") as enFile:
-        enFile.write(salt)  # 写入盐值
-        enFile.write(mac_digest)  # 写入消息认证码
-
-        for i in newblist:
-            t = AES.new(byteKey, AES.MODE_CBC, os.urandom(16))  # 生成随机的初始向量
-            encrypted = t.encrypt(i)  # 加密数据块
-            enFile.write(encrypted)
-
-    return True, [db_path, out_path, key]
+    return False, f"error!"
