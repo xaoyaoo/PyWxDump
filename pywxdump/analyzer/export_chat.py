@@ -20,9 +20,9 @@ import time
 from functools import wraps
 
 from .utils import get_md5, detach_databases, attach_databases, execute_sql
-from .db_parsing import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
+# from .db_parsing import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
 
-from flask import Flask, request, render_template, g, Blueprint
+# from flask import Flask, request, render_template, g, Blueprint
 
 
 def get_contact_list(MicroMsg_db_path):
@@ -35,14 +35,19 @@ def get_contact_list(MicroMsg_db_path):
     # 连接 MicroMsg.db 数据库，并执行查询
     db = sqlite3.connect(MicroMsg_db_path)
     cursor = db.cursor()
-    cursor.execute(
-        "SELECT A.UserName, A.NickName, A.Remark,B.bigHeadImgUrl FROM Contact A,ContactHeadImgUrl B ORDER BY NickName ASC")
+    sql = ("SELECT A.UserName, A.NickName, A.Remark,A.Alias,A.Reserved6,B.bigHeadImgUrl "
+           "FROM Contact A,ContactHeadImgUrl B "
+           "where UserName==usrName "
+           "ORDER BY NickName ASC;")
+    cursor.execute(sql)
     result = cursor.fetchall()
 
     for row in result:
         # 获取用户名、昵称、备注和聊天记录数量
-        username, nickname, remark, headImgUrl = row
-        users.append({"username": username, "nickname": nickname, "remark": remark, "headImgUrl": headImgUrl})
+        username, nickname, remark, Alias, describe, headImgUrl = row
+        users.append(
+            {"username": username, "nickname": nickname, "remark": remark, "account": Alias, "describe": describe,
+             "headImgUrl": headImgUrl})
     cursor.close()
     db.close()
     return users
@@ -264,61 +269,7 @@ def export(username, outpath, MSG_ALL_db_path, MicroMsg_db_path, MediaMSG_all_db
         return export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorage_path)
 
 
-app_show_chat = Blueprint('show_chat_main', __name__, template_folder='templates')
-app_show_chat.debug = False
-
-
-# 主页 - 显示用户列表
-@app_show_chat.route('/')
-def index():
-    g.USER_LIST = get_user_list(g.MSG_ALL_db_path, g.MicroMsg_db_path)
-    return render_template("index.html", users=g.USER_LIST)
-
-
-# 获取聊天记录
-@app_show_chat.route('/get_chat_data', methods=["GET", 'POST'])
-def get_chat_data():
-    username = request.args.get("username", "")
-    user = list(filter(lambda x: x["username"] == username, g.USER_LIST))
-
-    if username and len(user) > 0:
-        user = user[0]
-
-        limit = int(request.args.get("limit", 100))  # 每页显示的条数
-        page = int(request.args.get("page", user.get("chat_count", limit) / limit))  # 当前页数
-
-        start_index = (page - 1) * limit
-        page_size = limit
-
-        data = load_chat_records(username, start_index, page_size, user, g.MSG_ALL_db_path, g.MediaMSG_all_db_path,
-                                 g.FileStorage_path)
-        return render_template("chat.html", msgs=data)
-    else:
-        return "error"
-
-
-# 聊天记录导出为html
-@app_show_chat.route('/export_chat_data', methods=["GET", 'POST'])
-def get_export():
-    username = request.args.get("username", "")
-
-    user = list(filter(lambda x: x["username"] == username, g.USER_LIST))
-
-    if username and len(user) > 0:
-        user = user[0]
-        n = f"{user.get('username', '')}_{user.get('nickname', '')}_{user.get('remark', '')}"
-        outpath = os.path.join(os.getcwd(), "export" + os.sep + n)
-        if not os.path.exists(outpath):
-            os.makedirs(outpath)
-
-        ret = export_html(user, outpath, g.MSG_ALL_db_path, g.MediaMSG_all_db_path, g.FileStorage_path, page_size=200)
-        if ret[0]:
-            return ret[1]
-        else:
-            return ret[1]
-    else:
-        return "error"
-
-
 if __name__ == '__main__':
-    pass
+    msg_all = r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db"
+    a = get_contact_list(msg_all)
+    print(a)

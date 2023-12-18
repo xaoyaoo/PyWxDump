@@ -56,12 +56,29 @@ def execute_sql(connection, sql, params=None):
         - sql：要执行的SQL语句
         - params：SQL语句中的参数
     """
-    cursor = connection.cursor()
-    if params:
-        cursor.execute(sql, params)
-    else:
-        cursor.execute(sql)
-    return cursor.fetchall()
+    try:
+        # connection.text_factory = bytes
+        cursor = connection.cursor()
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        return cursor.fetchall()
+    except Exception as e:
+        try:
+            connection.text_factory = bytes
+            cursor = connection.cursor()
+            if params:
+                cursor.execute(sql, params)
+            else:
+                cursor.execute(sql)
+            rdata = cursor.fetchall()
+            connection.text_factory = str
+            return rdata
+        except Exception as e:
+            print(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********")
+            return None
+
 
 if __name__ == '__main__':
     pass
