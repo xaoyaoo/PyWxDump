@@ -228,7 +228,7 @@ def read_info(version_list, is_logging=False):
         if process.name() == 'WeChat.exe':
             wechat_process.append(process)
 
-    if len(wechat_process) == 0:
+    if len(wechat_process) <= 0:
         error = "[-] WeChat No Run"
         if is_logging: print(error)
         return error
@@ -355,5 +355,4 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
 
 if __name__ == '__main__':
     from pywxdump import VERSION_LIST
-
     read_info(VERSION_LIST, is_logging=True)

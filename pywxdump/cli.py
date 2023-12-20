@@ -62,13 +62,23 @@ class MainWxInfo():
         sb_wx_info = parser.add_parser(self.mode, help="获取微信信息")
         sb_wx_info.add_argument("-vlp", '--version_list_path', metavar="", type=str,
                                 help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
+        sb_wx_info.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)保存路径")
         return sb_wx_info
 
     def run(self, args):
         # 读取微信各版本偏移
         path = args.version_list_path
+        save_path = args.save_path
         version_list = json.load(open(path, "r", encoding="utf-8"))
         result = read_info(version_list, True)  # 读取微信信息
+        if save_path:
+            try:
+                infos = json.load(open(save_path, "r", encoding="utf-8")) if os.path.exists(save_path) else []
+            except:
+                infos = []
+            with open(save_path, "w", encoding="utf-8") as f:
+                infos += result
+                json.dump(infos, f, ensure_ascii=False, indent=4)
         return result
 
 
@@ -353,7 +363,9 @@ class MainAll():
             args.filestorage_path = FileStorage_path
             MainShowChatRecords().run(args)
 
+
 PYWXDUMP_VERSION = pywxdump.__version__
+
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def format_help(self):

@@ -20,6 +20,8 @@ import time
 from functools import wraps
 
 from .utils import get_md5, detach_databases, attach_databases, execute_sql
+
+
 # from .db_parsing import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
 
 # from flask import Flask, request, render_template, g, Blueprint
@@ -105,48 +107,6 @@ def get_chat_count(MSG_db_path: [str, list], db=None, databases=None):
         row_data = {"username": username, "chat_count": chat_count}
         chat_counts.append(row_data)
     return chat_counts
-
-
-def load_base64_audio_data(MsgSvrID, MediaMSG_all_db_path):
-    wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=MediaMSG_all_db_path)
-    if not wave_data:
-        return ""
-    video_base64 = base64.b64encode(wave_data).decode("utf-8")
-    video_data = f"data:audio/wav;base64,{video_base64}"
-    return video_data
-
-
-def load_base64_img_data(start_time, end_time, username_md5, FileStorage_path):
-    """
-    获取图片的base64数据
-    :param start_time: 开始时间戳
-    :param end_time:  结束时间戳
-    :param username_md5: 用户名的md5值
-    :return:
-    """
-    # 获取CreateTime的最大值日期
-    min_time = time.strftime("%Y-%m", time.localtime(start_time))
-    max_time = time.strftime("%Y-%m", time.localtime(end_time))
-    img_path = os.path.join(FileStorage_path, "MsgAttach", username_md5, "Image")
-    if not os.path.exists(img_path):
-        return {}
-    # print(min_time, max_time, img_path)
-    paths = []
-    for root, path, files in os.walk(img_path):
-        for p in path:
-            if p >= min_time and p <= max_time:
-                paths.append(os.path.join(root, p))
-    # print(paths)
-    img_md5_data = {}
-    for path in paths:
-        for root, path, files in os.walk(path):
-            for file in files:
-                if file.endswith(".dat"):
-                    file_path = os.path.join(root, file)
-                    fomt, md5, out_bytes = read_img_dat(file_path)
-                    out_bytes = base64.b64encode(out_bytes).decode("utf-8")
-                    img_md5_data[md5] = f"data:{fomt};base64,{out_bytes}"
-    return img_md5_data
 
 
 def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_ALL_db_path, MediaMSG_all_db_path,
@@ -270,6 +230,6 @@ def export(username, outpath, MSG_ALL_db_path, MicroMsg_db_path, MediaMSG_all_db
 
 
 if __name__ == '__main__':
-    msg_all = r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db"
+    msg_all = ""
     a = get_contact_list(msg_all)
     print(a)
