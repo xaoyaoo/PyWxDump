@@ -17,4 +17,4 @@ VERSION_LIST_PATH = os.path.join(os.path.dirname(__file__), "version_list.json")
 with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
     VERSION_LIST = json.load(f)
 
-__version__ = "2.3.23"
+__version__ = "2.3.24"
