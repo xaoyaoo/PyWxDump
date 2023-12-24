@@ -155,7 +155,7 @@ def decompress_CompressContent(data):
         return None
     try:
         dst = lz4.block.decompress(data, uncompressed_size=len(data) << 8)
-        dst.decode().replace(b'\x00', '')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
+        dst = dst.replace(b'\x00', b'')  # 已经解码完成后，还含有0x00的部分，要删掉，要不后面ET识别的时候会报错
         uncompressed_data = dst.decode('utf-8', errors='ignore')
         return uncompressed_data
     except Exception as e:
