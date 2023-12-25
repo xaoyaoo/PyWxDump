@@ -19,7 +19,7 @@ import json
 import time
 from functools import wraps
 
-from .utils import get_md5, detach_databases, attach_databases, execute_sql
+from .utils import get_md5, attach_databases, execute_sql
 
 
 def get_contact_list(MicroMsg_db_path):
@@ -222,9 +222,3 @@ def export(username, outpath, MSG_ALL_db_path, MicroMsg_db_path, MediaMSG_all_db
     if username and len(user) > 0:
         user = user[0]
         return export_html(user, outpath, MSG_ALL_db_path, MediaMSG_all_db_path, FileStorage_path)
-
-
-if __name__ == '__main__':
-    msg_all = ""
-    a = get_contact_list(msg_all)
-    print(a)
