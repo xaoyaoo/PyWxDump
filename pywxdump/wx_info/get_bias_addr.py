@@ -5,92 +5,18 @@
 # Author:       xaoyaoo
 # Date:         2023/08/22
 # -------------------------------------------------------------------------------
-import argparse
 import ctypes
-import hashlib
 import json
-import multiprocessing
 import os
 import re
 import sys
-
 import psutil
-from win32com.client import Dispatch
-from pymem import Pymem
 import pymem
-import hmac
+
+from .utils import get_exe_version, get_exe_bit, verify_key
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
-KEY_SIZE = 32
-DEFAULT_PAGESIZE = 4096
-DEFAULT_ITER = 64000
-
-
-def validate_key(key, salt, first, mac_salt):
-    byteKey = hashlib.pbkdf2_hmac("sha1", key, salt, DEFAULT_ITER, KEY_SIZE)
-    mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
-    hash_mac = hmac.new(mac_key, first[:-32], hashlib.sha1)
-    hash_mac.update(b'\x01\x00\x00\x00')
-
-    if hash_mac.digest() == first[-32:-12]:
-        return True
-    else:
-        return False
-
-
-def get_exe_bit(file_path):
-    """
-    获取 PE 文件的位数: 32 位或 64 位
-    :param file_path:  PE 文件路径(可执行文件)
-    :return: 如果遇到错误则返回 64
-    """
-    try:
-        with open(file_path, 'rb') as f:
-            dos_header = f.read(2)
-            if dos_header != b'MZ':
-                print('get exe bit error: Invalid PE file')
-                return 64
-            # Seek to the offset of the PE signature
-            f.seek(60)
-            pe_offset_bytes = f.read(4)
-            pe_offset = int.from_bytes(pe_offset_bytes, byteorder='little')
-
-            # Seek to the Machine field in the PE header
-            f.seek(pe_offset + 4)
-            machine_bytes = f.read(2)
-            machine = int.from_bytes(machine_bytes, byteorder='little')
-
-            if machine == 0x14c:
-                return 32
-            elif machine == 0x8664:
-                return 64
-            else:
-                print('get exe bit error: Unknown architecture: %s' % hex(machine))
-                return 64
-    except IOError:
-        print('get exe bit error: File not found or cannot be opened')
-        return 64
-
-
-def get_exe_version(file_path):
-    """
-    获取 PE 文件的版本号
-    :param file_path:  PE 文件路径(可执行文件)
-    :return: 如果遇到错误则返回
-    """
-    file_version = Dispatch("Scripting.FileSystemObject").GetFileVersion(file_path)
-    return file_version
-
-
-def find_all(c: bytes, string: bytes, base_addr=0):
-    """
-    查找字符串中所有子串的位置
-    :param c: 子串 b'123'
-    :param string: 字符串 b'123456789123'
-    :return:
-    """
-    return [base_addr + m.start() for m in re.finditer(re.escape(c), string)]
 
 
 class BiasAddr:
@@ -116,7 +42,7 @@ class BiasAddr:
 
     def get_process_handle(self):
         try:
-            self.pm = Pymem(self.process_name)
+            self.pm = pymem.Pymem(self.process_name)
             self.pm.check_wow64()
             self.is_WoW64 = self.pm.is_WoW64
             self.process_handle = self.pm.process_handle
@@ -189,25 +115,6 @@ class BiasAddr:
             key_bytes = bytes(key)
             return key_bytes
 
-        def verify_key(key, wx_db_path):
-            KEY_SIZE = 32
-            DEFAULT_PAGESIZE = 4096
-            DEFAULT_ITER = 64000
-            with open(wx_db_path, "rb") as file:
-                blist = file.read(5000)
-            salt = blist[:16]
-            byteKey = hashlib.pbkdf2_hmac("sha1", key, salt, DEFAULT_ITER, KEY_SIZE)
-            first = blist[16:DEFAULT_PAGESIZE]
-
-            mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
-            mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
-            hash_mac = hmac.new(mac_key, first[:-32], hashlib.sha1)
-            hash_mac.update(b'\x01\x00\x00\x00')
-
-            if hash_mac.digest() != first[-32:-12]:
-                return False
-            return True
-
         phone_type1 = "iphone\x00"
         phone_type2 = "android\x00"
         phone_type3 = "ipad\x00"
@@ -264,15 +171,7 @@ class BiasAddr:
         return rdata
 
 
-def get_info_without_key(h_process, address, n_size=64):
-    array = ctypes.create_string_buffer(n_size)
-    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
-    array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
-    text = array.decode('utf-8', errors='ignore')
-    return text.strip() if text.strip() != "" else "None"
-
-
 if __name__ == '__main__':
-    account, mobile, name, key, db_path = "test", "test", "test",None, r"test"
+    account, mobile, name, key, db_path = "test", "test", "test", None, r"test"
     bias_addr = BiasAddr(account, mobile, name, key, db_path)
     bias_addr.run(logging_path=True)

@@ -5,55 +5,17 @@
 # Author:       xaoyaoo
 # Date:         2023/08/21
 # -------------------------------------------------------------------------------
-import hmac
-import hashlib
 import ctypes
 import os
 import re
 import winreg
-import pymem
-from win32com.client import Dispatch
 import psutil
-import sys
+import pymem
 from typing import List, Union
+from .utils import pattern_scan_all,verify_key,get_exe_version,get_exe_bit
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
-
-
-# 获取exe文件的位数
-def get_exe_bit(file_path):
-    """
-    获取 PE 文件的位数: 32 位或 64 位
-    :param file_path:  PE 文件路径(可执行文件)
-    :return: 如果遇到错误则返回 64
-    """
-    try:
-        with open(file_path, 'rb') as f:
-            dos_header = f.read(2)
-            if dos_header != b'MZ':
-                print('get exe bit error: Invalid PE file')
-                return 64
-            # Seek to the offset of the PE signature
-            f.seek(60)
-            pe_offset_bytes = f.read(4)
-            pe_offset = int.from_bytes(pe_offset_bytes, byteorder='little')
-
-            # Seek to the Machine field in the PE header
-            f.seek(pe_offset + 4)
-            machine_bytes = f.read(2)
-            machine = int.from_bytes(machine_bytes, byteorder='little')
-
-            if machine == 0x14c:
-                return 32
-            elif machine == 0x8664:
-                return 64
-            else:
-                print('get exe bit error: Unknown architecture: %s' % hex(machine))
-                return 64
-    except IOError:
-        print('get exe bit error: File not found or cannot be opened')
-        return 64
 
 
 # 读取内存中的字符串(非key部分)
@@ -63,30 +25,6 @@ def get_info_without_key(h_process, address, n_size=64):
     array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
     text = array.decode('utf-8', errors='ignore')
     return text.strip() if text.strip() != "" else "None"
-
-
-def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
-    next_region = 0
-    found = []
-    user_space_limit = 0x7FFFFFFF0000 if sys.maxsize > 2 ** 32 else 0x7fff0000
-    while next_region < user_space_limit:
-        try:
-            next_region, page_found = pymem.pattern.scan_pattern_page(
-                handle,
-                next_region,
-                pattern,
-                return_multiple=return_multiple
-            )
-        except Exception as e:
-            print(e)
-            break
-        if not return_multiple and page_found:
-            return page_found
-        if page_found:
-            found += page_found
-        if len(found) > find_num:
-            break
-    return found
 
 
 def get_info_wxid(h_process):
@@ -167,25 +105,6 @@ def get_key(pid, db_path, addr_len):
         key_bytes = bytes(key)
         return key_bytes
 
-    def verify_key(key, wx_db_path):
-        KEY_SIZE = 32
-        DEFAULT_PAGESIZE = 4096
-        DEFAULT_ITER = 64000
-        with open(wx_db_path, "rb") as file:
-            blist = file.read(5000)
-        salt = blist[:16]
-        byteKey = hashlib.pbkdf2_hmac("sha1", key, salt, DEFAULT_ITER, KEY_SIZE)
-        first = blist[16:DEFAULT_PAGESIZE]
-
-        mac_salt = bytes([(salt[i] ^ 58) for i in range(16)])
-        mac_key = hashlib.pbkdf2_hmac("sha1", byteKey, mac_salt, 2, KEY_SIZE)
-        hash_mac = hmac.new(mac_key, first[:-32], hashlib.sha1)
-        hash_mac.update(b'\x01\x00\x00\x00')
-
-        if hash_mac.digest() != first[-32:-12]:
-            return False
-        return True
-
     phone_type1 = "iphone\x00"
     phone_type2 = "android\x00"
     phone_type3 = "ipad\x00"
@@ -237,7 +156,7 @@ def read_info(version_list, is_logging=False):
         tmp_rd = {}
 
         tmp_rd['pid'] = process.pid
-        tmp_rd['version'] = Dispatch("Scripting.FileSystemObject").GetFileVersion(process.exe())
+        tmp_rd['version'] = get_exe_version(process.exe())
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
 
@@ -355,4 +274,5 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
 
 if __name__ == '__main__':
     from pywxdump import VERSION_LIST
+
     read_info(VERSION_LIST, is_logging=True)
