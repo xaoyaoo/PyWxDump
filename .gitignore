@@ -1,12 +1,13 @@
-# 忽略logs目录
 dist/
 build/
 .git/
 __pycache__/
 decrypted/
 pywxdump.egg-info/
+
 # 忽略.idea目录
 .idea/
+
 pysqlcipher3/
 # 忽略secret.txt文件
 secret.txt
