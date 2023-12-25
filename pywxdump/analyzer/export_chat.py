@@ -22,11 +22,6 @@ from functools import wraps
 from .utils import get_md5, detach_databases, attach_databases, execute_sql
 
 
-# from .db_parsing import read_img_dat, decompress_CompressContent, read_audio, parse_xml_string
-
-# from flask import Flask, request, render_template, g, Blueprint
-
-
 def get_contact_list(MicroMsg_db_path):
     """
     获取联系人列表

@@ -18,3 +18,5 @@ secret.txt
 *.iml
 
 gitandpypi.cmd
+# 忽略test_xaooyaoo_conf.txt文件
+test_xaooyaoo_conf.txt
