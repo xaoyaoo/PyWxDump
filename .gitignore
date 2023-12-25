@@ -1,0 +1,19 @@
+# 忽略logs目录
+dist/
+build/
+.git/
+__pycache__/
+decrypted/
+pywxdump.egg-info/
+# 忽略.idea目录
+.idea/
+pysqlcipher3/
+# 忽略secret.txt文件
+secret.txt
+#.gitignore
+# 忽略所有的.class文件
+*.class
+# 忽略所有的.iml文件
+*.iml
+
+gitandpypi.cmd
