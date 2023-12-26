@@ -188,10 +188,9 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
             else:
                 content["src"] = ""
             content["msg"] = "图片"
-
-
         else:
             content["msg"] = StrContent
+
         talker = "未知"
         if IsSender == 1:
             talker = "我"
