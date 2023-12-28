@@ -245,10 +245,24 @@ class MainExportChatRecords():
         sb_decrypt.add_argument("-fs", "--filestorage_path", type=str,
                                 help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False,
                                 metavar="")
+        sb_decrypt.add_argument("-t", "--type", type=str, help="导出类型(可选:html,txt)", required=False,
+                                default="html",
+                                metavar="")
         return sb_decrypt
 
     def run(self, args):
         # 从命令行参数获取值
+        t = args.type
+        if t not in ["html", "txt"]:
+            print("[-] 未知的导出类型")
+            return
+        if t == "txt":
+            try:
+                export_csv(args.username, args.outpath, args.msg_path, page_size=1000000)
+            except Exception as e:
+                print(e)
+                print("[-] 导出失败")
+                return
         try:
             from flask import Flask, request, jsonify, render_template, g
             import logging
