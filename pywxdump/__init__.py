@@ -14,8 +14,12 @@ from .ui import app_show_chat, get_user_list, export
 
 import os, json
 
-VERSION_LIST_PATH = os.path.join(os.path.dirname(__file__), "version_list.json")
-with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
-    VERSION_LIST = json.load(f)
+try:
+    VERSION_LIST_PATH = os.path.join(os.path.dirname(__file__), "version_list.json")
+    with open(VERSION_LIST_PATH, "r", encoding="utf-8") as f:
+        VERSION_LIST = json.load(f)
+except:
+    VERSION_LIST = {}
+    VERSION_LIST_PATH = None
 
 __version__ = "2.3.26"
