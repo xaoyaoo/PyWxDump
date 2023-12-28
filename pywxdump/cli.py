@@ -313,28 +313,32 @@ class MainAll():
                 print("[-] 未获取到数据库路径")
                 return
 
+            wxdbpaths = [i for i in wxdbpaths if "Backup.db" not in i and "xInfo.db" not in i] # 过滤掉无需解密的数据库
             wxdblen = len(wxdbpaths)
             print(f"[+] 共发现 {wxdblen} 个微信数据库")
             print("=" * 32)
 
-            out_path = os.path.join(os.getcwd(), "decrypted", wxid) if wxid else os.path.join(os.getcwd(), "decrypted")
-            print(f"[*] 解密后文件夹：{out_path} ")
+            decrypted_path = os.path.join(os.getcwd(), "decrypted")
+            print(f"[*] 解密后文件夹：{decrypted_path} ")
             print(f"[*] 解密中...（用时较久，耐心等待）")
-            if not os.path.exists(out_path):
-                os.makedirs(out_path)
 
             # 判断out_path是否为空目录
-            if os.listdir(out_path):
-                isdel = input(f"[*] 输出文件夹不为空({out_path})\n    是否删除?(y/n):")
+            if os.path.exists(decrypted_path) and os.listdir(decrypted_path):
+                isdel = input(f"[*] 输出文件夹不为空({decrypted_path})\n    是否删除?(y/n):")
                 if isdel.lower() == 'y' or isdel.lower() == 'yes':
-                    for root, dirs, files in os.walk(out_path, topdown=False):
+                    for root, dirs, files in os.walk(decrypted_path, topdown=False):
                         for name in files:
                             os.remove(os.path.join(root, name))
                         for name in dirs:
                             os.rmdir(os.path.join(root, name))
 
+            out_path = os.path.join(decrypted_path, wxid) if wxid else decrypted_path
+            if not os.path.exists(out_path):
+                os.makedirs(out_path)
+
             # 调用 decrypt 函数，并传入参数   # 解密
             code, ret = batch_decrypt(key, wxdbpaths, out_path, False)
+
             if not code:
                 print(ret)
                 return
@@ -361,19 +365,17 @@ class MainAll():
                 print("[-] 未获取到解密后的数据库路径")
                 return
 
+            parpare_merge_db_path = [i for i in out_dbs if "de_MicroMsg" in i or "de_MediaMSG" in i or "de_MSG" in i]
+            # 合并所有的数据库
+            print(f"[*] 合并数据库中...（用时较久，耐心等待）")
+            merge_save_path = merge_db(parpare_merge_db_path, os.path.join(out_path, "merge_all.db"))
+
             FileStorage_path = os.path.join(filePath, "FileStorage") if filePath else "FileStorage"
 
-            # 查看聊天记录
-            MSGDB = [i for i in out_dbs if "de_MSG" in i]
-            MSGDB = MSGDB[-1] if MSGDB else None
-            MicroMsgDB = [i for i in out_dbs if "de_MicroMsg" in i]
-            MicroMsgDB = MicroMsgDB[-1] if MicroMsgDB else None
-            MediaMSGDB = [i for i in out_dbs if "de_MediaMSG" in i]
-            MediaMSGDB = MediaMSGDB[-1] if MediaMSGDB else None
-
-            args.msg_path = MSGDB
-            args.micro_path = MicroMsgDB
-            args.media_path = MediaMSGDB
+            # # 查看聊天记录
+            args.msg_path = merge_save_path
+            args.micro_path =merge_save_path
+            args.media_path = merge_save_path
             args.filestorage_path = FileStorage_path
             MainShowChatRecords().run(args)
 
