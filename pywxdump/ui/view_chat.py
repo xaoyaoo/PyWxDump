@@ -172,12 +172,15 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
         elif Type == 3 and SubType == 0:  # 图片
             xml_content = parse_xml_string(StrContent)
             BytesExtra = read_BytesExtra(BytesExtra)
-            BytesExtra =str(BytesExtra)
+            BytesExtra = str(BytesExtra)
             match = re.search(r"MsgAttach(.*?)'", BytesExtra)
             if match:
                 img_path = match.group(0).replace("'", "")
                 # print(FileStorage_path)
                 # print(img_path)
+                img_path = img_path.split("\\")
+                img_path = [i for i in img_path if i != ""]
+                img_path = os.path.join(*img_path)
                 if FileStorage_path:
                     img_path = os.path.join(FileStorage_path, img_path)
                     fomt, md5, out_bytes = read_img_dat(img_path)
