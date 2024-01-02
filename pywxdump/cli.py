@@ -62,7 +62,7 @@ class MainWxInfo():
         sb_wx_info = parser.add_parser(self.mode, help="获取微信信息")
         sb_wx_info.add_argument("-vlp", '--version_list_path', metavar="", type=str,
                                 help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
-        sb_wx_info.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)保存路径")
+        sb_wx_info.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)保存路径【json文件】")
         return sb_wx_info
 
     def run(self, args):
@@ -70,15 +70,7 @@ class MainWxInfo():
         path = args.version_list_path
         save_path = args.save_path
         version_list = json.load(open(path, "r", encoding="utf-8"))
-        result = read_info(version_list, True)  # 读取微信信息
-        if save_path:
-            try:
-                infos = json.load(open(save_path, "r", encoding="utf-8")) if os.path.exists(save_path) else []
-            except:
-                infos = []
-            with open(save_path, "w", encoding="utf-8") as f:
-                infos += result
-                json.dump(infos, f, ensure_ascii=False, indent=4)
+        result = read_info(version_list, True, save_path)  # 读取微信信息
         return result
 
 
@@ -290,11 +282,13 @@ class MainAll():
         self.mode = "all"
         # 添加 'all' 子命令解析器
         sb_all = parser.add_parser(self.mode, help="获取微信信息，解密微信数据库，查看聊天记录")
+        sb_all.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)wx_info保存路径【json文件】")
         return sb_all
 
     def run(self, args):
         # 获取微信信息
-        WxInfo = read_info(VERSION_LIST, True)
+        save_path = args.save_path
+        WxInfo = read_info(VERSION_LIST, True, save_path)
 
         for user in WxInfo:
             key = user.get("key", "")
@@ -313,7 +307,7 @@ class MainAll():
                 print("[-] 未获取到数据库路径")
                 return
 
-            wxdbpaths = [i for i in wxdbpaths if "Backup.db" not in i and "xInfo.db" not in i] # 过滤掉无需解密的数据库
+            wxdbpaths = [i for i in wxdbpaths if "Backup.db" not in i and "xInfo.db" not in i]  # 过滤掉无需解密的数据库
             wxdblen = len(wxdbpaths)
             print(f"[+] 共发现 {wxdblen} 个微信数据库")
             print("=" * 32)
@@ -374,13 +368,10 @@ class MainAll():
 
             # # 查看聊天记录
             args.msg_path = merge_save_path
-            args.micro_path =merge_save_path
+            args.micro_path = merge_save_path
             args.media_path = merge_save_path
             args.filestorage_path = FileStorage_path
             MainShowChatRecords().run(args)
-
-
-PYWXDUMP_VERSION = pywxdump.__version__
 
 
 class CustomArgumentParser(argparse.ArgumentParser):

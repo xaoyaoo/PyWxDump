@@ -6,13 +6,14 @@
 # Date:         2023/08/21
 # -------------------------------------------------------------------------------
 import ctypes
+import json
 import os
 import re
 import winreg
 import psutil
 import pymem
 from typing import List, Union
-from .utils import pattern_scan_all,verify_key,get_exe_version,get_exe_bit
+from .utils import pattern_scan_all, verify_key, get_exe_version, get_exe_bit
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
@@ -139,7 +140,7 @@ def get_key(pid, db_path, addr_len):
 
 
 # 读取微信信息(account,mobile,name,mail,wxid,key)
-def read_info(version_list, is_logging=False):
+def read_info(version_list: dict, is_logging: bool = False, save_path: str = None):
     wechat_process = []
     result = []
     error = ""
@@ -207,7 +208,14 @@ def read_info(version_list, is_logging=False):
                     print(f"[+] {k:>8}: {v}")
                 print(end="-" * 32 + "\n" if i != len(result) - 1 else "")
         print("=" * 32)
-
+    if save_path:
+        try:
+            infos = json.load(open(save_path, "r", encoding="utf-8")) if os.path.exists(save_path) else []
+        except:
+            infos = []
+        with open(save_path, "w", encoding="utf-8") as f:
+            infos += result
+            json.dump(infos, f, ensure_ascii=False, indent=4)
     return result
 
 
