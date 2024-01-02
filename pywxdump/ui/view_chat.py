@@ -183,9 +183,12 @@ def load_chat_records(selected_talker, start_index, page_size, user_list, MSG_AL
                 img_path = os.path.join(*img_path)
                 if FileStorage_path:
                     img_path = os.path.join(FileStorage_path, img_path)
-                    fomt, md5, out_bytes = read_img_dat(img_path)
-                    out_bytes = base64.b64encode(out_bytes).decode("utf-8")
-                    content["src"] = f"data:{fomt};base64,{out_bytes}"
+                    if os.path.exists(img_path):
+                        fomt, md5, out_bytes = read_img_dat(img_path)
+                        out_bytes = base64.b64encode(out_bytes).decode("utf-8")
+                        content["src"] = f"data:{fomt};base64,{out_bytes}"
+                    else:
+                        content["src"] = ""
                 else:
                     content["src"] = ""
             else:
