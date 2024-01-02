@@ -208,6 +208,7 @@ def read_info(version_list: dict, is_logging: bool = False, save_path: str = Non
                     print(f"[+] {k:>8}: {v}")
                 print(end="-" * 32 + "\n" if i != len(result) - 1 else "")
         print("=" * 32)
+
     if save_path:
         try:
             infos = json.load(open(save_path, "r", encoding="utf-8")) if os.path.exists(save_path) else []
