@@ -20,3 +20,10 @@ secret.txt
 gitandpypi.cmd
 # 忽略test_xaooyaoo_conf.txt文件
 test_xaooyaoo_conf.txt
+
+# vue ignore
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
