@@ -83,6 +83,9 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
     """
     获取聊天记录列表
     :param MSG_db_path: MSG.db 文件路径
+    :param selected_talker: 选中的聊天对象 wxid
+    :param start_index: 开始索引
+    :param page_size: 每页数量
     :return: 聊天记录列表
     """
 
