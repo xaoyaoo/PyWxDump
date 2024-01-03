@@ -45,8 +45,12 @@ def decrypt(key: str, db_path, out_path):
         return False, f"[-] key:'{key}' Len Error!"
 
     password = bytes.fromhex(key.strip())
-    with open(db_path, "rb") as file:
-        blist = file.read()
+
+    try:
+        with open(db_path, "rb") as file:
+            blist = file.read()
+    except Exception as e:
+        return False, f"[-] db_path:'{db_path}' {e}!"
 
     salt = blist[:16]
     byteKey = hashlib.pbkdf2_hmac("sha1", password, salt, DEFAULT_ITER, KEY_SIZE)
