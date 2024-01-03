@@ -115,32 +115,37 @@ def contact_count_list():
 
 @app.route('/api/msgs', methods=["GET", 'POST'])
 def get_msgs():
-    try:
-        msg_path = request.headers.get("msg_path")
-        micro_path = request.headers.get("micro_path")
-        if not msg_path:
-            msg_path = g.msg_path
-        if not micro_path:
-            micro_path = g.micro_path
-        start = request.json.get("start")
-        limit = request.json.get("limit")
-        wxid = request.json.get("wxid")
-        msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
-        # row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
-        #             "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
+    msg_path = request.headers.get("msg_path")
+    micro_path = request.headers.get("micro_path")
+    if not msg_path:
+        msg_path = g.msg_path
+    if not micro_path:
+        micro_path = g.micro_path
+    start = request.json.get("start")
+    limit = request.json.get("limit")
+    wxid = request.json.get("wxid")
+    msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
+    # row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
+    #             "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
+    contact_list = analyzer.get_contact_list(micro_path)
 
-        userlist = {}
-        if wxid.endswith("@chatroom"):
-            # 群聊
-            talkers = [msg["talker"] for msg in msg_list]
-            talkers = list(set(talkers))
-            for user in g.user_list:
-                if user["username"] in talkers:
-                    userlist[user["username"]] = user
-        return ReJson(0, {"msg_list": msg_list, "user_list": userlist})
+    userlist = {}
+    if wxid.endswith("@chatroom"):
+        # 群聊
+        talkers = [msg["talker"] for msg in msg_list] + [wxid, g.my_wxid]
+        talkers = list(set(talkers))
+        for user in contact_list:
+            if user["username"] in talkers:
+                userlist[user["username"]] = user
+    else:
+        # 单聊
+        for user in contact_list:
+            if user["username"] == wxid or user["username"] == g.my_wxid:
+                userlist[user["username"]] = user
+            if len(userlist) == 2:
+                break
 
-    except Exception as e:
-        return ReJson(9999, msg=str(e))
+    return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": g.my_wxid})
 
 
 if __name__ == '__main__':
@@ -151,6 +156,8 @@ if __name__ == '__main__':
         g.micro_path = path
         g.media_path = path
         g.filestorage_path = "args.filestorage_path"
+        g.my_wxid = "wxid_vzzcn5fevion22"
+        g.user_list = []
 
 
     app.run(host='0.0.0.0', port=5000, debug=True)
