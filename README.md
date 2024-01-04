@@ -91,6 +91,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 * 常见问题请参考[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md)
 * 更新日志请参考[CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
+* Web UI的仓库位置 [wxdump_web](https://github.com/xaoyaoo/wxdump_web)
 
 ## 5. Star History
 
