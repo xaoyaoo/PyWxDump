@@ -33,8 +33,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 ## 1. 项目简介
 
-[PyWxDump](https://github.com/xaoyaoo/PyWxDump)是一款用于获取账号信息(昵称/账号/手机/邮箱/数据库密钥)
-、解密数据库、查看聊天记录、备份导出聊天记录为html的工具。
+[PyWxDump](https://github.com/xaoyaoo/PyWxDump)是一款用于获取账号信息(昵称/账号/手机/邮箱/数据库密钥)、解密数据库、查看聊天记录、备份导出聊天记录为html的工具。
 
 * <strong><big>
   超级想要star，走过路过，帮忙点个[![Star](https://img.shields.io/github/stars/xaoyaoo/PyWxDump.svg?style=social&label=Star)](https://github.com/xaoyaoo/PyWxDump/)
@@ -42,17 +41,28 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 ## 2. 功能介绍
 
-* （1）获取微信昵称、微信账号、微信手机号、微信邮箱、微信KEY的基址偏移
-* （2）获取微信的微信昵称、微信账号、微信手机号、微信邮箱、微信KEY、微信原始ID（wxid_******）
-* （3）获取微信文件夹路径
-* （4）支持查看聊天记录查看
-* （5）根据key解密微信数据库
-* （6）提供数据库部分字段说明
-* （7）支持微信多开场景，获取多用户信息等
-* （8）微信需要登录状态才能获取数据库密钥
-* （9）支持导出聊天记录为html,备份微信聊天记录,方便查看
-* （10）合并多个数据库，方便查看
-* （11）增加极简版pywxdump
+#### 2.1 核心功能
+
+* （1）获取微信昵称、微信账号、微信手机号、微信邮箱、微信KEY的**基址偏移**
+* （2）获取当前登录微信的微信昵称、微信账号、微信手机号、微信邮箱、微信KEY、微信原始ID（wxid_******）、微信文件夹路径
+* （3）根据key解密微信数据库
+* （4）合并多种类型数据库，方便统一查看
+
+#### 2.2 扩展功能
+
+* （1）通过web查看聊天记录
+* （2）支持导出聊天记录为html、csv,备份微信聊天记录
+* （3）远程查看微信聊天记录（必须网络可达，例如局域网）
+
+#### 2.3 文档类
+
+* （1）提供数据库部分字段说明
+* （2）提供CE获取基址偏移方法
+
+#### 2.4 其他功能
+
+* （1）增加极简版pywxdumpmini，只提供获取数据库密钥以及数据库位置的功能
+* （2）支持微信多开场景，获取多用户信息等
 
 **利用场景**
 
@@ -60,7 +70,8 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 2. 渗透到运维机器(有些运维机器会日常登录自己的微信)
 3. 某些工作需要取证(数据库需要拷贝到本地)
 4. 自行备份(日常备份自己留存)
-5. 等等...............
+5. 远程查看聊天记录(通过web查看聊天记录)
+6. 等等...............
 
 ## 3. 更新计划
 
@@ -79,19 +90,15 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 ## 4. 其他
 
-[PyWxDump](https://github.com/xaoyaoo/PyWxDump)是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)
-的经过重构python语言版本，同时添加了一些新的功能。
+[PyWxDump](https://github.com/xaoyaoo/PyWxDump)是[SharpWxDump](https://github.com/AdminTest0/SharpWxDump)的经过重构的python语言版本，同时添加了很多新的功能。
 
 * 项目地址：https://github.com/xaoyaoo/PyWxDump
 * 目前只在windows下测试过，mac、linux下可能会存在问题。
-* 如发现[version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json)缺失或错误,
-  请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
-* 如发现bug或有改进意见, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
-* 如有其他想要的功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
-* 常见问题请参考[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md)
-* 更新日志请参考[CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
-* [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
+* 如发现[version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json)缺失或错误、bug，有改进意见、想要新增功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
+* 常见问题请参考[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md)，更新日志请参考[CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * Web UI的仓库位置 [wxdump_web](https://github.com/xaoyaoo/wxdump_web)
+
+* [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
 
 ## 5. Star History
 
@@ -107,6 +114,8 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 * 详细使用说明见[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
 
 * 极简版使用说明[pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
+
+* 如果你想更改UI，请clone[wx_dump_web](https://github.com/xaoyaoo/wx_dump_web)项目，然后按需修改（该UI采用VUE+ElementUI开发）
 
 【注】:
 

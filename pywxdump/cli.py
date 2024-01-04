@@ -328,6 +328,7 @@ class MainAll():
                 return
 
             wxdbpaths = [i for i in wxdbpaths if "Backup.db" not in i and "xInfo.db" not in i]  # 过滤掉无需解密的数据库
+            wxdbpaths = [i for i in wxdbpaths if "MicroMsg" in i or "MediaMSG" in i or r"Multi\MSG" in i]  # 过滤掉无需解密的数据库
             wxdblen = len(wxdbpaths)
             print(f"[+] 共发现 {wxdblen} 个微信数据库")
             print("=" * 32)
