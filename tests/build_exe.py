@@ -102,6 +102,7 @@ if package_path:
         hidden_imports = f.read().splitlines()
     hidden_imports = [i for i in hidden_imports if i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
 
+    # 获取 ui 文件夹下的所有文件 用于打包
     root_path = os.path.join(package_path, 'pywxdump')
     datas_741258 = []
     for root, dirs, files in os.walk(os.path.join(root_path,"ui")):
@@ -109,6 +110,7 @@ if package_path:
             file_path = os.path.join(root, file)
             datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )''')
     datas_741258 = ",\n".join(datas_741258)
+
     # print(datas_741258)
     # 生成 spec 文件
     spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports, datas_741258=datas_741258)
