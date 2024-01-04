@@ -206,7 +206,7 @@ class MainShowChatRecords():
         app.logger.setLevel(logging.ERROR)
 
         from flask_cors import CORS
-        from pywxdump.api.api import api
+        from pywxdump.api import api
         CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
         @app.before_request
         def before_request():
