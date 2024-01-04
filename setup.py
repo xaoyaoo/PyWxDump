@@ -25,7 +25,8 @@ install_requires = [
     "flask",
     "lz4",
     "blackboxprotobuf",
-    "lxml"
+    "lxml",
+    "flask_cors",
 ]
 
 setup(
