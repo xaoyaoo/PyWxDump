@@ -7,6 +7,7 @@
 # -------------------------------------------------------------------------------
 import argparse
 import os
+import subprocess
 import sys
 import time
 
@@ -219,6 +220,18 @@ class MainShowChatRecords():
             g.user_list = []
 
         app.register_blueprint(api)
+
+        # 自动打开浏览器
+        url = "http://127.0.0.1:5000/"
+        # 根据操作系统使用不同的命令打开默认浏览器
+        if sys.platform.startswith('darwin'):  # macOS
+            subprocess.call(['open', url])
+        elif sys.platform.startswith('win'):  # Windows
+            subprocess.call(['start', url], shell=True)
+        elif sys.platform.startswith('linux'):  # Linux
+            subprocess.call(['xdg-open', url])
+        else:
+            print("Unsupported platform, can't open browser automatically.")
 
         print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
         app.run(host='0.0.0.0', port=5000, debug=False)
@@ -450,7 +463,7 @@ def console_run():
 
     # 检查是否需要显示帮助信息
     if len(sys.argv) == 1:
-        sys.argv.append('-h')
+        sys.argv.append('-all')
     elif len(sys.argv) == 2 and sys.argv[1] in modes.keys() and sys.argv[1] not in [main_all.mode, main_wx_info.mode,
                                                                                     main_wx_db_path.mode]:
         sys.argv.append('-h')
