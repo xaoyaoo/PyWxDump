@@ -5,8 +5,11 @@
 # Author:       xaoyaoo
 # Date:         2024/01/02
 # -------------------------------------------------------------------------------
-from flask import Flask, request, render_template, g, Blueprint
-from pywxdump import analyzer
+import base64
+import os
+
+from flask import Flask, request, render_template, g, Blueprint, send_file
+from pywxdump import analyzer, read_img_dat
 from pywxdump.api.rjson import ReJson, RqJson
 from flask_cors import CORS
 
@@ -148,6 +151,29 @@ def get_msgs():
     return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": g.my_wxid})
 
 
+@app.route('/api/img', methods=["GET", 'POST'])
+def get_img():
+    """
+    获取图片
+    :return:
+    """
+    img_path = request.args.get("img_path")
+    img_path = request.json.get("img_path", img_path)
+    if not img_path:
+        return ReJson(1002)
+    img_path_all = os.path.join(g.wxid_path, img_path)
+    if os.path.exists(img_path_all):
+        fomt, md5, out_bytes = read_img_dat(img_path_all)
+        out_bytes = base64.b64encode(out_bytes).decode("utf-8")
+        out_bytes = f"data:{fomt};base64,{out_bytes}"
+        return ReJson(0, out_bytes)
+    else:
+        return ReJson(1001)
+
+@app.route('/api/audio', methods=["GET", 'POST'])
+def get_audio():
+    pass
+
 if __name__ == '__main__':
     @app.before_request
     def before_request():
@@ -155,8 +181,9 @@ if __name__ == '__main__':
         g.msg_path = path
         g.micro_path = path
         g.media_path = path
-        g.filestorage_path = "args.filestorage_path"
+        g.wxid_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
         g.my_wxid = "wxid_vzzcn5fevion22"
+        g.tmp_path = "dist"  # 临时文件夹,用于存放图片等
         g.user_list = []
 
 

@@ -126,6 +126,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             match = re.search(r"FileStorage(.*?)'", BytesExtra)
             if match:
                 img_path = match.group(0).replace("'", "")
+                img_path = [i for i in img_path.split("\\") if i]
+                img_path = os.path.join(*img_path)
                 content["src"] = img_path
             else:
                 content["src"] = ""
