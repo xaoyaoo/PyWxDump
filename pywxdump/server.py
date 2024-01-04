@@ -19,12 +19,12 @@ CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允
 
 @app.before_request
 def before_request():
-    path = r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db"
+    path = r"****.db"
     g.msg_path = path
     g.micro_path = path
     g.media_path = path
-    g.wxid_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
-    g.my_wxid = "wxid_vzzcn5fevion22"
+    g.wxid_path = r"*****"
+    g.my_wxid = "******"
     g.tmp_path = "dist"  # 临时文件夹,用于存放图片等
     g.user_list = []
 

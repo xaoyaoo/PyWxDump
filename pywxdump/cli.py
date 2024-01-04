@@ -8,6 +8,7 @@
 import argparse
 import os
 import sys
+import time
 
 from pywxdump import *
 import pywxdump
@@ -291,7 +292,8 @@ class MainAll():
         # 获取微信信息
         save_path = args.save_path
         WxInfo = read_info(VERSION_LIST, True, save_path)
-
+        if isinstance(WxInfo, str):  # 如果返回的是字符串，则表示出错
+            return
         for user in WxInfo:
             key = user.get("key", "")
             if not key:
@@ -365,14 +367,15 @@ class MainAll():
             # 合并所有的数据库
             print(f"[*] 合并数据库中...（用时较久，耐心等待）")
             merge_save_path = merge_db(parpare_merge_db_path, os.path.join(out_path, "merge_all.db"))
-
-            FileStorage_path = os.path.join(filePath, "FileStorage") if filePath else "FileStorage"
-
+            time.sleep(1)
+            print(f"[+] 合并完成：{merge_save_path}")
+            print("=" * 32)
             # # 查看聊天记录
             args.msg_path = merge_save_path
             args.micro_path = merge_save_path
             args.media_path = merge_save_path
-            args.filestorage_path = FileStorage_path
+            args.wxid_path = filePath
+            args.my_wxid = wxid
             MainShowChatRecords().run(args)
 
 
