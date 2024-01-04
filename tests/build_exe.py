@@ -39,8 +39,7 @@ a = Analysis(['tmp.py'],
              datas=[(r'{root_path}\\version_list.json', 'pywxdump'),
               (r'{root_path}/ui/templates/chat.html', 'pywxdump/ui/templates'), 
              (r'{root_path}/ui/templates/index.html', 'pywxdump/ui/templates'),
-             *[(f, 'pywxdump/ui/web/assets/') for f in glob.glob(r'{root_path}/ui/web/assets/*')],
-            *[(f, 'pywxdump/ui/web/') for f in glob.glob(r'{root_path}/ui/web/*')],
+            {datas_741258}
             ],
              hiddenimports={hidden_imports},
              hookspath=[],
@@ -104,9 +103,15 @@ if package_path:
     hidden_imports = [i for i in hidden_imports if i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
 
     root_path = os.path.join(package_path, 'pywxdump')
-
+    datas_741258 = []
+    for root, dirs, files in os.walk(root_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(root_path.replace(package_path, ""))}' )''')
+    datas_741258 = ",\n".join(datas_741258)
+    print(datas_741258)
     # 生成 spec 文件
-    spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports)
+    spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports, datas_741258=datas_741258)
     spec_file = os.path.join("dist", "pywxdump.spec")
     with open(spec_file, 'w', encoding="utf-8") as f:
         f.write(spec_content.strip())
