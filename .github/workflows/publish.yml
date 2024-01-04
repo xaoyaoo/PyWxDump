@@ -42,6 +42,7 @@ jobs:
       - name: Build exe file
         run: |
           python tests/build_exe.py
+          cat dist/pywxdump.spec
 
       - name: Build Executable
         run: |

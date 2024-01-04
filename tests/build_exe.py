@@ -107,7 +107,7 @@ if package_path:
     for root, dirs, files in os.walk(os.path.join(root_path,"ui")):
         for file in files:
             file_path = os.path.join(root, file)
-            datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, ""))}' )''')
+            datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )''')
     datas_741258 = ",\n".join(datas_741258)
     print(datas_741258)
     # 生成 spec 文件
