@@ -13,3 +13,4 @@ pyahocorasick
 blackboxprotobuf
 lz4
 lxml
+flask_cors

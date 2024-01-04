@@ -11,16 +11,14 @@ import os
 from flask import Flask, request, render_template, g, Blueprint, send_file
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
-from flask_cors import CORS
+# app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
-# from flask_cors import CORS
-
-app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
-
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
+api = Blueprint('api', __name__, template_folder='templates')
+api.debug = False
 
 
-@app.route('/api/init', methods=["GET", 'POST'])
+
+@api.route('/api/init', methods=["GET", 'POST'])
 def init():
     """
     初始化
@@ -35,7 +33,7 @@ def init():
     return ReJson(0, rdata)
 
 
-@app.route('/api/contact_list', methods=["GET", 'POST'])
+@api.route('/api/contact_list', methods=["GET", 'POST'])
 def contact_list():
     """
     获取联系人列表
@@ -59,7 +57,7 @@ def contact_list():
         return ReJson(9999, msg=str(e))
 
 
-@app.route('/api/chat_count', methods=["GET", 'POST'])
+@api.route('/api/chat_count', methods=["GET", 'POST'])
 def chat_count():
     """
     获取联系人列表
@@ -77,7 +75,7 @@ def chat_count():
         return ReJson(9999, msg=str(e))
 
 
-@app.route('/api/contact_count_list', methods=["GET", 'POST'])
+@api.route('/api/contact_count_list', methods=["GET", 'POST'])
 def contact_count_list():
     """
     获取联系人列表
@@ -116,7 +114,7 @@ def contact_count_list():
         return ReJson(9999, msg=str(e))
 
 
-@app.route('/api/msgs', methods=["GET", 'POST'])
+@api.route('/api/msgs', methods=["GET", 'POST'])
 def get_msgs():
     msg_path = request.headers.get("msg_path")
     micro_path = request.headers.get("micro_path")
@@ -151,7 +149,7 @@ def get_msgs():
     return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": g.my_wxid})
 
 
-@app.route('/api/img', methods=["GET", 'POST'])
+@api.route('/api/img', methods=["GET", 'POST'])
 def get_img():
     """
     获取图片
@@ -170,7 +168,8 @@ def get_img():
     else:
         return ReJson(1001)
 
-@app.route('/api/audio', methods=["GET", 'POST'])
+
+@api.route('/api/audio', methods=["GET", 'POST'])
 def get_audio():
     MsgSvrID = request.args.get("MsgSvrID")
     MsgSvrID = request.json.get("MsgSvrID", MsgSvrID)
@@ -183,18 +182,7 @@ def get_audio():
     video_data = f"data:audio/wav;base64,{video_base64}"
     return ReJson(0, video_data)
 
+@api.route('/')
+def index():
+    return render_template('index.html')
 
-if __name__ == '__main__':
-    @app.before_request
-    def before_request():
-        path = r"D:\_code\py_code\test\a2023\b0821wxdb\merge_wfwx_db\kkWxMsg\MSG_all.db"
-        g.msg_path = path
-        g.micro_path = path
-        g.media_path = path
-        g.wxid_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
-        g.my_wxid = "wxid_vzzcn5fevion22"
-        g.tmp_path = "dist"  # 临时文件夹,用于存放图片等
-        g.user_list = []
-
-
-    app.run(host='0.0.0.0', port=5000, debug=True)

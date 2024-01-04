@@ -178,9 +178,11 @@ class MainShowChatRecords():
                                 metavar="")
         sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
                                 metavar="")
-        sb_decrypt.add_argument("-fs", "--filestorage_path", type=str,
-                                help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False,
+        sb_decrypt.add_argument("-wid", "--wxid_path", type=str,
+                                help="(可选)微信文件夹的路径（用于显示图片）", required=False,
                                 metavar="")
+        sb_decrypt.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
+                                default="wxid_vzzcn5fevion22", metavar="")
         return sb_decrypt
 
     def run(self, args):
@@ -199,19 +201,23 @@ class MainShowChatRecords():
             print("[-] 输入数据库路径不存在")
             return
 
-        app = Flask(__name__, template_folder='./show_chat/templates')
+        app = Flask(__name__, template_folder='./ui/web', static_folder='./ui/web/assets/', static_url_path='/assets/')
         app.logger.setLevel(logging.ERROR)
 
+        from flask_cors import CORS
+        from pywxdump.api.api import api
+        CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
         @app.before_request
         def before_request():
+            g.msg_path = args.msg_path
+            g.micro_path = args.micro_path
+            g.media_path = args.media_path
+            g.wxid_path = args.wxid_path
+            g.my_wxid = args.my_wxid
+            g.tmp_path = "tmp"  # 临时文件夹,用于存放图片等
+            g.user_list = []
 
-            g.MSG_ALL_db_path = args.msg_path
-            g.MicroMsg_db_path = args.micro_path
-            g.MediaMSG_all_db_path = args.media_path
-            g.FileStorage_path = args.filestorage_path
-            g.USER_LIST = get_user_list(args.msg_path, args.micro_path)
-
-        app.register_blueprint(app_show_chat)
+        app.register_blueprint(api)
 
         print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
         app.run(host='0.0.0.0', port=5000, debug=False)
