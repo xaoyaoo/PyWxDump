@@ -9,7 +9,7 @@ import base64
 import os
 
 from flask import Flask, request, render_template, g, Blueprint, send_file
-from pywxdump import analyzer, read_img_dat
+from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
 from flask_cors import CORS
 
@@ -172,7 +172,17 @@ def get_img():
 
 @app.route('/api/audio', methods=["GET", 'POST'])
 def get_audio():
-    pass
+    MsgSvrID = request.args.get("MsgSvrID")
+    MsgSvrID = request.json.get("MsgSvrID", MsgSvrID)
+    if not MsgSvrID:
+        return ReJson(1002)
+    wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=g.media_path)
+    if not wave_data:
+        return ReJson(1001)
+    video_base64 = base64.b64encode(wave_data).decode("utf-8")
+    video_data = f"data:audio/wav;base64,{video_base64}"
+    return ReJson(0, video_data)
+
 
 if __name__ == '__main__':
     @app.before_request
