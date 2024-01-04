@@ -109,7 +109,7 @@ if package_path:
             file_path = os.path.join(root, file)
             datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )''')
     datas_741258 = ",\n".join(datas_741258)
-    print(datas_741258)
+    # print(datas_741258)
     # 生成 spec 文件
     spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports, datas_741258=datas_741258)
     spec_file = os.path.join("dist", "pywxdump.spec")
