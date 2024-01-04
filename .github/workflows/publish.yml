@@ -39,6 +39,10 @@ jobs:
           pip install -U .
           python tests/build_exe.py
 
+      - name: Build exe file
+        run: |
+          python tests/build_exe.py
+
       - name: Build Executable
         run: |
           pyinstaller --clean --distpath=dist dist/pywxdump.spec
