@@ -221,17 +221,20 @@ class MainShowChatRecords():
 
         app.register_blueprint(api)
 
-        # 自动打开浏览器
-        url = "http://127.0.0.1:5000/"
-        # 根据操作系统使用不同的命令打开默认浏览器
-        if sys.platform.startswith('darwin'):  # macOS
-            subprocess.call(['open', url])
-        elif sys.platform.startswith('win'):  # Windows
-            subprocess.call(['start', url], shell=True)
-        elif sys.platform.startswith('linux'):  # Linux
-            subprocess.call(['xdg-open', url])
-        else:
-            print("Unsupported platform, can't open browser automatically.")
+        try:
+            # 自动打开浏览器
+            url = "http://127.0.0.1:5000/"
+            # 根据操作系统使用不同的命令打开默认浏览器
+            if sys.platform.startswith('darwin'):  # macOS
+                subprocess.call(['open', url])
+            elif sys.platform.startswith('win'):  # Windows
+                subprocess.call(['start', url], shell=True)
+            elif sys.platform.startswith('linux'):  # Linux
+                subprocess.call(['xdg-open', url])
+            else:
+                print("Unsupported platform, can't open browser automatically.")
+        except Exception as e:
+            pass
 
         print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
         app.run(host='0.0.0.0', port=5000, debug=False)
