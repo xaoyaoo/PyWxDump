@@ -39,7 +39,7 @@ jobs:
           pip install -U .
           python tests/build_exe.py
 
-      - name: Build exe file
+      - name: Generate File pywxdump.spec
         run: |
           python tests/build_exe.py
           cat dist/pywxdump.spec
