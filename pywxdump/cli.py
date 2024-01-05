@@ -203,12 +203,29 @@ class MainShowChatRecords():
             print("[-] 输入数据库路径不存在")
             return
 
-        app = Flask(__name__, template_folder='./ui/web', static_folder='./ui/web/assets/', static_url_path='/assets/')
-        app.logger.setLevel(logging.ERROR)
-
         from flask_cors import CORS
         from pywxdump.api import api
+
+        # if getattr(sys, 'frozen', False):
+        #     # The application is run as a bundled executable (PyInstaller)
+        #     base_dir = sys._MEIPASS
+        # else:
+        #     # The application is run as a script
+        #     base_dir = os.path.abspath(os.path.dirname(__file__))
+
+        # template_folder = os.path.join(base_dir, 'ui/web')
+        # static_folder = os.path.join(base_dir, 'ui/web/assets/')
+
+        app = Flask(__name__, template_folder='./ui/web', static_folder='./ui/web/assets/', static_url_path='/assets/')
+
+        # app.template_folder = template_folder
+        # app.static_folder = static_folder
+        # app.static_url_path = '/assets/'
+
+        app.logger.setLevel(logging.ERROR)
+
         CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
+
         @app.before_request
         def before_request():
             g.msg_path = args.msg_path
@@ -235,9 +252,25 @@ class MainShowChatRecords():
                 print("Unsupported platform, can't open browser automatically.")
         except Exception as e:
             pass
+        import socket
+        def is_port_in_use(host, port):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                try:
+                    s.bind((host, port))
+                except socket.error:
+                    return True
+            return False
 
-        print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
-        app.run(host='0.0.0.0', port=5000, debug=False)
+        # 检查端口是否被占用
+        host = '0.0.0.0'
+        port = 5000
+        if is_port_in_use(host, port):
+            print(f"Port {port} is already in use. Choose a different port.")
+            input("Press Enter to exit...")
+        else:
+            time.sleep(1)
+            print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
+            app.run(host=host, port=port, debug=False)
 
 
 class MainExportChatRecords():
@@ -368,9 +401,10 @@ class MainAll():
                     print(
                         f'[+] success "{os.path.relpath(ret1[0], os.path.commonprefix(wxdbpaths))}" -> "{os.path.relpath(ret1[1], os.getcwd())}"')
                     out_dbs.append(ret1[1])
-            print("-" * 32)
-            print(
-                "[-] " + f"警告：共 {len(errors)} 个文件未解密(可能原因:非当前登录用户数据库;非加密数据库),详见{out_path}下‘未解密.txt’;")
+            if len(errors) > 0:
+                print("-" * 32)
+                print(
+                    "[-] " + f"警告：共 {len(errors)} 个文件未解密(可能原因:非当前登录用户数据库;非加密数据库),详见{out_path}下‘未解密.txt’;")
             # print("; ".join([f'"{wxdbpaths[i]}"' for i in errors]))
             with open(os.path.join(out_path, "未解密.txt"), "w", encoding="utf-8") as f:
                 f.write("\n".join([f'{i}' for i in errors]))

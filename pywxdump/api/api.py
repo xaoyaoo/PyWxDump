@@ -11,11 +11,11 @@ import os
 from flask import Flask, request, render_template, g, Blueprint, send_file
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
+
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
-api = Blueprint('api', __name__, template_folder='templates')
+api = Blueprint('api', __name__, template_folder='../ui/web')
 api.debug = False
-
 
 
 @api.route('/api/init', methods=["GET", 'POST'])
@@ -182,7 +182,7 @@ def get_audio():
     video_data = f"data:audio/wav;base64,{video_base64}"
     return ReJson(0, video_data)
 
+
 @api.route('/')
 def index():
     return render_template('index.html')
-
