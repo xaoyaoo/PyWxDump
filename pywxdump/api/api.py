@@ -69,7 +69,8 @@ def chat_count():
         msg_path = request.headers.get("msg_path")
         if not msg_path:
             msg_path = g.msg_path
-        contact_list = analyzer.get_chat_count(msg_path)
+        username = request.json.get("username", "")
+        contact_list = analyzer.get_chat_count(msg_path, username)
         return ReJson(0, contact_list)
     except Exception as e:
         return ReJson(9999, msg=str(e))
