@@ -135,7 +135,13 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 请勿利用本项目的相关技术从事非法测试，如因此产生的一切不良后果与项目作者无关。
 
-# 四、许可证
+# 四、致谢
+
+[![PyWxDump 贡献者](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)
+
+[![UI 贡献者](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
+
+# 五、许可证
 
 ```text
 MIT License
