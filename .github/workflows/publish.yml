@@ -33,11 +33,30 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Build Web UI
+        run: |
+          cd ..
+          git clone https://github.com/xaoyaoo/wxdump_web.git
+          cd wxdump_web
+          npm install
+          npm run build
+
+      - name: copy web ui to pywxdump/ui/web
+          cd ..
+          ls -l wxdump_web/dist
+          cp -r wxdump_web/dist PyWxDump/pywxdump/ui/web
+          ls -l PyWxDump/pywxdump/ui/web
+          cd PyWxDump
+
       - name: Build package
         run: |
           python -m build
           pip install -U .
-          python tests/build_exe.py
 
       - name: Generate File pywxdump.spec
         run: |
