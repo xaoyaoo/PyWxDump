@@ -300,7 +300,7 @@ class MainExportChatRecords():
             return
         if t == "txt":
             try:
-                code, ret = export_csv(args.username, args.outpath, args.msg_path, page_size=1000000)
+                code, ret = export_csv(args.username, args.outpath, args.msg_path, page_size=10000000)
                 if not code:
                     print(ret)
                     return
