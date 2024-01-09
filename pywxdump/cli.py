@@ -185,6 +185,8 @@ class MainShowChatRecords():
                                 metavar="")
         sb_decrypt.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
                                 default="wxid_vzzcn5fevion22", metavar="")
+        sb_decrypt.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False,
+                                default=False, metavar="")
         return sb_decrypt
 
     def run(self, args):
@@ -206,21 +208,7 @@ class MainShowChatRecords():
         from flask_cors import CORS
         from pywxdump.api import api
 
-        # if getattr(sys, 'frozen', False):
-        #     # The application is run as a bundled executable (PyInstaller)
-        #     base_dir = sys._MEIPASS
-        # else:
-        #     # The application is run as a script
-        #     base_dir = os.path.abspath(os.path.dirname(__file__))
-
-        # template_folder = os.path.join(base_dir, 'ui/web')
-        # static_folder = os.path.join(base_dir, 'ui/web/assets/')
-
         app = Flask(__name__, template_folder='./ui/web', static_folder='./ui/web/assets/', static_url_path='/assets/')
-
-        # app.template_folder = template_folder
-        # app.static_folder = static_folder
-        # app.static_url_path = '/assets/'
 
         app.logger.setLevel(logging.ERROR)
 
@@ -252,8 +240,9 @@ class MainShowChatRecords():
                 print("Unsupported platform, can't open browser automatically.")
         except Exception as e:
             pass
-        import socket
+
         def is_port_in_use(host, port):
+            import socket
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 try:
                     s.bind((host, port))
@@ -261,8 +250,13 @@ class MainShowChatRecords():
                     return True
             return False
 
+        online = args.online
         # 检查端口是否被占用
-        host = '0.0.0.0'
+        if online:
+            host = '0.0.0.0'
+        else:
+            host = "127.0.0.1"
+
         port = 5000
         if is_port_in_use(host, port):
             print(f"Port {port} is already in use. Choose a different port.")
@@ -432,6 +426,7 @@ class MainAll():
             args.media_path = merge_save_path
             args.wxid_path = filePath
             args.my_wxid = wxid
+            args.online = False
             MainShowChatRecords().run(args)
 
 
