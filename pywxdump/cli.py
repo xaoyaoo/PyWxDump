@@ -296,7 +296,7 @@ class MainExportChatRecords():
         # 从命令行参数获取值
         t = args.type
 
-        if t == "txt":
+        if t == "csv":
             try:
                 code, ret = export_csv(args.username, args.outpath, args.msg_path, page_size=10000000)
                 if not code:
