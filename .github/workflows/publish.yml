@@ -82,6 +82,10 @@ jobs:
           Compress-Archive -Path PyWxDump/dist/*.exe,PyWxDump/dist/*.whl -DestinationPath exe_whl.zip
           Compress-Archive -Path PyWxDump.zip,wxdump_web.zip -DestinationPath Source.zip
           ls
+          cp exe_whl.zip PyWxDump/dist/exe_whl.zip
+          cp Source.zip PyWxDump/dist/Source.zip
+          ls PyWxDump/dist
+          cd PyWxDump
 
       - name: Publish package with Twine # 使用 Twine 发布到 PyPI
         run: |
@@ -103,7 +107,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            PyWxDump/dist/*.exe
-            PyWxDump/dist/*.whl
-            exe_whl.zip
-            Source.zip
+            dist/*.exe
+            dist/*.whl
+            dist/exe_whl.zip
+            dist/Source.zip
