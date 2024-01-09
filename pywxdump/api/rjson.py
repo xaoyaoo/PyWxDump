@@ -1,7 +1,7 @@
 import logging
 
 
-def ReJson(code: int, body: dict = None, msg: str = None, error: str = None, extra: dict = None) -> dict:
+def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = None, extra: dict = None) -> dict:
     """
         返回格式化的json数据
     :param code: 状态码  int

@@ -99,6 +99,8 @@ def contact_count_list():
         chat_count = analyzer.get_chat_count(msg_path)
         for contact in contact_list:
             contact["chat_count"] = chat_count.get(contact["username"], 0)
+        # 去重
+        contact_list = [dict(t) for t in {tuple(d.items()) for d in contact_list}]
         # 降序
         contact_list = sorted(contact_list, key=lambda x: x["chat_count"], reverse=True)
 

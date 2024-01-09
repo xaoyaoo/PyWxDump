@@ -137,9 +137,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 # 四、致谢
 
-[![PyWxDump 贡献者](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)
-
-[![UI 贡献者](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
+[![PyWxDump 贡献者](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)[![UI 贡献者](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
 
 # 五、许可证
 
