@@ -139,7 +139,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             if voicelength.isdigit():
                 voicelength = int(voicelength) / 1000
                 voicelength = f"{voicelength:.2f}"
-            content["msg"] = f"语音时长：{voicelength}秒\n翻译结果：{transtext}" if transtext else f"语音时长：{voicelength}秒"
+            content[
+                "msg"] = f"语音时长：{voicelength}秒\n翻译结果：{transtext}" if transtext else f"语音时长：{voicelength}秒"
             content["src"] = os.path.join("audio", f"{StrTalker}", f"{CreateTime}_{MsgSvrID}.wav")
         elif type_id == (43, 0):  # 视频
             BytesExtra = read_BytesExtra(BytesExtra)
@@ -189,8 +190,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             else:
                 talker = StrTalker
 
-        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,"id": id,
-                    "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
+        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
+                    "room_name": StrTalker, "content": content, "CreateTime": CreateTime, "id": id}
         data.append(row_data)
     return data
 
@@ -231,8 +232,9 @@ def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
             break
         save_path = os.path.join(outpath, f"{username}_{int(i / page_size)}.csv")
         with open(save_path, "w", encoding="utf-8") as f:
-            f.write("MsgSvrID,type_name,is_sender,talker,room_name,content,CreateTime\n")
+            f.write("id,MsgSvrID,type_name,is_sender,talker,room_name,content,CreateTime\n")
             for row in data:
+                id = row.get("id", "")
                 MsgSvrID = row.get("MsgSvrID", "")
                 type_name = row.get("type_name", "")
                 is_sender = row.get("is_sender", "")
@@ -243,7 +245,7 @@ def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
 
                 content = json.dumps(content, ensure_ascii=False)
 
-                f.write(f"{MsgSvrID},{type_name},{is_sender},{talker},{room_name},{content},{CreateTime}\n")
+                f.write(f"{id},{MsgSvrID},{type_name},{is_sender},{talker},{room_name},{content},{CreateTime}\n")
     return True, f"导出成功: {outpath}"
 
 
