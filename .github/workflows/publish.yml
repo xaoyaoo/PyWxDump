@@ -78,10 +78,10 @@ jobs:
       - name: Zip Executable
         run: |
           cd ..
-          ls -l
+          ls
           Compress-Archive -Path PyWxDump/dist/*.exe,PyWxDump/dist/*.whl -DestinationPath exe_whl.zip
           Compress-Archive -Path PyWxDump.zip,wxdump_web.zip -DestinationPath Source.zip
-          ls -l
+          ls
 
       - name: Publish package with Twine # 使用 Twine 发布到 PyPI
         run: |
