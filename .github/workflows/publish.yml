@@ -47,6 +47,7 @@ jobs:
           npm run build
 
       - name: copy web ui to pywxdump/ui/web
+        run: |
           cd ..
           ls -l wxdump_web/dist
           cp -r wxdump_web/dist PyWxDump/pywxdump/ui/web
