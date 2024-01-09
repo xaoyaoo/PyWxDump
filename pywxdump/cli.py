@@ -287,11 +287,9 @@ class MainExportChatRecords():
         sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
                                 metavar="")
         sb_decrypt.add_argument("-fs", "--filestorage_path", type=str,
-                                help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False,
-                                metavar="")
+                                help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False, metavar="")
         sb_decrypt.add_argument("-t", "--type", type=str, help="导出类型(可选:html,csv)", required=False,
-                                default="html",
-                                metavar="")
+                                default="html", metavar="")
         return sb_decrypt
 
     def run(self, args):
