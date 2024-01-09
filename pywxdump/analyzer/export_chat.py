@@ -94,13 +94,13 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
     cursor1 = db1.cursor()
     if selected_talker:
         sql = (
-            "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra "
+            "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
             "FROM MSG WHERE StrTalker=? "
             "ORDER BY CreateTime ASC LIMIT ?,?")
         cursor1.execute(sql, (selected_talker, start_index, page_size))
     else:
         sql = (
-            "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra "
+            "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
             "FROM MSG ORDER BY CreateTime ASC LIMIT ?,?")
         cursor1.execute(sql, (start_index, page_size))
     result1 = cursor1.fetchall()
@@ -109,7 +109,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
 
     data = []
     for row in result1:
-        localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra = row
+        localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra, id = row
         CreateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(CreateTime))
 
         type_id = (Type, SubType)
@@ -189,7 +189,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             else:
                 talker = StrTalker
 
-        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
+        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,"id": id,
                     "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
         data.append(row_data)
     return data
