@@ -295,9 +295,7 @@ class MainExportChatRecords():
     def run(self, args):
         # 从命令行参数获取值
         t = args.type
-        if t not in ["html", "csv"]:
-            print("[-] 未知的导出类型")
-            return
+
         if t == "txt":
             try:
                 code, ret = export_csv(args.username, args.outpath, args.msg_path, page_size=10000000)
@@ -310,27 +308,30 @@ class MainExportChatRecords():
                 print(e)
                 print("[-] 导出失败")
                 return
+        elif t == "html":
+            try:
+                from flask import Flask, request, jsonify, render_template, g
+                import logging
+            except Exception as e:
+                print(e)
+                print("[-] 请安装flask( pip install flask)")
+                return
 
-        try:
-            from flask import Flask, request, jsonify, render_template, g
-            import logging
-        except Exception as e:
-            print(e)
-            print("[-] 请安装flask( pip install flask)")
+            if not os.path.exists(args.msg_path) or not os.path.exists(args.micro_path) or not os.path.exists(
+                    args.media_path):
+                print(os.path.exists(args.msg_path), os.path.exists(args.micro_path), os.path.exists(args.media_path))
+                print("[-] 输入数据库路径不存在")
+                return
+
+            if not os.path.exists(args.outpath):
+                os.makedirs(args.outpath)
+                print(f"[+] 创建输出文件夹：{args.outpath}")
+
+            export(args.username, args.outpath, args.msg_path, args.micro_path, args.media_path, args.filestorage_path)
+            print(f"[+] 导出成功{args.outpath}")
+        else:
+            print("[-] 未知的导出类型")
             return
-
-        if not os.path.exists(args.msg_path) or not os.path.exists(args.micro_path) or not os.path.exists(
-                args.media_path):
-            print(os.path.exists(args.msg_path), os.path.exists(args.micro_path), os.path.exists(args.media_path))
-            print("[-] 输入数据库路径不存在")
-            return
-
-        if not os.path.exists(args.outpath):
-            os.makedirs(args.outpath)
-            print(f"[+] 创建输出文件夹：{args.outpath}")
-
-        export(args.username, args.outpath, args.msg_path, args.micro_path, args.media_path, args.filestorage_path)
-        print(f"[+] 导出成功{args.outpath}")
 
 
 class MainAll():

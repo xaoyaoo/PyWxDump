@@ -12,6 +12,7 @@
 # Author:       xaoyaoo
 # Date:         2023/11/10
 # -------------------------------------------------------------------------------
+import csv
 import re
 import sqlite3
 import os
@@ -233,7 +234,9 @@ def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
             break
         save_path = os.path.join(outpath, f"{username}_{i}_{i + page_size}.csv")
         with open(save_path, "w", encoding="utf-8") as f:
-            f.write("id,MsgSvrID,type_name,is_sender,talker,room_name,content,CreateTime\n")
+            csv_writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow(["id", "MsgSvrID", "type_name", "is_sender", "talker", "room_name", "content",
+                                 "CreateTime"])
             for row in data:
                 id = row.get("id", "")
                 MsgSvrID = row.get("MsgSvrID", "")
@@ -245,8 +248,8 @@ def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
                 CreateTime = row.get("CreateTime", "")
 
                 content = json.dumps(content, ensure_ascii=False)
+                csv_writer.writerow([id, MsgSvrID, type_name, is_sender, talker, room_name, content, CreateTime])
 
-                f.write(f"{id},{MsgSvrID},{type_name},{is_sender},{talker},{room_name},{content},{CreateTime}\n")
     return True, f"导出成功: {outpath}"
 
 
