@@ -230,7 +230,7 @@ def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
         data = get_msg_list(MSG_ALL_db_path, username, start_index, page_size)
         if len(data) == 0:
             break
-        save_path = os.path.join(outpath, f"{username}_{int(i / page_size)}.csv")
+        save_path = os.path.join(outpath, f"{username}_{i}_{i + page_size}.csv")
         with open(save_path, "w", encoding="utf-8") as f:
             f.write("id,MsgSvrID,type_name,is_sender,talker,room_name,content,CreateTime\n")
             for row in data:
