@@ -33,15 +33,17 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
 
-      - name: Set up Node.js
+      - name: Set up Node.js # 设置 Node.js 环境
         uses: actions/setup-node@v2
         with:
           node-version: 20
 
-      - name: Build Web UI
+      - name: Build Web UI # 构建 Web UI
         run: |
           cd ..
           git clone https://github.com/xaoyaoo/wxdump_web.git
+          Compress-Archive -Path wxdump_web -DestinationPath wxdump_web.zip
+          Compress-Archive -Path PyWxDump -DestinationPath PyWxDump.zip
           cd wxdump_web
           npm install
           npm run build
@@ -54,12 +56,12 @@ jobs:
           ls -l PyWxDump/pywxdump/ui/web
           cd PyWxDump
 
-      - name: Build package
+      - name: Build package # 构建包
         run: |
           python -m build
           pip install -U .
 
-      - name: Generate File pywxdump.spec
+      - name: Generate File pywxdump.spec # 生成 pywxdump.spec 文件
         run: |
           python tests/build_exe.py
           cat dist/pywxdump.spec
@@ -72,6 +74,14 @@ jobs:
         run: |
           ls -l dist
           ls -l "${{ github.workspace }}"
+
+      - name: Zip Executable
+        run: |
+          cd ..
+          ls -l
+          Compress-Archive -Path PyWxDump/dist/*.exe,PyWxDump/dist/*.whl -DestinationPath exe_whl.zip
+          Compress-Archive -Path PyWxDump.zip,wxdump_web.zip -DestinationPath Source.zip
+          ls -l
 
       - name: Publish package with Twine # 使用 Twine 发布到 PyPI
         run: |
@@ -93,5 +103,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dist/*.exe
-            dist/*.whl
+            PyWxDump/dist/*.exe
+            PyWxDump/dist/*.whl
+            exe_whl.zip
+            Source.zip
