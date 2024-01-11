@@ -11,6 +11,7 @@ import os
 from flask import Flask, request, render_template, g, Blueprint, send_file
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
+from pywxdump import read_info,VERSION_LIST
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -185,6 +186,19 @@ def get_audio():
     video_data = f"data:audio/wav;base64,{video_base64}"
     return ReJson(0, video_data)
 
+
+# 这部分为专业工具的api
+@api.route('/api/wxinfo', methods=["GET", 'POST'])
+def get_wxinfo():
+    """
+    获取微信信息
+    :return:
+    """
+    import pythoncom
+    pythoncom.CoInitialize()
+    wxinfos = read_info(VERSION_LIST)
+    pythoncom.CoUninitialize()
+    return ReJson(0, wxinfos)
 
 @api.route('/')
 def index():

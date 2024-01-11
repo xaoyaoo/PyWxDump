@@ -140,7 +140,10 @@ def get_key(pid, db_path, addr_len):
 
 
 # 读取微信信息(account,mobile,name,mail,wxid,key)
-def read_info(version_list: dict, is_logging: bool = False, save_path: str = None):
+def read_info(version_list: dict = None, is_logging: bool = False, save_path: str = None):
+    if version_list is None:
+        version_list = {}
+
     wechat_process = []
     result = []
     error = ""
