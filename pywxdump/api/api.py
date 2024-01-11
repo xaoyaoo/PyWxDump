@@ -11,7 +11,7 @@ import os
 from flask import Flask, request, render_template, g, Blueprint, send_file
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump import read_info,VERSION_LIST
+from pywxdump import read_info, VERSION_LIST, batch_decrypt
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -200,6 +200,27 @@ def get_wxinfo():
     pythoncom.CoUninitialize()
     return ReJson(0, wxinfos)
 
+
+@api.route('/api/decrypt', methods=["GET", 'POST'])
+def decrypt():
+    """
+    解密
+    :return:
+    """
+    key = request.json.get("key")
+    if not key:
+        return ReJson(1002)
+    wxdb_path = request.json.get("wxdbPath")
+    if not wxdb_path:
+        return ReJson(1002)
+    out_path = request.json.get("outPath")
+    if not out_path:
+        out_path = g.tmp_path
+    wxinfos = batch_decrypt(key, wxdb_path, out_path=out_path)
+    return ReJson(0, str(wxinfos))
+
+
+# END 这部分为专业工具的api
 @api.route('/')
 def index():
     return render_template('index.html')
