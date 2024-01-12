@@ -11,7 +11,7 @@ import os
 from flask import Flask, request, render_template, g, Blueprint, send_file
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump import read_info, VERSION_LIST, batch_decrypt
+from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -219,6 +219,26 @@ def decrypt():
     wxinfos = batch_decrypt(key, wxdb_path, out_path=out_path)
     return ReJson(0, str(wxinfos))
 
+@api.route('/api/biasaddr', methods=["GET", 'POST'])
+def biasaddr():
+    """
+    BiasAddr
+    :return:
+    """
+    #       mobile: mobile.value,
+    #       name: name.value,
+    #       account: account.value,
+    #       key: key.value,
+    #       wxdbPath: wxdbPath.value
+    mobile = request.json.get("mobile")
+    name = request.json.get("name")
+    account = request.json.get("account")
+    key = request.json.get("key", "")
+    wxdbPath = request.json.get("wxdbPath", "")
+    if not mobile or not name or not account:
+        return ReJson(1002)
+    rdata = BiasAddr(account,mobile, name,  key, wxdbPath).run()
+    return ReJson(0, str(rdata))
 
 # END 这部分为专业工具的api
 @api.route('/')
