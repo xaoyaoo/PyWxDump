@@ -11,7 +11,7 @@ import os
 from flask import Flask, request, render_template, g, Blueprint, send_file
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr
+from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -219,6 +219,7 @@ def decrypt():
     wxinfos = batch_decrypt(key, wxdb_path, out_path=out_path)
     return ReJson(0, str(wxinfos))
 
+
 @api.route('/api/biasaddr', methods=["GET", 'POST'])
 def biasaddr():
     """
@@ -232,10 +233,29 @@ def biasaddr():
     wxdbPath = request.json.get("wxdbPath", "")
     if not mobile or not name or not account:
         return ReJson(1002)
-    rdata = BiasAddr(account,mobile, name,  key, wxdbPath).run()
+    rdata = BiasAddr(account, mobile, name, key, wxdbPath).run()
     return ReJson(0, str(rdata))
 
+
+@api.route('/api/merge', methods=["GET", 'POST'])
+def merge():
+    """
+    合并
+    :return:
+    """
+    wxdb_path = request.json.get("dbPath")
+    if not wxdb_path:
+        return ReJson(1002)
+    out_path = request.json.get("outPath")
+    if not out_path:
+        return ReJson(1002)
+    rdata = merge_db(wxdb_path, out_path)
+    return ReJson(0, str(rdata))
+
+
 # END 这部分为专业工具的api
+
+
 @api.route('/')
 def index():
     return render_template('index.html')
