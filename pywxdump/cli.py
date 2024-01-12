@@ -174,12 +174,16 @@ class MainShowChatRecords():
         self.mode = "dbshow"
         # 添加 'decrypt' 子命令解析器
         sb_decrypt = parser.add_parser(self.mode, help="聊天记录查看")
-        sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
+        sb_decrypt.add_argument("-merge", "--merge_path", type=str, help="解密后的 merge_all.db 的路径", required=False,
                                 metavar="")
-        sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=True,
+
+        sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=False,
                                 metavar="")
-        sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
+        sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=False,
                                 metavar="")
+        sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=False,
+                                metavar="")
+
         sb_decrypt.add_argument("-wid", "--wxid_path", type=str,
                                 help="(可选)微信文件夹的路径（用于显示图片）", required=False,
                                 metavar="")
@@ -190,7 +194,18 @@ class MainShowChatRecords():
         return sb_decrypt
 
     def run(self, args):
+        # merge和(msg_path,micro_path,media_path) 二选一
+        if (not args.merge_path) or (not args.msg_path and not args.micro_path and not args.media_path):
+            print("[-] 请输入数据库路径（[merge_path] or [msg_path,micro_path,media_path]）")
+            return
+
         # 从命令行参数获取值
+        merge_path = args.merge_path
+        if merge_path:
+            args.msg_path = merge_path
+            args.micro_path = merge_path
+            args.media_path = merge_path
+
         try:
             from flask import Flask, request, jsonify, render_template, g
             import logging
@@ -334,11 +349,14 @@ class MainAll():
         # 添加 'all' 子命令解析器
         sb_all = parser.add_parser(self.mode, help="获取微信信息，解密微信数据库，查看聊天记录")
         sb_all.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)wx_info保存路径【json文件】")
+        sb_all.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False,
+                            default=False, metavar="")
         return sb_all
 
     def run(self, args):
         # 获取微信信息
         save_path = args.save_path
+        online = args.online
         WxInfo = read_info(VERSION_LIST, True, save_path)
         if isinstance(WxInfo, str):  # 如果返回的是字符串，则表示出错
             return
@@ -426,7 +444,7 @@ class MainAll():
             args.media_path = merge_save_path
             args.wxid_path = filePath
             args.my_wxid = wxid
-            args.online = False
+            args.online = online
             MainShowChatRecords().run(args)
 
 
