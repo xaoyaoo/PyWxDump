@@ -41,6 +41,7 @@ class MainBiasAddr():
         return sb_bias_addr
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 从命令行参数获取值
         mobile = args.mobile
         name = args.name
@@ -109,6 +110,7 @@ class MainDecrypt():
         return sb_decrypt
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 从命令行参数获取值
         key = args.key
         db_path = args.db_path
@@ -141,6 +143,7 @@ class MainMerge():
         return sb_merge
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 从命令行参数获取值
         db_path = args.db_path
         out_path = args.out_path
@@ -194,6 +197,7 @@ class MainShowChatRecords():
         return sb_decrypt
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # merge和(msg_path,micro_path,media_path) 二选一
         if (not args.merge_path) or (not args.msg_path and not args.micro_path and not args.media_path):
             print("[-] 请输入数据库路径（[merge_path] or [msg_path,micro_path,media_path]）")
@@ -302,6 +306,7 @@ class MainExportChatRecords():
         return sb_decrypt
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 从命令行参数获取值
         t = args.type
 
@@ -354,6 +359,7 @@ class MainAll():
         return sb_all
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 获取微信信息
         save_path = args.save_path
         online = args.online
