@@ -84,12 +84,11 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 * 5.创建GUI图形界面，方便使用（完成部分功能）
 * 8.增加企业微信的支持
 * 9.增加获取实时聊天记录的功能
-* 10.聊天记录关键字搜索 或者按时间点搜索列出所有的联系人记录就nice了（增加搜索联系人）
-* 11.增加好友的信息获取（增加好友信息获取api）
-* 12.备份后的聊天记录，恢复到微信中
-* 13.朋友圈的查看与备份
-* 14.微信存储空间清理，减少微信占用空间
-* 15.通过UI控制，自动给指定人发送消息
+* 10.增加好友的信息获取（增加好友信息获取api）
+* 11.备份后的聊天记录，恢复到微信中
+* 12.朋友圈的查看与备份
+* 13.微信存储空间清理，减少微信占用空间
+* 14.通过UI控制，自动给指定人发送消息
 
 ## 4. 其他
 
@@ -116,7 +115,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 * 详细使用说明见 [UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
 
-* 极简版使用说明 [pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini) 
+* 极简版使用说明 [pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
 
 * 如果想修改UI，请clone [wx_dump_web](https://github.com/xaoyaoo/wx_dump_web) 项目，然后按需修改（该UI采用VUE+ElementUI开发）
 
