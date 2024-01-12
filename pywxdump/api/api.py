@@ -225,11 +225,6 @@ def biasaddr():
     BiasAddr
     :return:
     """
-    #       mobile: mobile.value,
-    #       name: name.value,
-    #       account: account.value,
-    #       key: key.value,
-    #       wxdbPath: wxdbPath.value
     mobile = request.json.get("mobile")
     name = request.json.get("name")
     account = request.json.get("account")
