@@ -198,9 +198,9 @@ class MainShowChatRecords():
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
-        # merge和(msg_path,micro_path,media_path) 二选一
-        if (not args.merge_path) or (not args.msg_path and not args.micro_path and not args.media_path):
-            print("[-] 请输入数据库路径（[merge_path] or [msg_path,micro_path,media_path]）")
+        # (merge)和(msg_path,micro_path,media_path) 二选一
+        if not args.merge_path and not (args.msg_path and args.micro_path and args.media_path):
+            print("[-] 请输入数据库路径（[merge_path] or [msg_path, micro_path, media_path]）")
             return
 
         # 从命令行参数获取值
@@ -220,7 +220,6 @@ class MainShowChatRecords():
 
         if not os.path.exists(args.msg_path) or not os.path.exists(args.micro_path) or not os.path.exists(
                 args.media_path):
-            print(os.path.exists(args.msg_path), os.path.exists(args.micro_path), os.path.exists(args.media_path))
             print("[-] 输入数据库路径不存在")
             return
 
