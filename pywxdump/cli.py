@@ -444,6 +444,7 @@ class MainAll():
             print(f"[+] 合并完成：{merge_save_path}")
             print("=" * 32)
             # # 查看聊天记录
+            args.merge_path = merge_save_path
             args.msg_path = merge_save_path
             args.micro_path = merge_save_path
             args.media_path = merge_save_path
