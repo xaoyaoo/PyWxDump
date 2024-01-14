@@ -214,6 +214,21 @@ def export():
             chat_type_tups += tup
     if not chat_type_tups:
         return ReJson(1002)
+
+    # 导出路径
+    outpath = os.path.join(g.tmp_path, "export")
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    if export_type == "csv":
+        # 导出聊天记录
+        outpath = os.path.join(outpath, "csv")
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+        code, ret = analyzer.export_csv(username, outpath, g.msg_path)
+        if code:
+            return ReJson(0, ret)
+
     return ReJson(0, "")
 
 
