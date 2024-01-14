@@ -454,6 +454,84 @@ class MainAll():
             MainShowChatRecords().run(args)
 
 
+class MainUi():
+    def init_parses(self, parser):
+        self.mode = "ui"
+        # 添加 'ui' 子命令解析器
+        sb_ui = parser.add_parser(self.mode, help="启动UI界面")
+        sb_ui.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
+        sb_ui.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False, default=False,
+                           metavar="")
+        sb_ui.add_argument("--debug", type=bool, help="(可选)是否开启debug模式", default=False)
+        return sb_ui
+
+    def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
+        # 从命令行参数获取值
+        online = args.online
+        # 检查端口是否被占用
+        if online:
+            host = '0.0.0.0'
+        else:
+            host = "127.0.0.1"
+        port = args.port
+        debug = args.debug
+
+        from flask import Flask, g
+        import logging
+        from flask_cors import CORS
+        from pywxdump.api import api
+
+        app = Flask(__name__, template_folder='./ui/web', static_folder='./ui/web/assets/', static_url_path='/assets/')
+
+        app.logger.setLevel(logging.ERROR)
+
+        CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
+
+        @app.before_request
+        def before_request():
+            g.msg_path = ""
+            g.media_path = ""
+            g.wxid_path = ""
+            g.my_wxid = ""
+            g.tmp_path = os.path.join(os.getcwd(), "wxdump_tmp")  # 临时文件夹,用于存放图片等
+            g.user_list = []
+
+        app.register_blueprint(api)
+
+        try:
+            # 自动打开浏览器
+            url = f"http://127.0.0.1:{port}/"
+            # 根据操作系统使用不同的命令打开默认浏览器
+            if sys.platform.startswith('darwin'):  # macOS
+                subprocess.call(['open', url])
+            elif sys.platform.startswith('win'):  # Windows
+                subprocess.call(['start', url], shell=True)
+            elif sys.platform.startswith('linux'):  # Linux
+                subprocess.call(['xdg-open', url])
+            else:
+                print("Unsupported platform, can't open browser automatically.")
+        except Exception as e:
+            pass
+
+        def is_port_in_use(host, port):
+            import socket
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                try:
+                    s.bind((host, port))
+                except socket.error:
+                    return True
+            return False
+
+        if is_port_in_use(host, port):
+            print(f"Port {port} is already in use. Choose a different port.")
+            input("Press Enter to exit...")
+        else:
+            time.sleep(1)
+            print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
+            app.run(host=host, port=port, debug=debug)
+
+
 class CustomArgumentParser(argparse.ArgumentParser):
     def format_help(self):
         # 首先显示软件简介
