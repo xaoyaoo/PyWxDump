@@ -193,6 +193,30 @@ def get_audio(savePath):
     return send_file(savePath)
 
 
+# 导出聊天记录
+@api.route('/api/export', methods=["GET", 'POST'])
+def export():
+    """
+    导出聊天记录
+    :return:
+    """
+    export_type = request.json.get("export_type")
+    start_time = request.json.get("start_time")
+    end_time = request.json.get("end_time")
+    chat_type = request.json.get("chat_type")
+    username = request.json.get("username")
+    if not export_type or not start_time or not end_time or not chat_type or not username:
+        return ReJson(1002)
+    chat_type_tups = []
+    for t in chat_type:
+        tup = analyzer.get_name_typeid(t)
+        if tup:
+            chat_type_tups += tup
+    if not chat_type_tups:
+        return ReJson(1002)
+    return ReJson(0, "")
+
+
 # 这部分为专业工具的api
 @api.route('/api/wxinfo', methods=["GET", 'POST'])
 def get_wxinfo():
