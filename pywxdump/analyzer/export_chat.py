@@ -142,7 +142,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 voicelength = f"{voicelength:.2f}"
             content[
                 "msg"] = f"语音时长：{voicelength}秒\n翻译结果：{transtext}" if transtext else f"语音时长：{voicelength}秒"
-            content["src"] = os.path.join("audio", f"{StrTalker}", f"{CreateTime}_{MsgSvrID}.wav")
+            content["src"] = os.path.join("audio", f"{StrTalker}", f"{CreateTime.replace(':', '-').replace(' ','_')}_{IsSender}_{MsgSvrID}.wav")
         elif type_id == (43, 0):  # 视频
             BytesExtra = read_BytesExtra(BytesExtra)
             BytesExtra = str(BytesExtra)

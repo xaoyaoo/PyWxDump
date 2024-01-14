@@ -173,18 +173,23 @@ def get_img():
         return ReJson(1001)
 
 
-@api.route('/api/audio', methods=["GET", 'POST'])
-def get_audio():
-    MsgSvrID = request.args.get("MsgSvrID")
-    MsgSvrID = request.json.get("MsgSvrID", MsgSvrID)
-    if not MsgSvrID:
+@api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
+def get_audio(savePath):
+    # savePath = request.args.get("savePath")
+    # savePath = request.json.get("savePath", savePath)
+    savePath = "audio/" + savePath  # 这个是从url中获取的
+    MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
+    if not savePath:
         return ReJson(1002)
     wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=g.media_path)
     if not wave_data:
         return ReJson(1001)
-    video_base64 = base64.b64encode(wave_data).decode("utf-8")
-    video_data = f"data:audio/wav;base64,{video_base64}"
-    return ReJson(0, video_data)
+    # 判断savePath路径的文件夹是否存在
+    if not os.path.exists(os.path.dirname(savePath)):
+        os.makedirs(os.path.dirname(savePath))
+    with open(savePath, "wb") as f:
+        f.write(wave_data)
+    return send_file(savePath)
 
 
 # 这部分为专业工具的api
