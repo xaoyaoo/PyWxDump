@@ -1,0 +1,40 @@
+version: '1.0'
+name: pipeline-20240113
+displayName: pipeline-20240113
+triggers:
+  trigger: auto
+  push:
+    tags:
+      prefix:
+        - v
+stages:
+  - name: stage-31655d4b
+    displayName: 未命名
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@python
+        name: build_python
+        displayName: Python 构建
+        pythonVersion: '3.9'
+        commands:
+          - pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+          - '# 可以使用pip下载依赖'
+          - '# pip install --user -r requirements.txt'
+          - pip install pyinstaller
+          - python -V
+          - python -c "import time;time.sleep(60*5)"
+          - pip install pywxdump
+          - python tests/build_exe.py
+          - cat dist/pywxdump.spec
+          - pyinstaller --clean --distpath=dist dist/pywxdump.spec
+          - ' ls -l dist'
+        artifacts:
+          - name: BUILD_ARTIFACT
+            path:
+              - ./
+        caches: []
+        notify: []
+        strategy:
+          retry: '0'
