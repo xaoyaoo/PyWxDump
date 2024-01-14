@@ -191,7 +191,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             else:
                 talker = StrTalker
 
-        row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
+        row_data = {"MsgSvrID": str(MsgSvrID), "type_name": type_name, "is_sender": IsSender, "talker": talker,
                     "room_name": StrTalker, "content": content, "CreateTime": CreateTime, "id": id}
         data.append(row_data)
     return data
