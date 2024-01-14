@@ -185,6 +185,7 @@ def get_audio(savePath):
     if not wave_data:
         return ReJson(1001)
     # 判断savePath路径的文件夹是否存在
+    savePath = os.path.join(g.tmp_path, savePath)
     if not os.path.exists(os.path.dirname(savePath)):
         os.makedirs(os.path.dirname(savePath))
     with open(savePath, "wb") as f:

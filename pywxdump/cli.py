@@ -239,7 +239,7 @@ class MainShowChatRecords():
             g.media_path = args.media_path
             g.wxid_path = args.wxid_path
             g.my_wxid = args.my_wxid
-            g.tmp_path = "tmp"  # 临时文件夹,用于存放图片等
+            g.tmp_path = os.path.join(os.getcwd(), "wxdump_tmp")  # 临时文件夹,用于存放图片等
             g.user_list = []
 
         app.register_blueprint(api)
