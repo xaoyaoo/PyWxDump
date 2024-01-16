@@ -23,7 +23,7 @@ def before_request():
     g.msg_path = path
     g.micro_path = path
     g.media_path = path
-    g.wxid_path = r"*****"
+    g.wx_path = r"*****"
     g.my_wxid = "******"
     g.tmp_path = "dist"  # 临时文件夹,用于存放图片等
     g.user_list = []

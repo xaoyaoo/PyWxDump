@@ -187,7 +187,7 @@ class MainShowChatRecords():
         sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=False,
                                 metavar="")
 
-        sb_decrypt.add_argument("-wid", "--wxid_path", type=str,
+        sb_decrypt.add_argument("-wid", "--wx_path", type=str,
                                 help="(可选)微信文件夹的路径（用于显示图片）", required=False,
                                 metavar="")
         sb_decrypt.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
@@ -237,7 +237,8 @@ class MainShowChatRecords():
             g.msg_path = args.msg_path
             g.micro_path = args.micro_path
             g.media_path = args.media_path
-            g.wxid_path = args.wxid_path
+            g.wx_path = args.wx_path
+            # g.key = args.key
             g.my_wxid = args.my_wxid
             g.tmp_path = os.path.join(os.getcwd(), "wxdump_tmp")  # 临时文件夹,用于存放图片等
             g.user_list = []
@@ -448,7 +449,7 @@ class MainAll():
             args.msg_path = merge_save_path
             args.micro_path = merge_save_path
             args.media_path = merge_save_path
-            args.wxid_path = filePath
+            args.wx_path = filePath
             args.my_wxid = wxid
             args.online = online
             MainShowChatRecords().run(args)
@@ -492,7 +493,7 @@ class MainUi():
         def before_request():
             g.msg_path = ""
             g.media_path = ""
-            g.wxid_path = ""
+            g.wx_path = ""
             g.my_wxid = ""
             g.tmp_path = os.path.join(os.getcwd(), "wxdump_tmp")  # 临时文件夹,用于存放图片等
             g.user_list = []
@@ -601,11 +602,16 @@ def console_run():
     sb_all = main_all.init_parses(subparsers)
     modes[main_all.mode] = main_all
 
+    # 添加 'ui' 子命令解析器
+    main_ui = MainUi()
+    sb_ui = main_ui.init_parses(subparsers)
+    modes[main_ui.mode] = main_ui
+
     # 检查是否需要显示帮助信息
     if len(sys.argv) == 1:
         sys.argv.append('all')
     elif len(sys.argv) == 2 and sys.argv[1] in modes.keys() and sys.argv[1] not in [main_all.mode, main_wx_info.mode,
-                                                                                    main_wx_db_path.mode]:
+                                                                                    main_wx_db_path.mode, main_ui.mode]:
         sys.argv.append('-h')
 
     args = parser.parse_args()  # 解析命令行参数

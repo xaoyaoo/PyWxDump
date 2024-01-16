@@ -12,6 +12,7 @@ from flask import Flask, request, render_template, g, Blueprint, send_file, make
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db
+import pywxdump
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -28,19 +29,26 @@ def init():
     #     g.msg_path = path
     #     g.micro_path = path
     #     g.media_path = path
-    #     g.wxid_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
+    #     g.wx_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
     #     g.my_wxid = "wxid_vzzcn5fevion22"
 
     rdata = {
         "msg_path": "",
         "micro_path": "",
         "media_path": "",
-        "wxid_path": "",
+        "wx_path": "",
         "my_wxid": "",
         "is_init": False,
     }
     return ReJson(0, rdata)
 
+@api.route('/api/version', methods=["GET", 'POST'])
+def version():
+    """
+    版本
+    :return:
+    """
+    return ReJson(0, pywxdump.__version__)
 
 @api.route('/api/contact_list', methods=["GET", 'POST'])
 def contact_list():
@@ -171,7 +179,7 @@ def get_img():
     img_path = request.json.get("img_path", img_path)
     if not img_path:
         return ReJson(1002)
-    img_path_all = os.path.join(g.wxid_path, img_path)
+    img_path_all = os.path.join(g.wx_path, img_path)
     if os.path.exists(img_path_all):
         fomt, md5, out_bytes = read_img_dat(img_path_all)
         out_bytes = base64.b64encode(out_bytes).decode("utf-8")
@@ -213,6 +221,11 @@ def export():
     end_time = request.json.get("end_time")
     chat_type = request.json.get("chat_type")
     username = request.json.get("username")
+
+    # 可选参数
+    wx_path = request.json.get("wx_path", g.wx_path)
+    key = request.json.get("key", "")
+
     if not export_type or not start_time or not end_time or not chat_type or not username:
         return ReJson(1002)
     chat_type_tups = []
@@ -228,7 +241,11 @@ def export():
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    if export_type == "csv":
+    if export_type == "endb":
+        pass
+    elif export_type == "dedb":
+        pass
+    elif export_type == "csv":
         # 导出聊天记录
         outpath = os.path.join(outpath, "csv")
         if not os.path.exists(outpath):
@@ -236,6 +253,16 @@ def export():
         code, ret = analyzer.export_csv(username, outpath, g.msg_path)
         if code:
             return ReJson(0, ret)
+    elif export_type == "json":
+        pass
+    elif export_type == "html":
+        pass
+    elif export_type == "pdf":
+        pass
+    elif export_type == "docx":
+        pass
+    else:
+        return ReJson(1002)
 
     return ReJson(0, "")
 
