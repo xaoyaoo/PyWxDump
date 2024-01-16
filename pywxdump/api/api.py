@@ -42,6 +42,13 @@ def init():
                 return ReJson(1002)
             if not os.path.exists(wx_path):
                 return ReJson(1001)
+            save_msg_path = read_session(g.sf, "msg_path")
+            save_micro_path = read_session(g.sf, "micro_path")
+            save_my_wxid = read_session(g.sf, "my_wxid")
+            if save_msg_path and save_micro_path and os.path.exists(save_msg_path) and os.path.exists(
+                    save_micro_path) and save_my_wxid == my_wxid:
+                return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
+
             # 解密
             WxDbPath = get_wechat_db('all', None, wxid=my_wxid, is_logging=False)  # 获取微信数据库路径
             if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
@@ -104,7 +111,30 @@ def init():
             return ReJson(0, rdata)
 
         else:
-            return ReJson(1002)
+            if not msg_path or not micro_path or not media_path or not wx_path or not my_wxid:
+                return ReJson(1002)
+            if not os.path.exists(msg_path) or not os.path.exists(micro_path) or not os.path.exists(
+                    media_path) or not os.path.exists(wx_path):
+                return ReJson(1001)
+
+            save_session(g.sf, "msg_path", msg_path)
+            save_session(g.sf, "micro_path", micro_path)
+            save_session(g.sf, "media_path", media_path)
+            save_session(g.sf, "wx_path", wx_path)
+            save_session(g.sf, "key", "")
+            save_session(g.sf, "my_wxid", my_wxid)
+
+            rdata = {
+                "msg_path": msg_path,
+                "micro_path": micro_path,
+                "media_path": media_path,
+                "wx_path": wx_path,
+                "key": "",
+                "my_wxid": my_wxid,
+                "is_init": True,
+            }
+            return ReJson(0, rdata)
+
     except Exception as e:
         return ReJson(9999, msg=str(e))
 
