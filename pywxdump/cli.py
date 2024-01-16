@@ -451,6 +451,7 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
     if wx_path: save_session(session_file, "wx_path", wx_path)
     if key: save_session(session_file, "key", key)
     if my_wxid: save_session(session_file, "my_wxid", my_wxid)
+    save_session(session_file, "test", my_wxid)
 
     app.register_blueprint(api)
 
