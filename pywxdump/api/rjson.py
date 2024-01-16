@@ -25,6 +25,7 @@ def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = N
         4004: {'code': 4004, 'body': body, 'msg': "数据不存在！", "extra": extra},
         4005: {'code': 4005, 'body': body, 'msg': "数据库异常！", "extra": extra},
         4006: {'code': 4006, 'body': body, 'msg': "数据已存在！", "extra": extra},
+        4007: {'code': 4007, 'body': body, 'msg': "数据库解密异常！", "extra": extra},
         5002: {'code': 5002, 'body': body, 'msg': "服务器错误！", "extra": extra},
         9999: {'code': 9999, 'body': body, 'msg': "未知错误！", "extra": extra},
     }

@@ -6,11 +6,14 @@
 # Date:         2024/01/02
 # -------------------------------------------------------------------------------
 import base64
+import logging
 import os
+import time
 
-from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, send_from_directory
-from pywxdump import analyzer, read_img_dat, read_audio
+from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
+from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db
 from pywxdump.api.rjson import ReJson, RqJson
+from pywxdump.api.utils import read_session, save_session
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db
 import pywxdump
 
@@ -26,21 +29,85 @@ def init():
     初始化
     :return:
     """
-    #     g.msg_path = path
-    #     g.micro_path = path
-    #     g.media_path = path
-    #     g.wx_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
-    #     g.my_wxid = "wxid_vzzcn5fevion22"
+    try:
+        msg_path = request.json.get("msg_path", "").strip()
+        micro_path = request.json.get("micro_path", "").strip()
+        media_path = request.json.get("media_path", "").strip()
+        wx_path = request.json.get("wx_path", "").strip()
+        key = request.json.get("key", "").strip()
+        my_wxid = request.json.get("my_wxid", "").strip()
 
-    rdata = {
-        "msg_path": "",
-        "micro_path": "",
-        "media_path": "",
-        "wx_path": "",
-        "my_wxid": "",
-        "is_init": False,
-    }
-    return ReJson(0, rdata)
+        if key:  # 如果key不为空，表示是解密模式
+            if not wx_path:
+                return ReJson(1002)
+            if not os.path.exists(wx_path):
+                return ReJson(1001)
+            # 解密
+            WxDbPath = get_wechat_db('all', None, wxid=my_wxid, is_logging=False)  # 获取微信数据库路径
+            if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
+                print(WxDbPath)
+                return ReJson(4007)
+            wxdbpaths = [path for user_dir in WxDbPath.values() for paths in user_dir.values() for path in paths]
+            if len(wxdbpaths) == 0:
+                print("[-] 未获取到数据库路径")
+                return ReJson(4007)
+
+            wxdbpaths = [i for i in wxdbpaths if "MicroMsg" in i or "MediaMSG" in i or r"Multi\MSG" in i]  # 过滤掉无需解密的数据库
+            decrypted_path = os.path.join(g.tmp_path, "decrypted")
+
+            # 判断out_path是否为空目录
+            if os.path.exists(decrypted_path) and os.listdir(decrypted_path):
+                isdel = "y"
+                if isdel.lower() == 'y' or isdel.lower() == 'yes':
+                    for root, dirs, files in os.walk(decrypted_path, topdown=False):
+                        for name in files:
+                            os.remove(os.path.join(root, name))
+                        for name in dirs:
+                            os.rmdir(os.path.join(root, name))
+
+            out_path = os.path.join(decrypted_path, my_wxid) if my_wxid else decrypted_path
+            if not os.path.exists(out_path):
+                os.makedirs(out_path)
+
+            # 调用 decrypt 函数，并传入参数   # 解密
+            code, ret = batch_decrypt(key, wxdbpaths, out_path, False)
+            if not code:
+                return ReJson(4007, msg=ret)
+
+            out_dbs = []
+            for code1, ret1 in ret:
+                if code1:
+                    out_dbs.append(ret1[1])
+
+            parpare_merge_db_path = [i for i in out_dbs if "de_MicroMsg" in i or "de_MediaMSG" in i or "de_MSG" in i]
+            # 合并所有的数据库
+            logging.info("开始合并数据库")
+            merge_save_path = merge_db(parpare_merge_db_path, os.path.join(out_path, "merge_all.db"))
+            time.sleep(1)
+
+            save_session(g.sf, "msg_path", merge_save_path)
+            save_session(g.sf, "micro_path", merge_save_path)
+            save_session(g.sf, "media_path", merge_save_path)
+            save_session(g.sf, "wx_path", wx_path)
+            save_session(g.sf, "key", key)
+            save_session(g.sf, "my_wxid", my_wxid)
+
+            rdata = {
+                "msg_path": merge_save_path,
+                "micro_path": merge_save_path,
+                "media_path": merge_save_path,
+                "wx_path": wx_path,
+                "key": key,
+                "my_wxid": my_wxid,
+                "is_init": True,
+            }
+            return ReJson(0, rdata)
+
+        else:
+            return ReJson(1002)
+    except Exception as e:
+        return ReJson(9999, msg=str(e))
+
 
 @api.route('/api/version', methods=["GET", 'POST'])
 def version():
@@ -49,6 +116,7 @@ def version():
     :return:
     """
     return ReJson(0, pywxdump.__version__)
+
 
 @api.route('/api/contact_list', methods=["GET", 'POST'])
 def contact_list():
@@ -61,12 +129,12 @@ def contact_list():
         # 从header中读取micro_path
         micro_path = request.headers.get("micro_path")
         if not micro_path:
-            micro_path = g.micro_path
+            micro_path = read_session(g.sf, "micro_path")
         start = request.json.get("start")
         limit = request.json.get("limit")
 
         contact_list = analyzer.get_contact_list(micro_path)
-        g.user_list = contact_list
+        save_session(g.sf, "user_list", contact_list)
         if limit:
             contact_list = contact_list[int(start):int(start) + int(limit)]
         return ReJson(0, contact_list)
@@ -85,7 +153,7 @@ def chat_count():
         # 从header中读取micro_path
         msg_path = request.headers.get("msg_path")
         if not msg_path:
-            msg_path = g.msg_path
+            msg_path = read_session(g.sf, "msg_path")
         username = request.json.get("username", "")
         contact_list = analyzer.get_chat_count(msg_path, username)
         return ReJson(0, contact_list)
@@ -105,9 +173,9 @@ def contact_count_list():
         msg_path = request.headers.get("msg_path")
         micro_path = request.headers.get("micro_path")
         if not msg_path:
-            msg_path = g.msg_path
+            msg_path = read_session(g.sf, "msg_path")
         if not micro_path:
-            micro_path = g.micro_path
+            micro_path = read_session(g.sf, "micro_path")
         start = request.json.get("start")
         limit = request.json.get("limit")
         word = request.json.get("word", "")
@@ -121,7 +189,7 @@ def contact_count_list():
         # 降序
         contact_list = sorted(contact_list, key=lambda x: x["chat_count"], reverse=True)
 
-        g.user_list = contact_list
+        save_session(g.sf, "user_list", contact_list)
 
         if word and word != "" and word != "undefined" and word != "null":
             contact_list = [contact for contact in contact_list if
@@ -139,9 +207,9 @@ def get_msgs():
     msg_path = request.headers.get("msg_path")
     micro_path = request.headers.get("micro_path")
     if not msg_path:
-        msg_path = g.msg_path
+        msg_path = read_session(g.sf, "msg_path")
     if not micro_path:
-        micro_path = g.micro_path
+        micro_path = read_session(g.sf, "micro_path")
     start = request.json.get("start")
     limit = request.json.get("limit")
     wxid = request.json.get("wxid")
@@ -151,9 +219,10 @@ def get_msgs():
     contact_list = analyzer.get_contact_list(micro_path)
 
     userlist = {}
+    my_wxid = read_session(g.sf, "my_wxid")
     if wxid.endswith("@chatroom"):
         # 群聊
-        talkers = [msg["talker"] for msg in msg_list] + [wxid, g.my_wxid]
+        talkers = [msg["talker"] for msg in msg_list] + [wxid, my_wxid]
         talkers = list(set(talkers))
         for user in contact_list:
             if user["username"] in talkers:
@@ -161,12 +230,12 @@ def get_msgs():
     else:
         # 单聊
         for user in contact_list:
-            if user["username"] == wxid or user["username"] == g.my_wxid:
+            if user["username"] == wxid or user["username"] == my_wxid:
                 userlist[user["username"]] = user
             if len(userlist) == 2:
                 break
 
-    return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": g.my_wxid})
+    return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": my_wxid})
 
 
 @api.route('/api/img', methods=["GET", 'POST'])
@@ -179,7 +248,8 @@ def get_img():
     img_path = request.json.get("img_path", img_path)
     if not img_path:
         return ReJson(1002)
-    img_path_all = os.path.join(g.wx_path, img_path)
+    wx_path = read_session(g.sf, "wx_path")
+    img_path_all = os.path.join(wx_path, img_path)
     if os.path.exists(img_path_all):
         fomt, md5, out_bytes = read_img_dat(img_path_all)
         out_bytes = base64.b64encode(out_bytes).decode("utf-8")
@@ -197,7 +267,8 @@ def get_audio(savePath):
     MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
     if not savePath:
         return ReJson(1002)
-    wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=g.media_path)
+    media_path = read_session(g.sf, "media_path")
+    wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=media_path)
     if not wave_data:
         return ReJson(1001)
     # 判断savePath路径的文件夹是否存在
@@ -223,8 +294,8 @@ def export():
     username = request.json.get("username")
 
     # 可选参数
-    wx_path = request.json.get("wx_path", g.wx_path)
-    key = request.json.get("key", "")
+    wx_path = request.json.get("wx_path", read_session(g.sf, "wx_path"))
+    key = request.json.get("key", read_session(g.sf, "key"))
 
     if not export_type or not start_time or not end_time or not chat_type or not username:
         return ReJson(1002)
@@ -250,7 +321,7 @@ def export():
         outpath = os.path.join(outpath, "csv")
         if not os.path.exists(outpath):
             os.makedirs(outpath)
-        code, ret = analyzer.export_csv(username, outpath, g.msg_path)
+        code, ret = analyzer.export_csv(username, outpath, read_session(g.sf, "msg_path"))
         if code:
             return ReJson(0, ret)
     elif export_type == "json":

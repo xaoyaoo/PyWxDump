@@ -225,6 +225,15 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
 
 def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = None, wxid: Union[List[str], str] = None,
                   is_logging: bool = False):
+    r"""
+    获取微信数据库路径
+    :param require_list:  需要获取的数据库类型
+    :param msg_dir:  微信数据库目录 eg: C:\Users\user\Documents\WeChat Files
+    :param wxid:  微信id
+    :param is_logging:  是否打印日志
+    :return:
+    """
+
     if not msg_dir:
         msg_dir = get_info_filePath(wxid="all")
 
