@@ -584,7 +584,7 @@ def console_run():
 
     # 检查是否需要显示帮助信息
     if len(sys.argv) == 1:
-        sys.argv.append('all')
+        sys.argv.append('ui')
     elif len(sys.argv) == 2 and sys.argv[1] in modes.keys() and sys.argv[1] not in [main_all.mode, main_wx_info.mode,
                                                                                     main_wx_db_path.mode, main_ui.mode]:
         sys.argv.append('-h')
