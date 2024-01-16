@@ -8,14 +8,14 @@
 import base64
 import os
 
-from flask import Flask, request, render_template, g, Blueprint, send_file
+from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, send_from_directory
 from pywxdump import analyzer, read_img_dat, read_audio
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
-api = Blueprint('api', __name__, template_folder='../ui/web')
+api = Blueprint('api', __name__, template_folder='../ui/web', static_folder='../ui/web/assets/', )
 api.debug = False
 
 
@@ -25,11 +25,19 @@ def init():
     初始化
     :return:
     """
+    #     g.msg_path = path
+    #     g.micro_path = path
+    #     g.media_path = path
+    #     g.wxid_path = r"C:\Users\xaoyo\Documents\Tencent\WeChat Files\wxid_vzzcn5fevion22"
+    #     g.my_wxid = "wxid_vzzcn5fevion22"
+
     rdata = {
         "msg_path": "",
         "micro_path": "",
         "media_path": "",
-        "filestorage_path": "",
+        "wxid_path": "",
+        "my_wxid": "",
+        "is_init": False,
     }
     return ReJson(0, rdata)
 
