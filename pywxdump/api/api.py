@@ -26,7 +26,7 @@ api.debug = False
 @api.route('/api/init', methods=["GET", 'POST'])
 def init():
     """
-    初始化
+    初始化 设置微信数据库路径，图片路径，解密需要的数据库
     :return:
     """
     try:
@@ -41,7 +41,7 @@ def init():
             if not wx_path:
                 return ReJson(1002)
             if not os.path.exists(wx_path):
-                return ReJson(1001)
+                return ReJson(1001, body=wx_path)
             save_msg_path = read_session(g.sf, "msg_path")
             save_micro_path = read_session(g.sf, "micro_path")
             save_my_wxid = read_session(g.sf, "my_wxid")
@@ -286,7 +286,7 @@ def get_img():
         out_bytes = f"data:{fomt};base64,{out_bytes}"
         return ReJson(0, out_bytes)
     else:
-        return ReJson(1001)
+        return ReJson(1001, body=img_path_all)
 
 
 @api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
