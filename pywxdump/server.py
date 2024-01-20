@@ -12,7 +12,7 @@ import time
 
 
 def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_path="", key="", my_wxid="", port=5000,
-                online=False, debug=False):
+                online=False, debug=False,isopenBrowser=True):
     """
     启动flask
     :param merge_path:  合并后的数据库路径
@@ -75,21 +75,21 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
     save_session(session_file, "test", my_wxid)
 
     app.register_blueprint(api)
-
-    try:
-        # 自动打开浏览器
-        url = f"http://127.0.0.1:{port}/"
-        # 根据操作系统使用不同的命令打开默认浏览器
-        if sys.platform.startswith('darwin'):  # macOS
-            subprocess.call(['open', url])
-        elif sys.platform.startswith('win'):  # Windows
-            subprocess.call(['start', url], shell=True)
-        elif sys.platform.startswith('linux'):  # Linux
-            subprocess.call(['xdg-open', url])
-        else:
-            print("Unsupported platform, can't open browser automatically.")
-    except Exception as e:
-        pass
+    if isopenBrowser:
+        try:
+            # 自动打开浏览器
+            url = f"http://127.0.0.1:{port}/"
+            # 根据操作系统使用不同的命令打开默认浏览器
+            if sys.platform.startswith('darwin'):  # macOS
+                subprocess.call(['open', url])
+            elif sys.platform.startswith('win'):  # Windows
+                subprocess.call(['start', url], shell=True)
+            elif sys.platform.startswith('linux'):  # Linux
+                subprocess.call(['xdg-open', url])
+            else:
+                print("Unsupported platform, can't open browser automatically.")
+        except Exception as e:
+            pass
 
     def is_port_in_use(host, port):
         import socket
