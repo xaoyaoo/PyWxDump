@@ -345,7 +345,6 @@ def export():
     elif export_type == "json":
         pass
     elif export_type == "html":
-
         chat_type_tups = []
         for ct in chat_type:
             tup = analyzer.get_name_typeid(ct)
