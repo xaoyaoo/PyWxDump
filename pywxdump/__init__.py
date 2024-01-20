@@ -11,6 +11,7 @@ from .analyzer.db_parsing import read_img_dat, read_emoji, decompress_CompressCo
     parse_xml_string, read_BytesExtra
 from .analyzer import export_csv
 from .ui import app_show_chat, get_user_list, export
+from .server import start_falsk
 
 import os, json
 
