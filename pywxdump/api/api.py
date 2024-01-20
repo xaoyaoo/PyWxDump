@@ -335,15 +335,23 @@ def export():
             return ReJson(1002, body={"start_time": start_time, "end_time": end_time})
 
     elif export_type == "csv":
+        outpath = os.path.join(outpath, username)
         if not os.path.exists(outpath):
             os.makedirs(outpath)
-        code, ret = analyzer.export_csv(username, os.path.join(outpath, username), read_session(g.sf, "msg_path"))
+        code, ret = analyzer.export_csv(username, outpath, read_session(g.sf, "msg_path"))
         if code:
             return ReJson(0, ret)
         else:
             return ReJson(2001, body=ret)
     elif export_type == "json":
-        pass
+        outpath = os.path.join(outpath, username)
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+        code, ret = analyzer.export_json(username, outpath, read_session(g.sf, "msg_path"))
+        if code:
+            return ReJson(0, ret)
+        else:
+            return ReJson(2001, body=ret)
     elif export_type == "html":
         chat_type_tups = []
         for ct in chat_type:

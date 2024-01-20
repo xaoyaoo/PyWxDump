@@ -142,7 +142,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 voicelength = f"{voicelength:.2f}"
             content[
                 "msg"] = f"语音时长：{voicelength}秒\n翻译结果：{transtext}" if transtext else f"语音时长：{voicelength}秒"
-            content["src"] = os.path.join("audio", f"{StrTalker}", f"{CreateTime.replace(':', '-').replace(' ','_')}_{IsSender}_{MsgSvrID}.wav")
+            content["src"] = os.path.join("audio", f"{StrTalker}",
+                                          f"{CreateTime.replace(':', '-').replace(' ', '_')}_{IsSender}_{MsgSvrID}.wav")
         elif type_id == (43, 0):  # 视频
             BytesExtra = read_BytesExtra(BytesExtra)
             BytesExtra = str(BytesExtra)
@@ -251,6 +252,27 @@ def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
                 content = json.dumps(content, ensure_ascii=False)
                 csv_writer.writerow([id, MsgSvrID, type_name, is_sender, talker, room_name, content, CreateTime])
 
+    return True, f"导出成功: {outpath}"
+
+
+def export_json(username, outpath, MSG_ALL_db_path):
+    if not os.path.exists(outpath):
+        outpath = os.path.join(os.getcwd(), "export" + os.sep + username)
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+    count = get_chat_count(MSG_ALL_db_path, username)
+    chatCount = count.get(username, 0)
+    if chatCount == 0:
+        return False, "没有聊天记录"
+    page_size = chatCount + 1
+    for i in range(0, chatCount, page_size):
+        start_index = i
+        data = get_msg_list(MSG_ALL_db_path, username, start_index, page_size)
+        if len(data) == 0:
+            return False, "没有聊天记录"
+        save_path = os.path.join(outpath, f"{username}_{i}_{i + page_size}.json")
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
     return True, f"导出成功: {outpath}"
 
 
