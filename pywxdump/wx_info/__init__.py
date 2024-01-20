@@ -8,4 +8,4 @@
 from .get_wx_info import read_info, get_wechat_db
 from .get_bias_addr import BiasAddr
 from .decryption import batch_decrypt, encrypt, decrypt
-from .merge_db import merge_msg_db, merge_copy_db, merge_media_msg_db, merge_db
+from .merge_db import merge_msg_db, merge_copy_db, merge_media_msg_db, merge_db, decrypt_merge
