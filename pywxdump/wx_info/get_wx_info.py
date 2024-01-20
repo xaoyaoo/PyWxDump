@@ -293,6 +293,41 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
     return user_dirs
 
 
+def get_core_db(wx_path: str, db_type: list = None) -> [str]:
+    """
+    获取聊天消息核心数据库路径
+    :param wx_path: 微信文件夹路径 eg：C:\*****\WeChat Files\wxid*******
+    :param db_type: 数据库类型 eg: ["MSG", "MediaMSG", "MicroMsg"]，三个中选择一个或多个
+    :return: 返回数据库路径 eg:["",""]
+    """
+    if not os.path.exists(wx_path):
+        return False, f"[-] 目录不存在: {wx_path}"
+    db_type_all = ["MSG", "MediaMSG", "MicroMsg"]
+
+    db_type = [dt for dt in db_type if dt in db_type_all]
+    if not db_type:
+        db_type = db_type_all
+
+    msg_dir = os.path.dirname(wx_path)
+    my_wxid = os.path.basename(wx_path)
+    WxDbPath = get_wechat_db('all', msg_dir, wxid=my_wxid, is_logging=False)  # 获取微信数据库路径
+    if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
+        return False, WxDbPath
+    wxdbpaths = [path for user_dir in WxDbPath.values() for paths in user_dir.values() for path in paths]
+    if len(wxdbpaths) == 0:
+        return False, "未获取到数据库路径"
+    rdbpaths = []
+    for dbp in wxdbpaths:
+        if "MicroMsg" in db_type and "MicroMsg" in dbp:
+            rdbpaths.append(dbp)
+        if "MediaMSG" in db_type and "MediaMSG" in dbp:
+            rdbpaths.append(dbp)
+        if "MSG" in db_type and "Multi\MSG" in dbp:
+            rdbpaths.append(dbp)
+
+    return True, rdbpaths
+
+
 if __name__ == '__main__':
     from pywxdump import VERSION_LIST
 

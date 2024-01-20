@@ -12,7 +12,7 @@ import time
 import shutil
 
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
-from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db
+from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, save_session
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge
@@ -282,34 +282,22 @@ def export():
     :return:
     """
     export_type = request.json.get("export_type")
-    start_time = request.json.get("start_time")
-    end_time = request.json.get("end_time")
+    start_time = request.json.get("start_time", 0)
+    end_time = request.json.get("end_time", 0)
     chat_type = request.json.get("chat_type")
     username = request.json.get("username")
-
-    # 可选参数
     wx_path = request.json.get("wx_path", read_session(g.sf, "wx_path"))
     key = request.json.get("key", read_session(g.sf, "key"))
 
-    if not export_type:
-        return ReJson(1002)
-    chat_type_tups = []
-    for t in chat_type:
-        tup = analyzer.get_name_typeid(t)
-        if tup:
-            chat_type_tups += tup
-    if not chat_type_tups:
+    if not export_type or not isinstance(export_type, str):
         return ReJson(1002)
 
     # 导出路径
-    outpath = os.path.join(g.tmp_path, "export")
+    outpath = os.path.join(g.tmp_path, "export", export_type)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    if export_type == "endb":
-        outpath = os.path.join(outpath, export_type)
-        if not os.path.exists(outpath):
-            os.makedirs(outpath)
+    if export_type == "endb":  # 导出加密数据库
         # 获取微信文件夹路径
         if not wx_path:
             return ReJson(1002)
@@ -317,36 +305,55 @@ def export():
             return ReJson(1001, body=wx_path)
 
         # 分割wx_path的文件名和父目录
-        msg_dir = os.path.dirname(wx_path)
-        my_wxid = os.path.basename(wx_path)
-        WxDbPath = get_wechat_db('all', msg_dir, wxid=my_wxid, is_logging=False)  # 获取微信数据库路径
-        if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
-            return False, WxDbPath
-        wxdbpaths = [path for user_dir in WxDbPath.values() for paths in user_dir.values() for path in paths]
-        if len(wxdbpaths) == 0:
-            return False, "未获取到数据库路径"
-        wxdbpaths = [i for i in wxdbpaths if "MicroMsg" in i or "MediaMSG" in i or r"Multi\MSG" in i]  # 过滤掉无需解密的数据库
+        code, wxdbpaths = get_core_db(wx_path)
+        if not code:
+            return ReJson(2001, body=wxdbpaths)
 
         for wxdb in wxdbpaths:
-            # 复制wxdb->dboutpath
-            dboutpath = os.path.join(outpath, os.path.basename(wxdb))
-            shutil.copy(wxdb, dboutpath)
+            # 复制wxdb->outpath, os.path.basename(wxdb)
+            shutil.copy(wxdb, os.path.join(outpath, os.path.basename(wxdb)))
         return ReJson(0, body=outpath)
 
     elif export_type == "dedb":
-        pass
+        if isinstance(start_time, int) and isinstance(end_time, int):
+            msg_path = read_session(g.sf, "msg_path")
+            micro_path = read_session(g.sf, "micro_path")
+            media_path = read_session(g.sf, "media_path")
+            dbpaths = [msg_path, msg_path, micro_path]
+            dbpaths = list(set(dbpaths))
+            mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time, end_time)
+            return ReJson(0, body=mergepath)
+            # if msg_path == media_path and msg_path == media_path:
+            #     shutil.copy(msg_path, os.path.join(outpath, "merge.db"))
+            #     return ReJson(0, body=msg_path)
+            # else:
+            #     dbpaths = [msg_path, msg_path, micro_path]
+            #     dbpaths = list(set(dbpaths))
+            #     mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time,  end_time)
+            #     return ReJson(0, body=mergepath)
+        else:
+            return ReJson(1002, body={"start_time": start_time, "end_time": end_time})
+
     elif export_type == "csv":
-        # 导出聊天记录
-        outpath = os.path.join(outpath, "csv")
         if not os.path.exists(outpath):
             os.makedirs(outpath)
-        code, ret = analyzer.export_csv(username, outpath, read_session(g.sf, "msg_path"))
+        code, ret = analyzer.export_csv(username, os.path.join(outpath, username), read_session(g.sf, "msg_path"))
         if code:
             return ReJson(0, ret)
+        else:
+            return ReJson(2001, body=ret)
     elif export_type == "json":
         pass
     elif export_type == "html":
-        pass
+
+        chat_type_tups = []
+        for ct in chat_type:
+            tup = analyzer.get_name_typeid(ct)
+            if tup:
+                chat_type_tups += tup
+        if not chat_type_tups:
+            return ReJson(1002)
+
     elif export_type == "pdf":
         pass
     elif export_type == "docx":
@@ -354,7 +361,7 @@ def export():
     else:
         return ReJson(1002)
 
-    return ReJson(0, "")
+    return ReJson(9999, "")
 
 
 # 这部分为专业工具的api

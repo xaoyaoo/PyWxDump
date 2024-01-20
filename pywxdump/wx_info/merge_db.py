@@ -279,7 +279,7 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
     return save_path
 
 
-def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0) -> (bool, str):
+def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0) -> (bool, str):
     """
     解密合并数据库 msg.db, microMsg.db, media.db
     :param wx_path: 微信路径 eg: C:\*******\WeChat Files\wxid_*********
@@ -287,28 +287,21 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0) -> (bool, str):
     :return: (true,解密后的数据库路径) or (false,错误信息)
     """
     from .decryption import batch_decrypt
-    from .get_wx_info import get_wechat_db
+    from .get_wx_info import get_core_db
 
     outpath = outpath if outpath else "decrypt_merge_tmp"
     merge_save_path = os.path.join(outpath, "merge_all.db")
     decrypted_path = os.path.join(outpath, "decrypted")
 
     if not wx_path or not key:
-        return True, "参数错误"
+        return False, "参数错误"
 
     # 分割wx_path的文件名和父目录
     msg_dir = os.path.dirname(wx_path)
     my_wxid = os.path.basename(wx_path)
 
     # 解密
-    WxDbPath = get_wechat_db('all', msg_dir, wxid=my_wxid, is_logging=False)  # 获取微信数据库路径
-    if isinstance(WxDbPath, str):  # 如果返回的是字符串，则表示出错
-        return False, WxDbPath
-    wxdbpaths = [path for user_dir in WxDbPath.values() for paths in user_dir.values() for path in paths]
-    if len(wxdbpaths) == 0:
-        return False, "未获取到数据库路径"
-
-    wxdbpaths = [i for i in wxdbpaths if "MicroMsg" in i or "MediaMSG" in i or r"Multi\MSG" in i]  # 过滤掉无需解密的数据库
+    code, wxdbpaths = get_core_db(wx_path)
 
     # 判断out_path是否为空目录
     if os.path.exists(decrypted_path) and os.listdir(decrypted_path):
@@ -333,6 +326,7 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0) -> (bool, str):
 
     parpare_merge_db_path = [i for i in out_dbs if "de_MicroMsg" in i or "de_MediaMSG" in i or "de_MSG" in i]
 
-    merge_save_path = merge_db(parpare_merge_db_path, merge_save_path, CreateTime=CreateTime)
+    merge_save_path = merge_db(parpare_merge_db_path, merge_save_path, CreateTime=CreateTime,
+                               endCreateTime=endCreateTime)
 
     return True, merge_save_path
