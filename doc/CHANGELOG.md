@@ -1,6 +1,7 @@
 ## HEAD
 
 - 生成CHANGELOG.md
+- publish.yml发布时候增加日志说明
 
 ## v2.4.23
 
@@ -448,4 +449,3 @@
 - Delete .vs/SharpWxDump/v16 directory
 - 完善项目，添加 数据库解密脚本，添加自动获取当前登录微信的数据库并解密，增加偏移地址脚本获取方式，可以一件获取偏移。
 - Merge branch 'python1.0' of github.com:xaoyaoo/PyWxDump into python1.0
-
