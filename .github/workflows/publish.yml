@@ -104,6 +104,7 @@ jobs:
           release_name: Release ${{ github.ref.tag }}
           body: |
             [Auto Release] Update PyWxDump to ${{ github.ref }}
+            详细更新日志请查看 [CHANGELOG.md](https://github.com/xaoyaoo/PyWxDump/blob/master/doc/CHANGELOG.md)
           draft: false
           prerelease: false
           files: |
