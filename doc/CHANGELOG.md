@@ -31,8 +31,8 @@
 - 解密MAC
 - 导出聊天记录
 - 添加UI的命令
-- 解密MAC数据库方法
 - 添加聊天记录选择展示
+- 解密MAC数据库方法
 - 聊天记录显示添加自定义数据库路径功能
 
 ## v2.4.18
@@ -272,8 +272,8 @@
 - 更新文档
 - 重构代码
 - 更新v2.2.18
-- 修复部分bug #34
 - parse.py 修改
+- 修复部分bug #34
 - 修复多微信获取wxid错误。 #33
 - Delete dist directory
 - Delete .eggs directory
@@ -408,8 +408,8 @@
 - 优化代码
 - 作为包安装使用
 - 添加注释，优化代码
-- 添加"3.9.5.81"版本偏移地址
 - (origin/v1.0) 优化代码
+- 添加"3.9.5.81"版本偏移地址
 - 将整个项目作为包安装，增加命令行统一操作
 - 整体重构项目，优化代码，增加命令行统一操作
 - 添加"3.9.5.81"版本偏移地址 #10
@@ -419,8 +419,8 @@
 - 优化代码
 - 完善错误判断
 - 修改readme
-- 添加数据库解析说明
 - Ð޸Äbug #3
+- 添加数据库解析说明
 - 3.9.7.29偏移
 - 使用python重构
 - SharpWxDump
@@ -428,20 +428,20 @@
 - 3.7.5.11以上为40
 - 格式化MSG数据库解析代码
 - 增加3.9.7.25版本支持
-- 添加自动解密数据库的命令行操作
+- 优化get_wx_info代码
 - 新增数据库解析，数据库字段说明
 - 更换更高效的key地址计算方式
-- 优化get_wx_info代码
-- 缩短使用db_path的运行时间
-- Update README.md
+- 添加自动解密数据库的命令行操作
 - Create CE获取基址.md
 - Create README.md
-- Update Program.cs
+- Update README.md
+- 缩短使用db_path的运行时间
 - Delete Program.cs
-- Delete obj directory
+- Update Program.cs
 - Add files via upload
-- Update issue templates
+- Delete obj directory
 - '修改获取基址内存搜索方式，防止进入死循环'
+- Update issue templates
 - 修改内存搜索方式，防止参数错误，无限循环搜索
 - 获取key基址偏移可以根据微信文件夹获取，不需要输入key
 - Delete bin/x86/Release directory
