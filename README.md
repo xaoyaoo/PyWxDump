@@ -22,6 +22,8 @@
 
 qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
 
+（进群如果需要密码，请查看[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)）
+
 <div>
 <a href="https://s.xaoyo.top/gOLUDl">
   <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/img/qq.jpg" alt="QQ群" title="加入QQ群" height="300"></a>
