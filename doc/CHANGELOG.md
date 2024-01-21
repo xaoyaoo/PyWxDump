@@ -1,4 +1,4 @@
-## HEAD
+## v2.4.24
 
 - 生成CHANGELOG.md
 - publish.yml发布时候增加日志说明
