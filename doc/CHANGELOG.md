@@ -1,3 +1,8 @@
+## v2.4.25
+
+- UPDATE 文档
+- UPDATE README.md
+
 ## v2.4.24
 
 - 生成CHANGELOG.md
