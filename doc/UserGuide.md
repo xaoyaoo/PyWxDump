@@ -66,7 +66,9 @@ python build_exe.py
 激活虚拟环境后（如果有的话），在项目根目录下运行：
 
 ```shell script
-wxdump 模式 [参数]
+wxdump -h  # 查看具体帮助
+# 用法: 
+# wxdump 模式 [参数]
 #  mode           运行模式:
 #    bias         获取微信基址偏移
 #    info         获取微信信息
@@ -76,6 +78,7 @@ wxdump 模式 [参数]
 #    dbshow       聊天记录查看
 #    export       聊天记录导出为html
 #    all          获取微信信息，解密微信数据库，查看聊天记录
+#    ui           启动网页图形界面
 ```
 
 *示例*
@@ -88,43 +91,57 @@ wxdump 模式 [参数]
 ##### 获取微信基址偏移
 
 ```bash
-pywxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--version_list_path <微信版本偏移文件路径>]
+wxdump bias -h # 查看具体帮助
+wxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--version_list_path <微信版本偏移文件路径>]
 ```
 
 ##### 获取微信信息
 
 ```bash
-pywxdump info [--version_list_path <微信版本偏移文件路径>]
+wxdump info -h # 查看具体帮助
+wxdump info [--version_list_path <微信版本偏移文件路径>]
 ```
 
 ##### 获取微信文件夹路径
 
 ```bash
-pywxdump db_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
+wxdump db_path -h # 查看具体帮助
+wxdump db_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
 ```
 
 ##### 解密微信数据库
 
 ```bash
-pywxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路径>]
+wxdump decrypt -h # 查看具体帮助
+wxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路径>]
 ```
 
 ##### 查看聊天记录
 
 ```bash
-pywxdump dbshow -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
+wxdump dbshow -h # 查看具体帮助
+wxdump dbshow -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
 ```
 
 ##### 导出聊天记录为 HTML
 
 ```bash
-pywxdump export -u <微信账号> -o <导出路径> -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
+wxdump export -h # 查看具体帮助
+wxdump export -u <微信账号> -o <导出路径> -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
 ```
 
 ##### 获取微信信息、解密数据库、查看聊天记录，一条命令搞定，开放端口5000，浏览器访问查看聊天记录（支持局域网其他机器访问）
 
 ```bash
-pywxdump all
+wxdump all -h # 查看具体帮助
+wxdump all
+```
+
+##### 启动网页图形界面
+
+```bash
+wxdump ui -h # 查看具体帮助
+pywxdump ui
 ```
 
 </details>
