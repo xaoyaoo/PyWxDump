@@ -1,6 +1,6 @@
 # 用户指南
 
-##  小白教程
+##  小白教程（大佬请看下面）
 
 ### 1. 安装
 
@@ -10,20 +10,10 @@
 
 * 1.打开微信电脑版，登录微信
 * 2.进入下载的exe文件所在目录
-* 3.按住shift键，同时鼠标右键，选择“在此处打开命令窗口”，或者“在此处打开powershell窗口”
-* 4.将文件夹中的exe文件拖动到命令窗口中，回车键确认 命令窗口会显示 `"C:\Users\...\wxdump.exe"` 这样的字样，表示已经成功输入命令
-* 5.接着根据提示输入参数，回车键确认
-eg: （`"C:\Users\...\wxdump.exe"` 为第4步中拖动到窗口中显示的内容。）
+* 3.双击wx_dump.exe运行
+* 4.打开浏览器，访问 http://127.0.0.1:5000/ 使用图形界面
 
-```shell script
-"C:\Users\...\wxdump.exe" info # 获取微信信息
-"C:\Users\...\wxdump.exe" decrypt -k "密钥" -i "数据库路径(目录or文件)" # 解密微信数据库,引号必须在英文状态下输入
-"C:\Users\...\wxdump.exe" dbshow -msg "解密后的 MSG.db 的路径" -micro "解密后的 MicroMsg.db 的路径" -media "解密后的 MediaMSG.db 的路径" # 接着打开浏览器访问 http://127.0.0.1:5000/ 查看聊天记录
-"C:\Users\...\wxdump.exe" export -u "微信账号" -o "导出路径" -msg "解密后的 MSG.db 的路径" -micro "解密后的 MicroMsg.db 的路径" -media "解密后的 MediaMSG.db 的路径" # 导出聊天记录为html
-"C:\Users\...\wxdump.exe" all # 获取微信信息，解密微信数据库，查看聊天记录
-```
-
-* 6.查看聊天记录后，按`ctrl+c`退出
+【注】更多详细使用方法关注公众号：`逍遥之芯`，回复：`PyWxDump` 获取图文教程。
 
 ## 详细教程(小白请看上面)
 
@@ -38,20 +28,28 @@ pip install -U pywxdump
 #### 1.2 从源码安装(安装最新版)
 
 ```shell script
-pip install -U git+git://github.com/xaoyaoo/PyWxDump.git
+pip install -U git+git://github.com/xaoyaoo/PyWxDump.git # 该方法无法安装网页图形界面
 ```
 
 或
 
 ```shell script
+# 如果使用网页图形界面，需要执行以下命令
+git clone https://github.com/xaoyaoo/wxdump_web.git
+cd wxdump_web
+npm run build
+cd ..
+# 安装PyWxDump
 git clone https://github.com/xaoyaoo/PyWxDump.git
+cp -r wxdump_web/dist PyWxDump/pywxdump/ui/web # 将网页图形界面文件复制到PyWxDump中，如果不需要网页图形界面，可以跳过这一步
 cd PyWxDump
 python -m pip install -U .
 ```
 
 #### 1.3 打包可执行文件exe
 
-* 自行打包，打包脚本见： [build_exe.py](./tests/build_exe.py)
+* 打包前需要在python环境中安装pywwxdump，参考[1.2 从源码安装](#12-从源码安装安装最新版)或[1.1 从pypi安装](#11-从pypi安装安装稳定版)
+* 自行打包，打包脚本见： [/tests/build_exe.py](https://github.com/xaoyaoo/PyWxDump/blob/master/tests/build_exe.py)
 
 ```shell
 cd tests
@@ -235,6 +233,3 @@ export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], 
 
 详见[更新日志](./CHANGELOG.md)
 
-### 5. 其他
-
-qq群密码：请查看[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 

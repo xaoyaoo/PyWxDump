@@ -22,8 +22,6 @@
 
 qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
 
-（因为qq群将满，所以进群需要密码，密码请查看[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)）
-
 <div>
 <a href="https://s.xaoyo.top/gOLUDl">
   <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/img/qq.jpg" alt="QQ群" title="加入QQ群" height="300"></a>
@@ -59,6 +57,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 * （1）提供数据库部分字段说明
 * （2）提供CE获取基址偏移方法
+* （3）提供MAC数据库解密方法
 
 #### 2.4 其他功能
 
@@ -67,12 +66,10 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 **利用场景**
 
-1. 钓鱼攻击(通过钓鱼控到的机器通常都是登录状态)
-2. 渗透到运维机器(有些运维机器会日常登录自己的微信)
-3. 某些工作需要取证(数据库需要拷贝到本地)
-4. 自行备份(日常备份自己留存)
-5. 远程查看聊天记录(通过web查看聊天记录)
-6. 等等...............
+1. 网络安全……
+2. 日常备份自己留存
+3. 远程查看聊天记录(通过web查看聊天记录)
+4. 等等...............
 
 ## 3. 更新计划
 
@@ -116,7 +113,7 @@ qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdum
 
 * 极简版使用说明 [pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
 
-* 如果想修改UI，请clone [wx_dump_web](https://github.com/xaoyaoo/wx_dump_web) 项目，然后按需修改（该UI采用VUE+ElementUI开发）
+* 如果想修改UI，请clone [wx_dump_web](https://github.com/xaoyaoo/wxdump_web) 项目，然后按需修改（该UI采用VUE+ElementUI开发）
 
 【注】:
 
