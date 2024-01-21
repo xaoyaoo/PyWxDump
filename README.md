@@ -20,7 +20,7 @@
 
 ### 如果对wxdump实现原理感兴趣，请关注公众号：`逍遥之芯`(右边二维码)，回复：`原理` 获取原理解析。
 
-qq交流群：577704006（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
+qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
 
 <div>
 <a href="https://s.xaoyo.top/gOLUDl">
