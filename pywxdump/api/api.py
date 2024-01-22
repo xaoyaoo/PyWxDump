@@ -14,7 +14,7 @@ import shutil
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump.api.utils import read_session, save_session
+from pywxdump.api.utils import read_session, save_session, error9999
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge
 import pywxdump
 
@@ -25,83 +25,79 @@ api.debug = False
 
 
 @api.route('/api/init', methods=["GET", 'POST'])
+@error9999
 def init():
     """
     初始化 设置微信数据库路径，图片路径，解密需要的数据库
     :return:
     """
-    try:
-        msg_path = request.json.get("msg_path", "").strip()
-        micro_path = request.json.get("micro_path", "").strip()
-        media_path = request.json.get("media_path", "").strip()
-        wx_path = request.json.get("wx_path", "").strip()
-        key = request.json.get("key", "").strip()
-        my_wxid = request.json.get("my_wxid", "").strip()
+    msg_path = request.json.get("msg_path", "").strip()
+    micro_path = request.json.get("micro_path", "").strip()
+    media_path = request.json.get("media_path", "").strip()
+    wx_path = request.json.get("wx_path", "").strip()
+    key = request.json.get("key", "").strip()
+    my_wxid = request.json.get("my_wxid", "").strip()
+    raise Exception("test")
+    if key:  # 如果key不为空，表示是解密模式
+        if not wx_path:
+            return ReJson(1002)
+        if not os.path.exists(wx_path):
+            return ReJson(1001, body=wx_path)
+        save_msg_path = read_session(g.sf, "msg_path")
+        save_micro_path = read_session(g.sf, "micro_path")
+        save_my_wxid = read_session(g.sf, "my_wxid")
+        if save_msg_path and save_micro_path and os.path.exists(save_msg_path) and os.path.exists(
+                save_micro_path) and save_my_wxid == my_wxid:
+            return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
 
-        if key:  # 如果key不为空，表示是解密模式
-            if not wx_path:
-                return ReJson(1002)
-            if not os.path.exists(wx_path):
-                return ReJson(1001, body=wx_path)
-            save_msg_path = read_session(g.sf, "msg_path")
-            save_micro_path = read_session(g.sf, "micro_path")
-            save_my_wxid = read_session(g.sf, "my_wxid")
-            if save_msg_path and save_micro_path and os.path.exists(save_msg_path) and os.path.exists(
-                    save_micro_path) and save_my_wxid == my_wxid:
-                return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
-
-            out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path,
-                                                                                                   "decrypted")
-            code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=out_path)
-            time.sleep(1)
-            if code:
-                save_session(g.sf, "msg_path", merge_save_path)
-                save_session(g.sf, "micro_path", merge_save_path)
-                save_session(g.sf, "media_path", merge_save_path)
-                save_session(g.sf, "wx_path", wx_path)
-                save_session(g.sf, "key", key)
-                save_session(g.sf, "my_wxid", my_wxid)
-                rdata = {
-                    "msg_path": merge_save_path,
-                    "micro_path": merge_save_path,
-                    "media_path": merge_save_path,
-                    "wx_path": wx_path,
-                    "key": key,
-                    "my_wxid": my_wxid,
-                    "is_init": True,
-                }
-                return ReJson(0, rdata)
-            else:
-                return ReJson(2001, body=merge_save_path)
-
-        else:
-            if not msg_path or not micro_path or not media_path or not wx_path or not my_wxid:
-                return ReJson(1002)
-            if not os.path.exists(msg_path) or not os.path.exists(micro_path) or not os.path.exists(
-                    media_path) or not os.path.exists(wx_path):
-                return ReJson(1001)
-
-            save_session(g.sf, "msg_path", msg_path)
-            save_session(g.sf, "micro_path", micro_path)
-            save_session(g.sf, "media_path", media_path)
+        out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path,
+                                                                                               "decrypted")
+        code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=out_path)
+        time.sleep(1)
+        if code:
+            save_session(g.sf, "msg_path", merge_save_path)
+            save_session(g.sf, "micro_path", merge_save_path)
+            save_session(g.sf, "media_path", merge_save_path)
             save_session(g.sf, "wx_path", wx_path)
-            save_session(g.sf, "key", "")
+            save_session(g.sf, "key", key)
             save_session(g.sf, "my_wxid", my_wxid)
-
             rdata = {
-                "msg_path": msg_path,
-                "micro_path": micro_path,
-                "media_path": media_path,
+                "msg_path": merge_save_path,
+                "micro_path": merge_save_path,
+                "media_path": merge_save_path,
                 "wx_path": wx_path,
-                "key": "",
+                "key": key,
                 "my_wxid": my_wxid,
                 "is_init": True,
             }
             return ReJson(0, rdata)
+        else:
+            return ReJson(2001, body=merge_save_path)
 
-    except Exception as e:
-        rdata = f"{e.__traceback__.tb_lineno}____{e.__traceback__.tb_frame.f_globals['__file__']}____{e}"
-        return ReJson(9999, body=rdata)
+    else:
+        if not msg_path or not micro_path or not media_path or not wx_path or not my_wxid:
+            return ReJson(1002)
+        if not os.path.exists(msg_path) or not os.path.exists(micro_path) or not os.path.exists(
+                media_path) or not os.path.exists(wx_path):
+            return ReJson(1001)
+
+        save_session(g.sf, "msg_path", msg_path)
+        save_session(g.sf, "micro_path", micro_path)
+        save_session(g.sf, "media_path", media_path)
+        save_session(g.sf, "wx_path", wx_path)
+        save_session(g.sf, "key", "")
+        save_session(g.sf, "my_wxid", my_wxid)
+
+        rdata = {
+            "msg_path": msg_path,
+            "micro_path": micro_path,
+            "media_path": media_path,
+            "wx_path": wx_path,
+            "key": "",
+            "my_wxid": my_wxid,
+            "is_init": True,
+        }
+        return ReJson(0, rdata)
 
 
 @api.route('/api/version', methods=["GET", 'POST'])
