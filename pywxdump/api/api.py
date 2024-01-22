@@ -37,7 +37,6 @@ def init():
     wx_path = request.json.get("wx_path", "").strip()
     key = request.json.get("key", "").strip()
     my_wxid = request.json.get("my_wxid", "").strip()
-    raise Exception("test")
     if key:  # 如果key不为空，表示是解密模式
         if not wx_path:
             return ReJson(1002)
