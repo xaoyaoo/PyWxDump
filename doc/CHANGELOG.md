@@ -1,6 +1,7 @@
 ## v2.4.26
 
 - test
+- api接口返回值增加报错堆栈
 - UPDATE CHANGELOG.md
 
 ## v2.4.25
