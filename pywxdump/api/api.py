@@ -100,6 +100,7 @@ def init():
 
 
 @api.route('/api/version', methods=["GET", 'POST'])
+@error9999
 def version():
     """
     版本
@@ -109,27 +110,25 @@ def version():
 
 
 @api.route('/api/contact_list', methods=["GET", 'POST'])
+@error9999
 def contact_list():
     """
     获取联系人列表
     :return:
     """
-    try:
-        # 获取联系人列表
-        # 从header中读取micro_path
-        micro_path = request.headers.get("micro_path")
-        if not micro_path:
-            micro_path = read_session(g.sf, "micro_path")
-        start = request.json.get("start")
-        limit = request.json.get("limit")
+    # 获取联系人列表
+    # 从header中读取micro_path
+    micro_path = request.headers.get("micro_path")
+    if not micro_path:
+        micro_path = read_session(g.sf, "micro_path")
+    start = request.json.get("start")
+    limit = request.json.get("limit")
 
-        contact_list = analyzer.get_contact_list(micro_path)
-        save_session(g.sf, "user_list", contact_list)
-        if limit:
-            contact_list = contact_list[int(start):int(start) + int(limit)]
-        return ReJson(0, contact_list)
-    except Exception as e:
-        return ReJson(9999, msg=str(e))
+    contact_list = analyzer.get_contact_list(micro_path)
+    save_session(g.sf, "user_list", contact_list)
+    if limit:
+        contact_list = contact_list[int(start):int(start) + int(limit)]
+    return ReJson(0, contact_list)
 
 
 @api.route('/api/chat_count', methods=["GET", 'POST'])
@@ -193,6 +192,7 @@ def contact_count_list():
 
 
 @api.route('/api/msgs', methods=["GET", 'POST'])
+@error9999
 def get_msgs():
     msg_path = request.headers.get("msg_path")
     micro_path = request.headers.get("micro_path")
@@ -229,6 +229,7 @@ def get_msgs():
 
 
 @api.route('/api/img', methods=["GET", 'POST'])
+@error9999
 def get_img():
     """
     获取图片
@@ -272,6 +273,7 @@ def get_audio(savePath):
 
 # 导出聊天记录
 @api.route('/api/export', methods=["GET", 'POST'])
+@error9999
 def export():
     """
     导出聊天记录
@@ -369,6 +371,7 @@ def export():
 
 # 这部分为专业工具的api
 @api.route('/api/wxinfo', methods=["GET", 'POST'])
+@error9999
 def get_wxinfo():
     """
     获取微信信息
@@ -382,6 +385,7 @@ def get_wxinfo():
 
 
 @api.route('/api/decrypt', methods=["GET", 'POST'])
+@error9999
 def decrypt():
     """
     解密
@@ -401,6 +405,7 @@ def decrypt():
 
 
 @api.route('/api/biasaddr', methods=["GET", 'POST'])
+@error9999
 def biasaddr():
     """
     BiasAddr
@@ -418,6 +423,7 @@ def biasaddr():
 
 
 @api.route('/api/merge', methods=["GET", 'POST'])
+@error9999
 def merge():
     """
     合并
@@ -437,5 +443,6 @@ def merge():
 
 
 @api.route('/')
+@error9999
 def index():
     return render_template('index.html')
