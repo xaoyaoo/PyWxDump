@@ -3,6 +3,7 @@
 - UPDATE 文档
 - UPDATE README.md
 - 增加报错的具体显示内容，方便调试
+- UPDATE CHANGELOG.md
 - 添加api接口报错9999的文件以及行号
 
 ## v2.4.25
