@@ -100,7 +100,8 @@ def init():
             return ReJson(0, rdata)
 
     except Exception as e:
-        return ReJson(9999, msg=str(e))
+        rdata = f"{e.__traceback__.tb_lineno}____{e.__traceback__.tb_frame.f_globals['__file__']}____{e}"
+        return ReJson(9999, body=rdata)
 
 
 @api.route('/api/version', methods=["GET", 'POST'])
