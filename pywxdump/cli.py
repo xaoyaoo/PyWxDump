@@ -65,6 +65,7 @@ class MainWxInfo():
         return sb_wx_info
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 读取微信各版本偏移
         path = args.version_list_path
         save_path = args.save_path

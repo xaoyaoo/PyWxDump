@@ -304,9 +304,10 @@ def get_core_db(wx_path: str, db_type: list = None) -> [str]:
         return False, f"[-] 目录不存在: {wx_path}"
     db_type_all = ["MSG", "MediaMSG", "MicroMsg"]
 
-    db_type = [dt for dt in db_type if dt in db_type_all]
     if not db_type:
         db_type = db_type_all
+
+    db_type = [dt for dt in db_type if dt in db_type_all]
 
     msg_dir = os.path.dirname(wx_path)
     my_wxid = os.path.basename(wx_path)

@@ -301,7 +301,7 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     my_wxid = os.path.basename(wx_path)
 
     # 解密
-    code, wxdbpaths = get_core_db(wx_path)
+    code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg"])
 
     # 判断out_path是否为空目录
     if os.path.exists(decrypted_path) and os.listdir(decrypted_path):
