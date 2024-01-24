@@ -11,7 +11,7 @@ import os
 import time
 import shutil
 
-from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
+from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session,send_file
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, save_session, error9999
@@ -248,7 +248,25 @@ def get_img():
         return ReJson(0, out_bytes)
     else:
         return ReJson(1001, body=img_path_all)
+    
+@api.route('/api/video/<path:videoPath>', methods=["GET", 'POST'])
+def get_video(videoPath):
+    # savePath = request.args.get("savePath")
+    # savePath = request.json.get("savePath", savePath)
+    savePath = "video/" + videoPath  # 这个是从url中获取的
+    wx_path = read_session(g.sf, "wx_path")
+    video_path =  os.path.join(wx_path, videoPath)
+    if not savePath:
+        return ReJson(1002)
 
+    # 判断savePath路径的文件夹是否存在
+    savePath = os.path.join(g.tmp_path, savePath)
+    if not os.path.exists(os.path.dirname(savePath)):
+        os.makedirs(os.path.dirname(savePath))
+    
+    
+    shutil.copy(video_path, savePath)
+    return send_file(savePath)
 
 @api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
 def get_audio(savePath):
