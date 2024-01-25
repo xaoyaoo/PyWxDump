@@ -251,23 +251,11 @@ def get_img():
     
 @api.route('/api/video/<path:videoPath>', methods=["GET", 'POST'])
 def get_video(videoPath):
-    savePath = os.path.join('video',videoPath)  # 这个是从url中获取的
     wx_path = read_session(g.sf, "wx_path")
-    video_path =  os.path.join(wx_path, videoPath)
-    if os.path.exists(savePath):
-        return send_file(savePath)
-    if not videoPath:
-        return ReJson(1002)
-    # 判断savePath路径的文件夹是否存在
-    savePath = os.path.join(g.tmp_path, savePath)
-    if not os.path.exists(os.path.dirname(savePath)):
-        os.makedirs(os.path.dirname(savePath))
-    try:
-        shutil.copy(video_path, savePath)
-    except PermissionError:
-        if not os.path.exists(savePath):
-            return ReJson(5002)
-    return send_file(savePath)
+    all_video_path =  os.path.join(wx_path, videoPath)
+    if not os.path.exists(all_video_path):
+        return ReJson(5002)
+    return send_file(all_video_path)
 
 @api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
 def get_audio(savePath):
