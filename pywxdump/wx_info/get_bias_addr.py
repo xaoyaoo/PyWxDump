@@ -68,6 +68,10 @@ class BiasAddr:
         return ret
 
     def get_key_bias1(self):
+        """
+        2024.01.26 wx version：3.9.9.35 失效
+        :return:
+        """
         try:
             byteLen = self.address_len  # 4 if self.bits == 32 else 8  # 4字节或8字节
 
@@ -119,20 +123,25 @@ class BiasAddr:
         phone_type2 = "android\x00"
         phone_type3 = "ipad\x00"
 
-        pm = pymem.Pymem("WeChat.exe")
+        pm = pymem.Pymem(self.pid)
         module_name = "WeChatWin.dll"
 
         MicroMsg_path = os.path.join(db_path, "MSG", "MicroMsg.db")
 
+        type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module_name, return_multiple=True)
+        type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module_name, return_multiple=True)
+        type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module_name, return_multiple=True)
+
+        type_addrs = []
+        if len(type1_addrs) >= 2: type_addrs += type1_addrs
+        if len(type2_addrs) >= 2: type_addrs += type2_addrs
+        if len(type3_addrs) >= 2: type_addrs += type3_addrs
+        if len(type_addrs) == 0: return "None"
+
+        type_addrs.sort()  # 从小到大排序
+
         module = pymem.process.module_from_name(pm.process_handle, module_name)
 
-        type1_addrs = pm.pattern_scan_module(phone_type1.encode(), module, return_multiple=True)
-        type2_addrs = pm.pattern_scan_module(phone_type2.encode(), module, return_multiple=True)
-        type3_addrs = pm.pattern_scan_module(phone_type3.encode(), module, return_multiple=True)
-        type_addrs = type1_addrs if len(type1_addrs) >= 2 else type2_addrs if len(
-            type2_addrs) >= 2 else type3_addrs if len(type3_addrs) >= 2 else "None"
-        if type_addrs == "None":
-            return 0
         for i in type_addrs[::-1]:
             for j in range(i, i - 2000, -addr_len):
                 key_bytes = read_key_bytes(pm.process_handle, j, addr_len)
