@@ -4,6 +4,9 @@
 - 更新偏移地址获取函数
 - 更新test Bias
 - 3.9.9.35 版本支持
+- UPDATE CHANGELOG.md
+- add video api (#69)
+- Merge branch 'master' of https://github.com/xaoyaoo/PyWxDump
 
 ## v2.4.27
 
