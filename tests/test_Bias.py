@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------------------
 import pywxdump
 from pywxdump import VERSION_LIST_PATH, VERSION_LIST
-from pywxdump.bias_addr import BiasAddr
+from pywxdump import BiasAddr
 from pywxdump.wx_info import read_info
 
 mobile = '13800138000'
