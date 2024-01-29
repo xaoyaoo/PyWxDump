@@ -139,3 +139,8 @@ eg：`wxdump.exe merge -i "C:\Users\user\Desktop\decrypted\MSG0.db,C:\Users\user
 
 不能，必须登录微信才能获取到密钥。
 但是可以保存密钥，下次再次使用时候，不需要登录即可。
+
+### 二十一、打开浏览器页面空白
+
+https://blog.csdn.net/qq_46106285/article/details/124749512 
+根据这个链接进行修复

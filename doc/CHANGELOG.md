@@ -1,5 +1,17 @@
+## v2.4.28
+
+- 更新FAQ
+- v2.4.28
+- 更新偏移地址获取函数
+- 更新test Bias
+- 3.9.9.35 版本支持
+- UPDATE CHANGELOG.md
+- add video api (#69)
+- Merge branch 'master' of https://github.com/xaoyaoo/PyWxDump
+
 ## v2.4.27
 
+- UPDATE CHANGELOG.md
 - fix 自动解密中获取主要数据库失败问题
 
 ## v2.4.26
