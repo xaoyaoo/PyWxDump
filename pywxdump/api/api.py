@@ -125,7 +125,7 @@ def contact_list():
     limit = request.json.get("limit")
 
     contact_list = analyzer.get_contact_list(micro_path)
-    save_session(g.sf, "user_list", contact_list)
+    # save_session(g.sf, "user_list", contact_list)
     if limit:
         contact_list = contact_list[int(start):int(start) + int(limit)]
     return ReJson(0, contact_list)
@@ -178,7 +178,7 @@ def contact_count_list():
         # 降序
         contact_list = sorted(contact_list, key=lambda x: x["chat_count"], reverse=True)
 
-        save_session(g.sf, "user_list", contact_list)
+        # save_session(g.sf, "user_list", contact_list)
 
         if word and word != "" and word != "undefined" and word != "null":
             contact_list = [contact for contact in contact_list if

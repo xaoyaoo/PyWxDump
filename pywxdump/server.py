@@ -32,7 +32,7 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
         os.makedirs(tmp_path)
         print(f"[+] 创建临时文件夹：{tmp_path}")
 
-    session_file = os.path.join(tmp_path, "session")  # 用于存放各种基础信息
+    session_file = os.path.join(tmp_path, "session.conf")  # 用于存放各种基础信息
 
     from flask import Flask, g
     from flask_cors import CORS
