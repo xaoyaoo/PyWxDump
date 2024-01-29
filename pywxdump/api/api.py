@@ -257,6 +257,28 @@ def get_video(videoPath):
         return ReJson(5002)
     return send_file(all_video_path)
 
+@api.route('/api/file_info', methods=["GET", 'POST'])
+def get_file_info():
+    file_path = request.args.get("file_path")
+    file_path = request.json.get("file_path", file_path)
+    if not file_path:
+        return ReJson(1002)
+    wx_path = read_session(g.sf, "wx_path")
+    all_file_path =  os.path.join(wx_path, file_path)
+    if not os.path.exists(all_file_path):
+        return ReJson(5002)
+    file_name = os.path.basename(all_file_path)
+    file_size = os.path.getsize(all_file_path)
+    return ReJson(0, {"file_name": file_name, "file_size": str(file_size)})
+
+@api.route('/api/file/<path:filePath>', methods=["GET", 'POST'])
+def get_file(filePath):
+    wx_path = read_session(g.sf, "wx_path")
+    all_file_path =  os.path.join(wx_path, filePath)
+    if not os.path.exists(all_file_path):
+        return ReJson(5002)
+    return send_file(all_file_path)
+
 @api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
 def get_audio(savePath):
     # savePath = request.args.get("savePath")
