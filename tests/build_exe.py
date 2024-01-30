@@ -115,7 +115,7 @@ VSVersionInfo(
       [
       StringTable(
         '040904b0',
-        [StringStruct('CompanyName', 'None'),
+        [StringStruct('CompanyName', 'PyWxDump'),
         StringStruct('FileDescription', 'PyWxDump from https://github.com/xaoyaoo/PyWxDump'),
         StringStruct('FileVersion', '{__version__}'),
         StringStruct('InternalName', 'wxdump.exe'),
