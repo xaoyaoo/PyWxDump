@@ -11,7 +11,7 @@ import os
 import time
 import shutil
 
-from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session,send_file
+from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, save_session, error9999
@@ -125,7 +125,7 @@ def contact_list():
     limit = request.json.get("limit")
 
     contact_list = analyzer.get_contact_list(micro_path)
-    save_session(g.sf, "user_list", contact_list)
+    # save_session(g.sf, "user_list", contact_list)
     if limit:
         contact_list = contact_list[int(start):int(start) + int(limit)]
     return ReJson(0, contact_list)
@@ -178,7 +178,7 @@ def contact_count_list():
         # 降序
         contact_list = sorted(contact_list, key=lambda x: x["chat_count"], reverse=True)
 
-        save_session(g.sf, "user_list", contact_list)
+        # save_session(g.sf, "user_list", contact_list)
 
         if word and word != "" and word != "undefined" and word != "null":
             contact_list = [contact for contact in contact_list if
@@ -248,11 +248,12 @@ def get_img():
         return ReJson(0, out_bytes)
     else:
         return ReJson(1001, body=img_path_all)
-    
+
+
 @api.route('/api/video/<path:videoPath>', methods=["GET", 'POST'])
 def get_video(videoPath):
     wx_path = read_session(g.sf, "wx_path")
-    all_video_path =  os.path.join(wx_path, videoPath)
+    all_video_path = os.path.join(wx_path, videoPath)
     if not os.path.exists(all_video_path):
         return ReJson(5002)
     return send_file(all_video_path)

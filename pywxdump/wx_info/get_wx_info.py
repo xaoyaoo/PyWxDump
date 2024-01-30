@@ -43,6 +43,21 @@ def get_info_wxid(h_process):
     return wxid
 
 
+def get_info_filePath_base_wxid(h_process, wxid=""):
+    find_num = 10
+    addrs = pattern_scan_all(h_process, wxid.encode() + br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
+    filePath = []
+    for addr in addrs:
+        win_addr_len = 260
+        array = ctypes.create_string_buffer(win_addr_len)
+        if ReadProcessMemory(h_process, void_p(addr - win_addr_len + 50), array, win_addr_len, 0) == 0: return "None"
+        array = bytes(array).split(b"\\Msg")[0]
+        array = array.split(b"\00")[-1]
+        filePath.append(array.decode('utf-8', errors='ignore'))
+    filePath = max(filePath, key=filePath.count) if filePath else "None"
+    return filePath
+
+
 def get_info_filePath(wxid="all"):
     if not wxid:
         return "None"
@@ -197,7 +212,9 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
         addrLen = get_exe_bit(process.exe()) // 8
 
         tmp_rd['wxid'] = get_info_wxid(Handle)
-        tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid']) if tmp_rd['wxid'] != "None" else "None"
+        tmp_rd['filePath'] = get_info_filePath_base_wxid(Handle, tmp_rd['wxid']) if tmp_rd['wxid'] != "None" else "None"
+        tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid']) if tmp_rd['wxid'] != "None" and tmp_rd[
+            'filePath'] == "None" else tmp_rd['filePath']
         tmp_rd['key'] = get_key(tmp_rd['pid'], tmp_rd['filePath'], addrLen) if tmp_rd['filePath'] != "None" else "None"
         result.append(tmp_rd)
 
