@@ -1,3 +1,12 @@
+## v2.4.29
+
+- 代码格式化
+- 重命名conf.json
+- session保存更加合理化
+- 文件和视频的支持api (#71)
+- 添加微信数据文件路径通过读取内存方式获取
+- Merge branch 'master' of https://github.com/xaoyaoo/PyWxDump
+
 ## v2.4.28
 
 - 更新FAQ
