@@ -412,6 +412,26 @@ class MainUi():
 
         start_falsk(port=port, online=online, debug=debug)
 
+class MainApi():
+    def init_parses(self, parser):
+        self.mode = "api"
+        # 添加 'api' 子命令解析器
+        sb_api = parser.add_parser(self.mode, help="启动api")
+        sb_api.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
+        sb_api.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False, default=False,
+                           metavar="")
+        sb_api.add_argument("--debug", type=bool, help="(可选)是否开启debug模式", default=False)
+        return sb_api
+
+    def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
+        # 从命令行参数获取值
+        online = args.online
+        port = args.port
+        debug = args.debug
+
+        start_falsk(port=port, online=online, debug=debug,isopenBrowser=False)
+
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def format_help(self):
@@ -487,11 +507,16 @@ def console_run():
     sb_ui = main_ui.init_parses(subparsers)
     modes[main_ui.mode] = main_ui
 
+     # 添加 'api' 子命令解析器
+    main_api = MainApi()
+    sb_api = main_api.init_parses(subparsers)
+    modes[main_api.mode] = main_api
+
     # 检查是否需要显示帮助信息
     if len(sys.argv) == 1:
         sys.argv.append('ui')
     elif len(sys.argv) == 2 and sys.argv[1] in modes.keys() and sys.argv[1] not in [main_all.mode, main_wx_info.mode,
-                                                                                    main_wx_db_path.mode, main_ui.mode]:
+                                                                                    main_wx_db_path.mode, main_ui.mode ,main_api.mode]:
         sys.argv.append('-h')
 
     args = parser.parse_args()  # 解析命令行参数
