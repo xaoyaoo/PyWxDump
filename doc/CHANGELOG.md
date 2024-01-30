@@ -1,6 +1,6 @@
 ## v2.4.31.(待发布)
 
-- 
+- UPDATE CHANGELOG.md
 
 ## v2.4.30
 
