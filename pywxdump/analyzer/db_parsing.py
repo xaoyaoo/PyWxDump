@@ -256,4 +256,3 @@ def read_BytesExtra(BytesExtra):
         return deserialize_data
     except Exception as e:
         return None
-

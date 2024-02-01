@@ -1,3 +1,25 @@
+## v2.4.31.(待发布)
+
+- UPDATE CHANGELOG.md
+
+## v2.4.30
+
+- 格式化代码
+- 删除test下不必要文件
+- 增加打包为exe时，添加版本信息
+- UPDATE CHANGELOG.md
+
+## v2.4.29
+
+- 代码格式化
+- 重命名conf.json
+- session保存更加合理化
+- 增加视频文件等内容显示 #71
+- 文件和视频的支持api (#71)
+- UPDATE CHANGELOG.md
+- 添加微信数据文件路径通过读取内存方式获取
+- Merge branch 'master' of https://github.com/xaoyaoo/PyWxDump
+
 ## v2.4.28
 
 - 更新FAQ
