@@ -125,7 +125,7 @@ def get_room_user_list(MSG_db_path, selected_talker):
     cursor1.close()
     db1.close()
     user_list = []
-    
+    read_user_wx_id = []
     for row  in result1:
         localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra, id = row
         bytes_extra = read_BytesExtra(BytesExtra)
@@ -134,10 +134,13 @@ def get_room_user_list(MSG_db_path, selected_talker):
                 talker = bytes_extra['3'][0]['2'].decode('utf-8', errors='ignore')
             except:
                 continue
+        if talker in read_user_wx_id:
+            continue
         user = get_contact(MSG_db_path, talker)
         if not user:
             continue
         user_list.append(user)
+        read_user_wx_id.append(talker)
     return user_list
             
 
