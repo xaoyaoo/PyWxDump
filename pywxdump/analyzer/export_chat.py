@@ -24,6 +24,30 @@ from .utils import get_md5, attach_databases, execute_sql, get_type_name, match_
 from .db_parsing import parse_xml_string, decompress_CompressContent, read_BytesExtra
 
 
+def get_contact(MicroMsg_db_path,wx_id):
+    """
+    获取联系人信息
+    :param MicroMsg_db_path: MicroMsg.db 文件路径
+    :param wx_id: 微信id
+    :return: 联系人信息
+    """
+    db = sqlite3.connect(MicroMsg_db_path)
+    cursor = db.cursor()
+    # 获取username是wx_id的用户
+    sql = ("SELECT A.UserName, A.NickName, A.Remark,A.Alias,A.Reserved6,B.bigHeadImgUrl "
+           "FROM Contact A,ContactHeadImgUrl B "
+           f"WHERE A.UserName = '{wx_id}' AND A.UserName = B.usrName "
+           "ORDER BY NickName ASC;")
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    print('联系人信息：', result)
+    if not result:
+        print('居然没找到！')
+        print(wx_id)
+        return None
+    return {"username": result[0], "nickname": result[1], "remark": result[2], "account": result[3], "describe": result[4], "headImgUrl": result[5]}
+    
+
 def get_contact_list(MicroMsg_db_path):
     """
     获取联系人列表
@@ -78,6 +102,44 @@ def get_chatroom_list(MicroMsg_db_path):
             {"ChatRoomName": ChatRoomName, "UserNameList": UserNameList, "DisplayNameList": DisplayNameList,
              "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor})
     return rooms
+
+def get_room_user_list(MSG_db_path, selected_talker):
+    """
+    获取群聊中包含的所有用户列表
+    :param MSG_db_path: MSG.db 文件路径
+    :param selected_talker: 选中的聊天对象 wxid
+    :return: 聊天用户列表
+    """
+    
+    # 连接 MSG_ALL.db 数据库，并执行查询
+    db1 = sqlite3.connect(MSG_db_path)
+    cursor1 = db1.cursor()
+
+    sql = (
+        "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
+        "FROM MSG WHERE StrTalker=? "
+        "ORDER BY CreateTime ASC")
+
+    cursor1.execute(sql, (selected_talker,))
+    result1 = cursor1.fetchall()
+    cursor1.close()
+    db1.close()
+    user_list = []
+    
+    for row  in result1:
+        localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra, id = row
+        bytes_extra = read_BytesExtra(BytesExtra)
+        if bytes_extra:
+            try:
+                talker = bytes_extra['3'][0]['2'].decode('utf-8', errors='ignore')
+            except:
+                continue
+        user = get_contact(MSG_db_path, talker)
+        if not user:
+            continue
+        user_list.append(user)
+    return user_list
+            
 
 
 def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):

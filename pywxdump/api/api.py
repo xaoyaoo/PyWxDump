@@ -13,6 +13,7 @@ import shutil
 
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
+from pywxdump.analyzer.export_chat import get_contact, get_room_user_list
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, save_session, error9999
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge
@@ -190,6 +191,30 @@ def contact_count_list():
     except Exception as e:
         return ReJson(9999, msg=str(e))
 
+@api.route('/api/msgs_user_list',methods=['GET','POST'])
+@error9999
+def get_msg_user_list():
+    msg_path = request.headers.get("msg_path")
+    micro_path = request.headers.get("micro_path")
+    if not msg_path:
+        msg_path = read_session(g.sf, "msg_path")
+    if not micro_path:
+        micro_path = read_session(g.sf, "micro_path")
+    wxid = request.json.get("wxid")
+    # msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
+    my_wxid = read_session(g.sf, "my_wxid")
+    userlist = []
+    if wxid.endswith("@chatroom"):
+        # 群聊
+        userlist = get_room_user_list(msg_path, wxid)
+    else:
+        # 单聊
+        user = get_contact(micro_path, wxid)
+        my_user = get_contact(micro_path,my_wxid)
+        userlist.append(user)
+        userlist.append(my_user)
+    return ReJson(0, {"user_list":userlist})
+    
 
 @api.route('/api/msgs', methods=["GET", 'POST'])
 @error9999
