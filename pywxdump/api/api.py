@@ -214,7 +214,22 @@ def get_msg_user_list():
         userlist.append(user)
         userlist.append(my_user)
     return ReJson(0, {"user_list":userlist})
-    
+
+@api.route('/api/msgs_list',methods=['GET','POST'])
+@error9999
+def get_msg_list():
+    msg_path = request.headers.get("msg_path")
+    micro_path = request.headers.get("micro_path")
+    if not msg_path:
+        msg_path = read_session(g.sf, "msg_path")
+    if not micro_path:
+        micro_path = read_session(g.sf, "micro_path")
+    start = request.json.get("start")
+    limit = request.json.get("limit")
+    wxid = request.json.get("wxid")
+    my_wxid = read_session(g.sf, "my_wxid")
+    msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
+    return ReJson(0, {"msg_list":msg_list,'my_wxid':my_wxid})
 
 @api.route('/api/msgs', methods=["GET", 'POST'])
 @error9999
