@@ -35,9 +35,11 @@ def init():
     msg_path = request.json.get("msg_path", "").strip()
     micro_path = request.json.get("micro_path", "").strip()
     media_path = request.json.get("media_path", "").strip()
+
     wx_path = request.json.get("wx_path", "").strip()
     key = request.json.get("key", "").strip()
     my_wxid = request.json.get("my_wxid", "").strip()
+
     init_type = request.json.get("init_type", "").strip()
 
     if init_type == "last":
@@ -48,7 +50,7 @@ def init():
                 save_micro_path):
             return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
         else:
-            return ReJson(1002,body="上次初始化的路径不存在")
+            return ReJson(1002, body="上次初始化的路径不存在")
 
     if key:  # 如果key不为空，表示是解密模式
         if not wx_path:
@@ -56,8 +58,10 @@ def init():
         if not os.path.exists(wx_path):
             return ReJson(1001, body=wx_path)
 
-        out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path,
-                                                                                               "decrypted")
+        out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path, "decrypted")
+        if os.path.exists(out_path):
+            shutil.rmtree(out_path)
+
         code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=out_path)
         time.sleep(1)
         if code:
