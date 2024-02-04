@@ -85,10 +85,9 @@ def init():
             return ReJson(2001, body=merge_save_path)
 
     else:
-        if not msg_path or not micro_path or not media_path or not wx_path or not my_wxid:
-            return ReJson(1002)
-        if not os.path.exists(msg_path) or not os.path.exists(micro_path) or not os.path.exists(
-                media_path) or not os.path.exists(wx_path):
+        if not msg_path or not micro_path:
+            return ReJson(1002, body="msg_path and micro_path is required")
+        if not os.path.exists(msg_path) or not os.path.exists(micro_path):
             return ReJson(1001)
 
         save_session(g.sf, "msg_path", msg_path)
