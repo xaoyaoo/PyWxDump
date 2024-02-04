@@ -135,7 +135,7 @@ def contact_list():
 @api.route('/api/chat_count', methods=["GET", 'POST'])
 def chat_count():
     """
-    获取联系人列表
+    获取每个联系人的聊天记录数量
     :return:
     """
     try:
@@ -154,7 +154,7 @@ def chat_count():
 @api.route('/api/contact_count_list', methods=["GET", 'POST'])
 def contact_count_list():
     """
-    获取联系人列表
+    获取联系人列表以及聊天记录数量
     :return:
     """
     try:
@@ -194,6 +194,10 @@ def contact_count_list():
 @api.route('/api/msgs_user_list',methods=['GET','POST'])
 @error9999
 def get_msg_user_list():
+    """
+    获取消息联系人列表
+    :return:
+    """
     msg_path = request.headers.get("msg_path")
     micro_path = request.headers.get("micro_path")
     if not msg_path:
