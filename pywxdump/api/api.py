@@ -32,13 +32,13 @@ def init():
     初始化 设置微信数据库路径，图片路径，解密需要的数据库
     :return:
     """
-    msg_path = request.json.get("msg_path", "").strip()
-    micro_path = request.json.get("micro_path", "").strip()
-    media_path = request.json.get("media_path", "").strip()
+    msg_path = request.json.get("msg_path", "").strip().strip("'").strip('"')
+    micro_path = request.json.get("micro_path", "").strip().strip("'").strip('"')
+    media_path = request.json.get("media_path", "").strip().strip("'").strip('"')
 
-    wx_path = request.json.get("wx_path", "").strip()
-    key = request.json.get("key", "").strip()
-    my_wxid = request.json.get("my_wxid", "").strip()
+    wx_path = request.json.get("wx_path", "").strip().strip("'").strip('"')
+    key = request.json.get("key", "").strip().strip("'").strip('"')
+    my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
 
     init_type = request.json.get("init_type", "").strip()
 
