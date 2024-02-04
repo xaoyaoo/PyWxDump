@@ -38,17 +38,23 @@ def init():
     wx_path = request.json.get("wx_path", "").strip()
     key = request.json.get("key", "").strip()
     my_wxid = request.json.get("my_wxid", "").strip()
+    init_type = request.json.get("init_type", "").strip()
+
+    if init_type == "last":
+        save_msg_path = read_session(g.sf, "msg_path")
+        save_micro_path = read_session(g.sf, "micro_path")
+        save_my_wxid = read_session(g.sf, "my_wxid")
+        if save_msg_path and save_micro_path and os.path.exists(save_msg_path) and os.path.exists(
+                save_micro_path):
+            return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
+        else:
+            return ReJson(1002,body="上次初始化的路径不存在")
+
     if key:  # 如果key不为空，表示是解密模式
         if not wx_path:
             return ReJson(1002)
         if not os.path.exists(wx_path):
             return ReJson(1001, body=wx_path)
-        save_msg_path = read_session(g.sf, "msg_path")
-        save_micro_path = read_session(g.sf, "micro_path")
-        save_my_wxid = read_session(g.sf, "my_wxid")
-        if save_msg_path and save_micro_path and os.path.exists(save_msg_path) and os.path.exists(
-                save_micro_path) and save_my_wxid == my_wxid:
-            return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
 
         out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path,
                                                                                                "decrypted")
@@ -191,7 +197,8 @@ def contact_count_list():
     except Exception as e:
         return ReJson(9999, msg=str(e))
 
-@api.route('/api/msgs_user_list',methods=['GET','POST'])
+
+@api.route('/api/msgs_user_list', methods=['GET', 'POST'])
 @error9999
 def get_msg_user_list():
     """
@@ -214,12 +221,13 @@ def get_msg_user_list():
     else:
         # 单聊
         user = get_contact(micro_path, wxid)
-        my_user = get_contact(micro_path,my_wxid)
+        my_user = get_contact(micro_path, my_wxid)
         userlist.append(user)
         userlist.append(my_user)
-    return ReJson(0, {"user_list":userlist})
+    return ReJson(0, {"user_list": userlist})
 
-@api.route('/api/msgs_list',methods=['GET','POST'])
+
+@api.route('/api/msgs_list', methods=['GET', 'POST'])
 @error9999
 def get_msg_list():
     msg_path = request.headers.get("msg_path")
@@ -233,7 +241,8 @@ def get_msg_list():
     wxid = request.json.get("wxid")
     my_wxid = read_session(g.sf, "my_wxid")
     msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
-    return ReJson(0, {"msg_list":msg_list,'my_wxid':my_wxid})
+    return ReJson(0, {"msg_list": msg_list, 'my_wxid': my_wxid})
+
 
 @api.route('/api/msgs', methods=["GET", 'POST'])
 @error9999
@@ -302,6 +311,7 @@ def get_video(videoPath):
         return ReJson(5002)
     return send_file(all_video_path)
 
+
 @api.route('/api/file_info', methods=["GET", 'POST'])
 def get_file_info():
     file_path = request.args.get("file_path")
@@ -309,20 +319,22 @@ def get_file_info():
     if not file_path:
         return ReJson(1002)
     wx_path = read_session(g.sf, "wx_path")
-    all_file_path =  os.path.join(wx_path, file_path)
+    all_file_path = os.path.join(wx_path, file_path)
     if not os.path.exists(all_file_path):
         return ReJson(5002)
     file_name = os.path.basename(all_file_path)
     file_size = os.path.getsize(all_file_path)
     return ReJson(0, {"file_name": file_name, "file_size": str(file_size)})
 
+
 @api.route('/api/file/<path:filePath>', methods=["GET", 'POST'])
 def get_file(filePath):
     wx_path = read_session(g.sf, "wx_path")
-    all_file_path =  os.path.join(wx_path, filePath)
+    all_file_path = os.path.join(wx_path, filePath)
     if not os.path.exists(all_file_path):
         return ReJson(5002)
     return send_file(all_file_path)
+
 
 @api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
 def get_audio(savePath):
