@@ -193,8 +193,8 @@ class MainShowChatRecords():
                                 metavar="")
         sb_decrypt.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
                                 default="wxid_vzzcn5fevion22", metavar="")
-        sb_decrypt.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False,
-                                default=False, metavar="")
+        sb_decrypt.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", required=False,
+                                default=False)
         return sb_decrypt
 
     def run(self, args):
@@ -290,8 +290,7 @@ class MainAll():
         # 添加 'all' 子命令解析器
         sb_all = parser.add_parser(self.mode, help="获取微信信息，解密微信数据库，查看聊天记录")
         sb_all.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)wx_info保存路径【json文件】")
-        sb_all.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False,
-                            default=False, metavar="")
+        sb_all.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", default=False)
         return sb_all
 
     def run(self, args):
@@ -391,16 +390,14 @@ class MainAll():
             MainShowChatRecords().run(args)
 
 
-
 class MainUi():
     def init_parses(self, parser):
         self.mode = "ui"
         # 添加 'ui' 子命令解析器
         sb_ui = parser.add_parser(self.mode, help="启动UI界面")
         sb_ui.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
-        sb_ui.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False, default=False,
-                           metavar="")
-        sb_ui.add_argument("--debug", type=bool, help="(可选)是否开启debug模式", default=False)
+        sb_ui.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
+        sb_ui.add_argument("--debug", help="(可选)是否开启debug模式", default=False, action='store_true')
         return sb_ui
 
     def run(self, args):
@@ -412,15 +409,15 @@ class MainUi():
 
         start_falsk(port=port, online=online, debug=debug)
 
+
 class MainApi():
     def init_parses(self, parser):
         self.mode = "api"
         # 添加 'api' 子命令解析器
         sb_api = parser.add_parser(self.mode, help="启动api")
         sb_api.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
-        sb_api.add_argument("--online", type=bool, help="(可选)是否在线查看(局域网查看)", required=False, default=False,
-                           metavar="")
-        sb_api.add_argument("--debug", type=bool, help="(可选)是否开启debug模式", default=False)
+        sb_api.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
+        sb_api.add_argument("--debug", action='store_true', help="(可选)是否开启debug模式", default=False)
         return sb_api
 
     def run(self, args):
@@ -430,7 +427,7 @@ class MainApi():
         port = args.port
         debug = args.debug
 
-        start_falsk(port=port, online=online, debug=debug,isopenBrowser=False)
+        start_falsk(port=port, online=online, debug=debug, isopenBrowser=False)
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -507,7 +504,7 @@ def console_run():
     sb_ui = main_ui.init_parses(subparsers)
     modes[main_ui.mode] = main_ui
 
-     # 添加 'api' 子命令解析器
+    # 添加 'api' 子命令解析器
     main_api = MainApi()
     sb_api = main_api.init_parses(subparsers)
     modes[main_api.mode] = main_api
@@ -516,7 +513,8 @@ def console_run():
     if len(sys.argv) == 1:
         sys.argv.append('ui')
     elif len(sys.argv) == 2 and sys.argv[1] in modes.keys() and sys.argv[1] not in [main_all.mode, main_wx_info.mode,
-                                                                                    main_wx_db_path.mode, main_ui.mode ,main_api.mode]:
+                                                                                    main_wx_db_path.mode, main_ui.mode,
+                                                                                    main_api.mode]:
         sys.argv.append('-h')
 
     args = parser.parse_args()  # 解析命令行参数
