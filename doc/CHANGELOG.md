@@ -1,6 +1,8 @@
 ## v2.4.33.(待发布)
 
 - add wx3.9.9.43bias
+- online 参数无需添加 true
+- UPDATE CHANGELOG.md
 
 ## v2.4.32
 
