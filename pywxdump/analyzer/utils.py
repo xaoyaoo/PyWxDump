@@ -69,6 +69,12 @@ def get_type_name(type_id: tuple):
         (43, 0): "视频",
         (47, 0): "动画表情",
 
+        (37, 0): "添加好友",  # 感谢 https://github.com/zhyc9de
+        (42, 0): "推荐公众号",  # 感谢 https://github.com/zhyc9de
+        (48, 0): "地图信息",  # 感谢 https://github.com/zhyc9de
+        (49, 40): "分享收藏夹",  # 感谢  https://github.com/zhyc9de
+        (49, 53): "接龙",  # 感谢  https://github.com/zhyc9de
+
         (49, 0): "文件",
         (49, 1): "类似文字消息而不一样的消息",
         (49, 5): "卡片式链接",
