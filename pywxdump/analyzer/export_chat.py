@@ -224,7 +224,6 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
         elif type_id == (47, 0):  # 动画表情
             content_tmp = parse_xml_string(StrContent)
             cdnurl = content_tmp.get("emoji", {}).get("cdnurl", "")
-            # md5 = content_tmp.get("emoji", {}).get("md5", "")
             if cdnurl:
                 content = {"src": cdnurl, "msg": "表情"}
 
