@@ -16,7 +16,7 @@ from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core
 from pywxdump.analyzer.export_chat import get_contact, get_room_user_list
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, save_session, error9999
-from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge
+from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 import pywxdump
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
@@ -46,8 +46,14 @@ def init():
         save_msg_path = read_session(g.sf, "msg_path")
         save_micro_path = read_session(g.sf, "micro_path")
         save_my_wxid = read_session(g.sf, "my_wxid")
+
         if save_msg_path and save_micro_path and os.path.exists(save_msg_path) and os.path.exists(
                 save_micro_path):
+            try:
+                a = get_real_time_msg()
+            except Exception as e:
+                pass
+
             return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
         else:
             return ReJson(1002, body="上次初始化的路径不存在")
@@ -282,6 +288,34 @@ def get_msgs():
                 break
 
     return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": my_wxid})
+
+
+@api.route('/api/realtimemsg', methods=["GET", "POST"])
+@error9999
+def get_real_time_msg():
+    """
+    获取实时消息 使用 merge_real_time_db()函数
+    :return:
+    """
+    save_msg_path = read_session(g.sf, "msg_path")
+    save_media_path = read_session(g.sf, "media_path")
+    wx_path = read_session(g.sf, "wx_path")
+    key = read_session(g.sf, "key")
+
+    if not save_msg_path or not save_media_path or not wx_path or not key:
+        return ReJson(1002, body="msg_path or media_path or wx_path or key is required")
+    media_paths = get_core_db(wx_path, ["MediaMSG"])
+    msg_paths = get_core_db(wx_path, ["MSG"])
+
+    if not media_paths[0] or not msg_paths[0]:
+        return ReJson(1001, body="media_paths or msg_paths is required")
+    media_paths = media_paths[1]
+    media_paths.sort()
+    msg_paths = msg_paths[1]
+    msg_paths.sort()
+    merge_real_time_db(key=key, db_path=media_paths[-1], merge_path=save_media_path)
+    merge_real_time_db(key=key, db_path=msg_paths[-1], merge_path=save_msg_path)
+    return ReJson(0, "success")
 
 
 @api.route('/api/img', methods=["GET", 'POST'])

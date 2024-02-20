@@ -164,6 +164,13 @@ if package_path:
             datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )''')
     datas_741258 = ",\n".join(datas_741258)
 
+    # 获取 wx_info/tools 文件夹下的所有文件 用于打包
+    for root, dirs, files in os.walk(os.path.join(root_path, "wx_info", "tools")):
+        for file in files:
+            file_path = os.path.join(root, file)
+            datas_741258 += f''',\n(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )'''
+
+
     # print(datas_741258)
     # 生成 spec 文件
     spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports, datas_741258=datas_741258, version=__version__)

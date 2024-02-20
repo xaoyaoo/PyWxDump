@@ -330,3 +330,49 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
                                endCreateTime=endCreateTime)
 
     return True, merge_save_path
+
+
+def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, endCreateTime: int = 9999999999):
+    """
+    合并实时数据库消息,暂时只支持64位系统
+    :param key:  解密密钥
+    :param db_path:  数据库路径
+    :param merge_path:  合并后的数据库路径
+    :param CreateTime:  从这个时间开始的消息 10位时间戳
+    :param endCreateTime:  结束时间
+    :return:
+    """
+    try:
+        import platform
+    except:
+        raise ImportError("未找到模块 platform")
+    # 判断系统位数是否为64位，如果不是则抛出异常
+    if platform.architecture()[0] != '64bit':
+        raise Exception("System is not 64-bit.")
+
+
+    if not os.path.exists(db_path):
+        raise FileNotFoundError("数据库不存在")
+
+    out_path = "tmp_real_time.db"
+
+    if os.path.exists(out_path):
+        os.remove(out_path)
+
+    # 获取当前文件夹路径
+    current_path = os.path.dirname(__file__)
+
+    real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
+
+    # 调用cmd命令
+    cmd = f"{real_time_exe_path} \"{key}\" \"{db_path}\" \"{out_path}\" {CreateTime} {endCreateTime}"
+    os.system(cmd)
+
+    if not os.path.exists(out_path):
+        raise FileNotFoundError("合并失败")
+
+    a = merge_db([out_path], merge_path, CreateTime=CreateTime, endCreateTime=endCreateTime)
+
+    os.remove(out_path)
+
+    return merge_path
