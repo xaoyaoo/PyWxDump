@@ -24,7 +24,7 @@ from .utils import get_md5, attach_databases, execute_sql, get_type_name, match_
 from .db_parsing import parse_xml_string, decompress_CompressContent, read_BytesExtra
 
 
-def get_contact(MicroMsg_db_path,wx_id):
+def get_contact(MicroMsg_db_path, wx_id):
     """
     获取联系人信息
     :param MicroMsg_db_path: MicroMsg.db 文件路径
@@ -45,8 +45,9 @@ def get_contact(MicroMsg_db_path,wx_id):
         print('居然没找到！')
         print(wx_id)
         return None
-    return {"username": result[0], "nickname": result[1], "remark": result[2], "account": result[3], "describe": result[4], "headImgUrl": result[5]}
-    
+    return {"username": result[0], "nickname": result[1], "remark": result[2], "account": result[3],
+            "describe": result[4], "headImgUrl": result[5]}
+
 
 def get_contact_list(MicroMsg_db_path):
     """
@@ -103,6 +104,7 @@ def get_chatroom_list(MicroMsg_db_path):
              "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor})
     return rooms
 
+
 def get_room_user_list(MSG_db_path, selected_talker):
     """
     获取群聊中包含的所有用户列表
@@ -110,7 +112,7 @@ def get_room_user_list(MSG_db_path, selected_talker):
     :param selected_talker: 选中的聊天对象 wxid
     :return: 聊天用户列表
     """
-    
+
     # 连接 MSG_ALL.db 数据库，并执行查询
     db1 = sqlite3.connect(MSG_db_path)
     cursor1 = db1.cursor()
@@ -126,7 +128,7 @@ def get_room_user_list(MSG_db_path, selected_talker):
     db1.close()
     user_list = []
     read_user_wx_id = []
-    for row  in result1:
+    for row in result1:
         localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra, id = row
         bytes_extra = read_BytesExtra(BytesExtra)
         if bytes_extra:
@@ -142,7 +144,6 @@ def get_room_user_list(MSG_db_path, selected_talker):
         user_list.append(user)
         read_user_wx_id.append(talker)
     return user_list
-            
 
 
 def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
@@ -234,7 +235,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             content["msg"] = type_name
 
         elif type_id == (50, 0):  # 语音通话
-            BytesExtra = read_BytesExtra(BytesExtra)
+            content_tmp = parse_xml_string(StrContent)
+            content["msg"] = "语音/视频通话[%s]" % content_tmp.get("VoIPBubbleMsg", {}).get("msg", "")
 
         # elif type_id == (10000, 0):
         #     content["msg"] = StrContent
