@@ -319,23 +319,40 @@ def get_real_time_msg():
 
 
 @api.route('/api/img', methods=["GET", 'POST'])
-@error9999
+# @error9999
 def get_img():
     """
     获取图片
     :return:
     """
-    img_path = request.args.get("img_path")
-    img_path = request.json.get("img_path", img_path)
+    if request.method == "GET":
+        img_path = request.args.get("img_path")
+    elif request.method == "POST":
+        img_path = request.json.get("img_path")
+    else:
+        return ReJson(1003, msg="Unsupported method")
     if not img_path:
         return ReJson(1002)
+    print(img_path)
     wx_path = read_session(g.sf, "wx_path")
+    img_tmp_path = os.path.join(g.tmp_path, "img")
     img_path_all = os.path.join(wx_path, img_path)
+
+    print(img_path_all)
+    print(os.path.exists(img_path_all))
+
+
     if os.path.exists(img_path_all):
         fomt, md5, out_bytes = read_img_dat(img_path_all)
-        out_bytes = base64.b64encode(out_bytes).decode("utf-8")
-        out_bytes = f"data:{fomt};base64,{out_bytes}"
-        return ReJson(0, out_bytes)
+        imgsavepath = os.path.join(img_tmp_path, img_path+"_"+".".join([md5, fomt]))
+        if not os.path.exists(os.path.dirname(imgsavepath)):
+            os.makedirs(os.path.dirname(imgsavepath))
+        with open(imgsavepath, "wb") as f:
+            f.write(out_bytes)
+        # out_bytes = base64.b64encode(out_bytes).decode("utf-8")
+        # out_bytes = f"data:{fomt};base64,{out_bytes}"
+        # return ReJson(0, out_bytes)
+        return send_file(imgsavepath)
     else:
         return ReJson(1001, body=img_path_all)
 
