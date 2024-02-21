@@ -54,7 +54,6 @@ PyWxDump_path = os.path.dirname((current_path))
 log_path = os.path.join(current_path, "log.txt")
 CHANGE_LOG_PATH = os.path.join(PyWxDump_path, "doc", "CHANGELOG.md")
 
-
 # 调用cmd执行命令,先cd到目录  D:\_code\py_code\test\a2023\b0821wxdb\PyWxDump
 os.chdir(PyWxDump_path)
 os.system(f'git log --oneline --decorate > "{log_path}"')
