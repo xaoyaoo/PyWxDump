@@ -22,23 +22,97 @@ wxdump_ascii = r"""
 ██║        ██║   ╚███╔███╔╝██╔╝ ██╗██████╔╝╚██████╔╝██║ ╚═╝ ██║██║     
 ╚═╝        ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝     
 """
+PYWXDUMP_VERSION = pywxdump.__version__
+
+models = {}
 
 
-class MainBiasAddr():
+def create_parser():
+    class CustomArgumentParser(argparse.ArgumentParser):
+        def format_help(self):
+            # 首先显示软件简介
+            # 定义软件简介文本并进行格式化
+            line_len = 70
+            PYWXDUMP_VERSION = pywxdump.__version__
+            wxdump_line = '\n'.join([f'\033[36m{line:^{line_len}}\033[0m' for line in wxdump_ascii.split('\n') if line])
+            first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^{line_len}}\033[0m'
+            brief = 'PyWxDump功能：获取账号信息、解密数据库、查看聊天记录、导出聊天记录为html等'
+            other = '更多详情请查看: \033[4m\033[1mhttps://github.com/xaoyaoo/PyWxDump\033[0m'
+
+            separator = f'\033[36m{" options ":-^{line_len}}\033[0m'
+
+            # 获取帮助信息并添加到软件简介下方
+            help_text = super().format_help().strip()
+
+            return f'\n{wxdump_line}\n\n{first_line}\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
+
+    # 创建命令行参数解析器
+    parser = CustomArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-V', '--version', action='version', version=f"PyWxDump v{PYWXDUMP_VERSION}")
+
+    # 添加子命令解析器
+    subparsers = parser.add_subparsers(dest="mode", help="""运行模式:""", required=True, metavar="mode")
+
+    return parser, subparsers
+
+
+main_parser, sub_parsers = create_parser()
+
+
+class SubMainMetaclass(type):
+
+    def is_implemented_method(cls, name: str, method: str):
+        if not hasattr(cls, method) or not callable(getattr(cls, method)):
+            raise NotImplementedError("{} NotImplemented [{}]".format(name, method))
+
+    def __init__(cls, name, bases, kwargs):
+        super(SubMainMetaclass, cls).__init__(name, bases, kwargs)
+
+        if name in ["BaseSubMainClass"]:
+            return
+
+        mode = getattr(cls, "mode")
+        if mode in models:
+            raise TypeError("mode[{}] is used...".format(mode))
+
+        cls.is_implemented_method(name, "init_parses")
+        cls.is_implemented_method(name, "run")
+
+        c = cls()
+        models[mode] = c
+        c.init_parses(sub_parsers.add_parser(mode, **getattr(c, "parser_kwargs")))
+
+
+class BaseSubMainClass(metaclass=SubMainMetaclass):
+    parser_kwargs = {}
+
+    @property
+    def mode(self) -> str:
+        raise NotImplementedError()
+
     def init_parses(self, parser):
-        self.mode = "bias"
+        raise NotImplementedError()
+
+    def run(self, args: argparse.Namespace):
+        raise NotImplementedError()
+
+
+class MainBiasAddr(BaseSubMainClass):
+    mode = "bias"
+    parser_kwargs = {"help": "获取微信基址偏移"}
+
+    def init_parses(self, parser):
         # 添加 'bias_addr' 子命令解析器
-        sb_bias_addr = parser.add_parser(self.mode, help="获取微信基址偏移")
-        sb_bias_addr.add_argument("--mobile", type=str, help="手机号", metavar="", required=True)
-        sb_bias_addr.add_argument("--name", type=str, help="微信昵称", metavar="", required=True)
-        sb_bias_addr.add_argument("--account", type=str, help="微信账号", metavar="", required=True)
-        sb_bias_addr.add_argument("--key", type=str, metavar="", help="(可选)密钥")
-        sb_bias_addr.add_argument("--db_path", type=str, metavar="", help="(可选)已登录账号的微信文件夹路径")
-        sb_bias_addr.add_argument("-vlp", '--version_list_path', type=str, metavar="",
-                                  help="(可选)微信版本偏移文件路径,如有，则自动更新",
-                                  default=None)
-        self.sb_bias_addr = sb_bias_addr
-        return sb_bias_addr
+        parser.add_argument("--mobile", type=str, help="手机号", metavar="", required=True)
+        parser.add_argument("--name", type=str, help="微信昵称", metavar="", required=True)
+        parser.add_argument("--account", type=str, help="微信账号", metavar="", required=True)
+        parser.add_argument("--key", type=str, metavar="", help="(可选)密钥")
+        parser.add_argument("--db_path", type=str, metavar="", help="(可选)已登录账号的微信文件夹路径")
+        parser.add_argument("-vlp", '--version_list_path', type=str, metavar="",
+                            help="(可选)微信版本偏移文件路径,如有，则自动更新",
+                            default=None)
+
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -54,15 +128,16 @@ class MainBiasAddr():
         return rdata
 
 
-class MainWxInfo():
+class MainWxInfo(BaseSubMainClass):
+    mode = "info"
+    parser_kwargs = {"help": "获取微信信息"}
+
     def init_parses(self, parser):
-        self.mode = "info"
         # 添加 'wx_info' 子命令解析器
-        sb_wx_info = parser.add_parser(self.mode, help="获取微信信息")
-        sb_wx_info.add_argument("-vlp", '--version_list_path', metavar="", type=str,
-                                help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
-        sb_wx_info.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)保存路径【json文件】")
-        return sb_wx_info
+        parser.add_argument("-vlp", '--version_list_path', metavar="", type=str,
+                            help="(可选)微信版本偏移文件路径", default=VERSION_LIST_PATH)
+        parser.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)保存路径【json文件】")
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -74,19 +149,20 @@ class MainWxInfo():
         return result
 
 
-class MainWxDbPath():
+class MainWxDbPath(BaseSubMainClass):
+    mode = "db_path"
+    parser_kwargs = {"help": "获取微信文件夹路径"}
+
     def init_parses(self, parser):
-        self.mode = "db_path"
         # 添加 'wx_db_path' 子命令解析器
-        sb_wx_db_path = parser.add_parser(self.mode, help="获取微信文件夹路径")
-        sb_wx_db_path.add_argument("-r", "--require_list", type=str,
-                                   help="(可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )",
-                                   default="all", metavar="")
-        sb_wx_db_path.add_argument("-wf", "--wx_files", type=str, help="(可选)'WeChat Files'路径", default=None,
-                                   metavar="")
-        sb_wx_db_path.add_argument("-id", "--wxid", type=str, help="(可选)wxid_,用于确认用户文件夹",
-                                   default=None, metavar="")
-        return sb_wx_db_path
+        parser.add_argument("-r", "--require_list", type=str,
+                            help="(可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )",
+                            default="all", metavar="")
+        parser.add_argument("-wf", "--wx_files", type=str, help="(可选)'WeChat Files'路径", default=None,
+                            metavar="")
+        parser.add_argument("-id", "--wxid", type=str, help="(可选)wxid_,用于确认用户文件夹",
+                            default=None, metavar="")
+        return parser
 
     def run(self, args):
         # 从命令行参数获取值
@@ -98,17 +174,18 @@ class MainWxDbPath():
         return user_dirs
 
 
-class MainDecrypt():
+class MainDecrypt(BaseSubMainClass):
+    mode = "decrypt"
+    parser_kwargs = {"help": "解密微信数据库"}
+
     def init_parses(self, parser):
-        self.mode = "decrypt"
         # 添加 'decrypt' 子命令解析器
-        sb_decrypt = parser.add_parser(self.mode, help="解密微信数据库")
-        sb_decrypt.add_argument("-k", "--key", type=str, help="密钥", required=True, metavar="")
-        sb_decrypt.add_argument("-i", "--db_path", type=str, help="数据库路径(目录or文件)", required=True, metavar="")
-        sb_decrypt.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
-                                help="输出路径(必须是目录)[默认为当前路径下decrypted文件夹]", required=False,
-                                metavar="")
-        return sb_decrypt
+        parser.add_argument("-k", "--key", type=str, help="密钥", required=True, metavar="")
+        parser.add_argument("-i", "--db_path", type=str, help="数据库路径(目录or文件)", required=True, metavar="")
+        parser.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
+                            help="输出路径(必须是目录)[默认为当前路径下decrypted文件夹]", required=False,
+                            metavar="")
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -130,18 +207,19 @@ class MainDecrypt():
         return result
 
 
-class MainMerge():
+class MainMerge(BaseSubMainClass):
+    mode = "merge"
+    parser_kwargs = {"help": "[测试功能]合并微信数据库(MSG.db or MediaMSG.db)"}
+
     def init_parses(self, parser):
-        self.mode = "merge"
         # 添加 'decrypt' 子命令解析器
-        sb_merge = parser.add_parser(self.mode, help="[测试功能]合并微信数据库(MSG.db or MediaMSG.db)")
-        sb_merge.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True,
-                              metavar="")
-        sb_merge.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
-                              help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]",
-                              required=False,
-                              metavar="")
-        return sb_merge
+        parser.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True,
+                            metavar="")
+        parser.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
+                            help="输出路径(目录或文件名)[默认为当前路径下decrypted文件夹下merge_***.db]",
+                            required=False,
+                            metavar="")
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -173,29 +251,30 @@ class MainMerge():
         return result
 
 
-class MainShowChatRecords():
+class MainShowChatRecords(BaseSubMainClass):
+    mode = "dbshow"
+    parser_kwargs = {"help": "聊天记录查看"}
+
     def init_parses(self, parser):
-        self.mode = "dbshow"
         # 添加 'decrypt' 子命令解析器
-        sb_decrypt = parser.add_parser(self.mode, help="聊天记录查看")
-        sb_decrypt.add_argument("-merge", "--merge_path", type=str, help="解密后的 merge_all.db 的路径", required=False,
-                                metavar="")
+        parser.add_argument("-merge", "--merge_path", type=str, help="解密后的 merge_all.db 的路径", required=False,
+                            metavar="")
 
-        sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=False,
-                                metavar="")
-        sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=False,
-                                metavar="")
-        sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=False,
-                                metavar="")
+        parser.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=False,
+                            metavar="")
+        parser.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=False,
+                            metavar="")
+        parser.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=False,
+                            metavar="")
 
-        sb_decrypt.add_argument("-wid", "--wx_path", type=str,
-                                help="(可选)微信文件夹的路径（用于显示图片）", required=False,
-                                metavar="")
-        sb_decrypt.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
-                                default="wxid_vzzcn5fevion22", metavar="")
-        sb_decrypt.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", required=False,
-                                default=False)
-        return sb_decrypt
+        parser.add_argument("-wid", "--wx_path", type=str,
+                            help="(可选)微信文件夹的路径（用于显示图片）", required=False,
+                            metavar="")
+        parser.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
+                            default="wxid_vzzcn5fevion22", metavar="")
+        parser.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", required=False,
+                            default=False)
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -222,24 +301,25 @@ class MainShowChatRecords():
                     wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
 
 
-class MainExportChatRecords():
+class MainExportChatRecords(BaseSubMainClass):
+    mode = "export"
+    parser_kwargs = {"help": "聊天记录导出为html"}
+
     def init_parses(self, parser):
-        self.mode = "export"
         # 添加 'decrypt' 子命令解析器
-        sb_decrypt = parser.add_parser(self.mode, help="聊天记录导出为html")
-        sb_decrypt.add_argument("-u", "--username", type=str, help="微信账号(聊天对象账号)", required=True, metavar="")
-        sb_decrypt.add_argument("-o", "--outpath", type=str, help="导出路径", required=True, metavar="")
-        sb_decrypt.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
-                                metavar="")
-        sb_decrypt.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=True,
-                                metavar="")
-        sb_decrypt.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
-                                metavar="")
-        sb_decrypt.add_argument("-fs", "--filestorage_path", type=str,
-                                help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False, metavar="")
-        sb_decrypt.add_argument("-t", "--type", type=str, help="导出类型(可选:html,csv)", required=False,
-                                default="html", metavar="")
-        return sb_decrypt
+        parser.add_argument("-u", "--username", type=str, help="微信账号(聊天对象账号)", required=True, metavar="")
+        parser.add_argument("-o", "--outpath", type=str, help="导出路径", required=True, metavar="")
+        parser.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=True,
+                            metavar="")
+        parser.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=True,
+                            metavar="")
+        parser.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=True,
+                            metavar="")
+        parser.add_argument("-fs", "--filestorage_path", type=str,
+                            help="(可选)文件夹FileStorage的路径（用于显示图片）", required=False, metavar="")
+        parser.add_argument("-t", "--type", type=str, help="导出类型(可选:html,csv)", required=False,
+                            default="html", metavar="")
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -284,14 +364,15 @@ class MainExportChatRecords():
             return
 
 
-class MainAll():
+class MainAll(BaseSubMainClass):
+    mode = "all"
+    parser_kwargs = {"help": "获取微信信息，解密微信数据库，查看聊天记录"}
+
     def init_parses(self, parser):
-        self.mode = "all"
         # 添加 'all' 子命令解析器
-        sb_all = parser.add_parser(self.mode, help="获取微信信息，解密微信数据库，查看聊天记录")
-        sb_all.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)wx_info保存路径【json文件】")
-        sb_all.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", default=False)
-        return sb_all
+        parser.add_argument("-s", '--save_path', metavar="", type=str, help="(可选)wx_info保存路径【json文件】")
+        parser.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", default=False)
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -390,15 +471,16 @@ class MainAll():
             MainShowChatRecords().run(args)
 
 
-class MainUi():
+class MainUi(BaseSubMainClass):
+    mode = "ui"
+    parser_kwargs = {"help": "启动UI界面"}
+
     def init_parses(self, parser):
-        self.mode = "ui"
         # 添加 'ui' 子命令解析器
-        sb_ui = parser.add_parser(self.mode, help="启动UI界面")
-        sb_ui.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
-        sb_ui.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
-        sb_ui.add_argument("--debug", help="(可选)是否开启debug模式", default=False, action='store_true')
-        return sb_ui
+        parser.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
+        parser.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
+        parser.add_argument("--debug", help="(可选)是否开启debug模式", default=False, action='store_true')
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -410,15 +492,16 @@ class MainUi():
         start_falsk(port=port, online=online, debug=debug)
 
 
-class MainApi():
+class MainApi(BaseSubMainClass):
+    mode = "api"
+    parser_kwargs = {"help": "启动api"}
+
     def init_parses(self, parser):
-        self.mode = "api"
         # 添加 'api' 子命令解析器
-        sb_api = parser.add_parser(self.mode, help="启动api")
-        sb_api.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
-        sb_api.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
-        sb_api.add_argument("--debug", action='store_true', help="(可选)是否开启debug模式", default=False)
-        return sb_api
+        parser.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
+        parser.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
+        parser.add_argument("--debug", action='store_true', help="(可选)是否开启debug模式", default=False)
+        return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
@@ -430,100 +513,23 @@ class MainApi():
         start_falsk(port=port, online=online, debug=debug, isopenBrowser=False)
 
 
-class CustomArgumentParser(argparse.ArgumentParser):
-    def format_help(self):
-        # 首先显示软件简介
-        # 定义软件简介文本并进行格式化
-        line_len = 70
-        PYWXDUMP_VERSION = pywxdump.__version__
-        wxdump_line = '\n'.join([f'\033[36m{line:^{line_len}}\033[0m' for line in wxdump_ascii.split('\n') if line])
-        first_line = f'\033[36m{" PyWxDump v" + PYWXDUMP_VERSION + " ":=^{line_len}}\033[0m'
-        brief = 'PyWxDump功能：获取账号信息、解密数据库、查看聊天记录、导出聊天记录为html等'
-        other = '更多详情请查看: \033[4m\033[1mhttps://github.com/xaoyaoo/PyWxDump\033[0m'
-
-        separator = f'\033[36m{" options ":-^{line_len}}\033[0m'
-
-        # 获取帮助信息并添加到软件简介下方
-        help_text = super().format_help().strip()
-
-        return f'\n{wxdump_line}\n\n{first_line}\n{brief}\n{separator}\n{help_text}\n{separator}\n{other}\n{first_line}\n'
-
-
 def console_run():
-    # 创建命令行参数解析器
-    parser = CustomArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    PYWXDUMP_VERSION = pywxdump.__version__
-    parser.add_argument('-V', '--version', action='version', version=f"PyWxDump v{PYWXDUMP_VERSION}")
-
-    # 添加子命令解析器
-    subparsers = parser.add_subparsers(dest="mode", help="""运行模式:""", required=True, metavar="mode")
-
-    modes = {}
-    # 添加 'bias' 子命令解析器
-    main_bias_addr = MainBiasAddr()
-    sb_bias_addr = main_bias_addr.init_parses(subparsers)
-    modes[main_bias_addr.mode] = main_bias_addr
-
-    # 添加 'info' 子命令解析器
-    main_wx_info = MainWxInfo()
-    sb_wx_info = main_wx_info.init_parses(subparsers)
-    modes[main_wx_info.mode] = main_wx_info
-
-    # 添加 'db_path' 子命令解析器
-    main_wx_db_path = MainWxDbPath()
-    sb_wx_db_path = main_wx_db_path.init_parses(subparsers)
-    modes[main_wx_db_path.mode] = main_wx_db_path
-
-    # 添加 'decrypt' 子命令解析器
-    main_decrypt = MainDecrypt()
-    sb_decrypt = main_decrypt.init_parses(subparsers)
-    modes[main_decrypt.mode] = main_decrypt
-
-    # 添加 'merge' 子命令解析器
-    main_merge = MainMerge()
-    sb_merge = main_merge.init_parses(subparsers)
-    modes[main_merge.mode] = main_merge
-
-    # 添加 '' 子命令解析器
-    main_show_chat_records = MainShowChatRecords()
-    sb_dbshow = main_show_chat_records.init_parses(subparsers)
-    modes[main_show_chat_records.mode] = main_show_chat_records
-
-    # 添加 'export' 子命令解析器
-    main_export_chat_records = MainExportChatRecords()
-    sb_export = main_export_chat_records.init_parses(subparsers)
-    modes[main_export_chat_records.mode] = main_export_chat_records
-
-    # 添加 'all' 子命令解析器
-    main_all = MainAll()
-    sb_all = main_all.init_parses(subparsers)
-    modes[main_all.mode] = main_all
-
-    # 添加 'ui' 子命令解析器
-    main_ui = MainUi()
-    sb_ui = main_ui.init_parses(subparsers)
-    modes[main_ui.mode] = main_ui
-
-    # 添加 'api' 子命令解析器
-    main_api = MainApi()
-    sb_api = main_api.init_parses(subparsers)
-    modes[main_api.mode] = main_api
-
     # 检查是否需要显示帮助信息
     if len(sys.argv) == 1:
-        sys.argv.append('ui')
-    elif len(sys.argv) == 2 and sys.argv[1] in modes.keys() and sys.argv[1] not in [main_all.mode, main_wx_info.mode,
-                                                                                    main_wx_db_path.mode, main_ui.mode,
-                                                                                    main_api.mode]:
+        sys.argv.append(MainUi.mode)
+    elif len(sys.argv) == 2 and sys.argv[1] not in models.keys():
         sys.argv.append('-h')
+        main_parser.print_help()
+        return
 
-    args = parser.parse_args()  # 解析命令行参数
+    args = main_parser.parse_args()  # 解析命令行参数
 
     if not any(vars(args).values()):
-        parser.print_help()
+        main_parser.print_help()
+        return
 
     # 根据不同的 'mode' 参数，执行不同的操作
-    modes[args.mode].run(args)
+    models[args.mode].run(args)
 
 
 if __name__ == '__main__':
