@@ -249,3 +249,7 @@ export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], 
 ### 4. 更新日志
 
 详见[更新日志](./CHANGELOG.md)
+
+### 5. 其他
+
+进群密码请查看[FAQ](./FAQ.md)

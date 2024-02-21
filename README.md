@@ -14,20 +14,16 @@
 
 * 欢迎大家提供更多的想法，或者提供代码，一起完善这个项目。
 
-### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案，或者关注公众号回复: `FAQ`。
-
 ### 如果是小白，请关注公众号：`逍遥之芯`(右边二维码)，回复：`PyWxDump` 获取图文教程。
 
-### 如果对wxdump实现原理感兴趣，请关注公众号：`逍遥之芯`(右边二维码)，回复：`原理` 获取原理解析。
+### 如有问题，请先查看：[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md) 是否有答案，或者关注公众号回复: `FAQ`。
 
-qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdump功能交流](https://s.xaoyo.top/gOLUDl)。
+qq交流群：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoyo.top/bgNcRa)。
 
-（进群如果需要密码，请查看[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)）
+（进群密码，请查看[UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)）
 
 <div>
-<a href="https://s.xaoyo.top/gOLUDl">
-  <img width="40%" src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/img/qq.jpg" alt="QQ群" title="加入QQ群" height="300"></a>
-  <img align="right" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/img/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="300">
+  <img align="" width="40%"  src="https://github.com/xaoyaoo/PyWxDump/blob/master/doc/img/qrcode_gh.jpg" alt="公众号" title="关注公众号" height="200"/>
 </div>
 
 # 一、项目介绍
@@ -69,7 +65,7 @@ qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdum
 **利用场景**
 
 1. 网络安全……
-2. 日常备份自己留存
+2. 日常备份存档
 3. 远程查看聊天记录(通过web查看聊天记录)
 4. 等等...............
 
@@ -97,6 +93,7 @@ qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdum
 * 如发现[version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json)缺失或错误、bug，有改进意见、想要新增功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 常见问题请参考[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md)，更新日志请参考[CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * Web UI的仓库位置 [wxdump_web](https://github.com/xaoyaoo/wxdump_web)
+* 如果对wxdump实现原理感兴趣，请关注公众号：`逍遥之芯`，回复：`原理` 获取原理解析。
 
 * [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
 
@@ -113,7 +110,7 @@ qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdum
 
 * 详细使用说明见 [UserGuide.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/UserGuide.md)
 
-* 极简版使用说明 [pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
+* 极简版使用说明见 [pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini)
 
 * 如果想修改UI，请clone [wx_dump_web](https://github.com/xaoyaoo/wxdump_web) 项目，然后按需修改（该UI采用VUE+ElementUI开发）
 
@@ -138,32 +135,4 @@ qq交流群：276392799（左边二维码） or 点击链接加入群聊[pywxdum
 # 四、致谢
 
 [![PyWxDump 贡献者](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)[![UI 贡献者](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
-
-# 五、许可证
-
-```text
-MIT License
-
-Copyright (c) 2023 xaoyaoo
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-PyWxDump is hosted at: https://github.com/xaoyaoo/PyWxDump
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
 
