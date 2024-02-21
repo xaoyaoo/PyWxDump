@@ -6,8 +6,6 @@
 # Date:         2023/10/14
 # -------------------------------------------------------------------------------
 import argparse
-import os
-import subprocess
 import sys
 import time
 
