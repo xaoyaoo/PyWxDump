@@ -63,7 +63,6 @@ jobs:
 
       - name: Generate File pywxdump.spec # 生成 pywxdump.spec 文件
         run: |
-          python tests/gen_change_log.py
           python tests/build_exe.py
           cat dist/pywxdump.spec
 
