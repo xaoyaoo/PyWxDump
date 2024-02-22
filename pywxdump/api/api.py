@@ -339,7 +339,7 @@ def get_img():
 
     if os.path.exists(img_path_all):
         fomt, md5, out_bytes = read_img_dat(img_path_all)
-        imgsavepath = os.path.join(img_tmp_path, img_path+"_"+".".join([md5, fomt]))
+        imgsavepath = os.path.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
         if not os.path.exists(os.path.dirname(imgsavepath)):
             os.makedirs(os.path.dirname(imgsavepath))
         with open(imgsavepath, "wb") as f:
@@ -589,15 +589,15 @@ def check_update():
             data = res.json()
             NEW_VERSION = data[0].get("name")
             if NEW_VERSION[1:] != pywxdump.__version__:
-                return ReJson(0, NEW_VERSION)
+                msg = "有新版本"
             else:
-                return ReJson(2001, body="已经是最新版本")
+                msg = "已经是最新版本"
+            return ReJson(0, body={"msg": msg, "latest_version": NEW_VERSION,
+                                   "latest_url": "https://github.com/xaoyaoo/PyWxDump/releases/tag/" + NEW_VERSION})
         else:
             return ReJson(2001, body="status_code is not 200")
     except Exception as e:
         return ReJson(9999, msg=str(e))
-
-
 
 
 # END 关于、帮助、设置
