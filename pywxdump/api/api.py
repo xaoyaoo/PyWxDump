@@ -573,6 +573,31 @@ def merge():
 
 # END 这部分为专业工具的api
 
+# 检查更新
+@api.route('/api/check_update', methods=["GET", 'POST'])
+@error9999
+def check_update():
+    """
+    检查更新
+    :return:
+    """
+    url = "https://api.github.com/repos/xaoyaoo/PyWxDump/tags"
+    try:
+        import requests
+        res = requests.get(url)
+        if res.status_code == 200:
+            data = res.json()
+            NEW_VERSION = data[0].get("name")
+            if NEW_VERSION[1:] != pywxdump.__version__:
+                return ReJson(0, NEW_VERSION)
+            else:
+                return ReJson(2001, body="已经是最新版本")
+        else:
+            return ReJson(2001, body="status_code is not 200")
+    except Exception as e:
+        return ReJson(9999, msg=str(e))
+# END 检查更新
+
 
 @api.route('/')
 @error9999
