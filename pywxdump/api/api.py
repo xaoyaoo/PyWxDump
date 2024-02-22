@@ -318,7 +318,7 @@ def get_real_time_msg():
 
 
 @api.route('/api/img', methods=["GET", 'POST'])
-# @error9999
+@error9999
 def get_img():
     """
     获取图片
