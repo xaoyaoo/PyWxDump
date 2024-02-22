@@ -234,8 +234,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             content["msg"] = type_name
 
         elif type_id == (50, 0):  # 语音通话
-            content_tmp = parse_xml_string(StrContent)
-            content["msg"] = "语音/视频通话[%s]" % content_tmp.get("VoIPBubbleMsg", {}).get("msg", "")
+            content["msg"] = "语音/视频通话[%s]" % DisplayContent
 
         # elif type_id == (10000, 0):
         #     content["msg"] = StrContent

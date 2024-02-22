@@ -53,7 +53,6 @@ def init():
                 a = get_real_time_msg()
             except Exception as e:
                 pass
-
             return ReJson(0, {"msg_path": save_msg_path, "micro_path": save_micro_path, "is_init": True})
         else:
             return ReJson(1002, body="上次初始化的路径不存在")
