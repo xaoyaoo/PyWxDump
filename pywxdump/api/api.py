@@ -573,7 +573,7 @@ def merge():
 
 # END 这部分为专业工具的api
 
-# 检查更新
+# 关于、帮助、设置
 @api.route('/api/check_update', methods=["GET", 'POST'])
 @error9999
 def check_update():
@@ -596,7 +596,11 @@ def check_update():
             return ReJson(2001, body="status_code is not 200")
     except Exception as e:
         return ReJson(9999, msg=str(e))
-# END 检查更新
+
+
+
+
+# END 关于、帮助、设置
 
 
 @api.route('/')
