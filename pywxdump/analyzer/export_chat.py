@@ -227,7 +227,15 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             if cdnurl:
                 content = {"src": cdnurl, "msg": "表情"}
 
-        elif type_id[0] == 49:
+        elif type_id == (49, 0):
+            BytesExtra = read_BytesExtra(BytesExtra)
+            url = match_BytesExtra(BytesExtra)
+            content["src"] = url
+            file_name = os.path.basename(url)
+            content["msg"] = file_name
+
+
+        elif type_id[0] == 49 and type_id[1] != 0:
             BytesExtra = read_BytesExtra(BytesExtra)
             url = match_BytesExtra(BytesExtra)
             content["src"] = url
