@@ -23,4 +23,4 @@ except:
     VERSION_LIST = {}
     VERSION_LIST_PATH = None
 
-__version__ = "2.4.36"
+__version__ = "2.4.40"
