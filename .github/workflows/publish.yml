@@ -65,6 +65,13 @@ jobs:
           npm install
           npm run build
 
+      - name: copy Export UI to pywxdump/ui/web
+        run: |
+          cd ..
+          ls -l wxdump_web/dist
+          cp -r wxdump_web/dist PyWxDump/pywxdump/ui/export
+          ls -l PyWxDump/pywxdump/ui/export
+          cd PyWxDump
 
       - name: Build package # 构建包
         run: |
