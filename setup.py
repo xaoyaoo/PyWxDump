@@ -49,7 +49,9 @@ setup(
                  },
 
     package_data={
-        'pywxdump': ['version_list.json', 'ui/templates/*', 'ui/web/*', 'ui/web/assets/*', 'wx_info/tools/*']
+        'pywxdump': ['version_list.json', 'ui/templates/*', 'ui/web/*', 'ui/web/assets/*', 'wx_info/tools/*',
+                     "ui/export/*", "ui/export/assets/*", "ui/export/assets/css/*", "ui/export/assets/js/*",
+                     ]
     },
     classifiers=[
         "Programming Language :: Python :: 3",

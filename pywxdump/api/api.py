@@ -6,6 +6,7 @@
 # Date:         2024/01/02
 # -------------------------------------------------------------------------------
 import base64
+import json
 import logging
 import os
 import time
@@ -252,18 +253,12 @@ def get_msg_list():
     return ReJson(0, {"msg_list": msg_list, 'my_wxid': my_wxid})
 
 
-@api.route('/api/msgs', methods=["GET", 'POST'])
-@error9999
-def get_msgs():
-    msg_path = request.headers.get("msg_path")
-    micro_path = request.headers.get("micro_path")
+def func_get_msgs(start, limit, wxid, msg_path, micro_path):
     if not msg_path:
         msg_path = read_session(g.sf, "msg_path")
     if not micro_path:
         micro_path = read_session(g.sf, "micro_path")
-    start = request.json.get("start")
-    limit = request.json.get("limit")
-    wxid = request.json.get("wxid")
+
     msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
     # row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
     #             "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
@@ -285,8 +280,23 @@ def get_msgs():
                 userlist[user["username"]] = user
             if len(userlist) == 2:
                 break
+    return {"msg_list": msg_list, "user_list": userlist, "my_wxid": my_wxid}
 
-    return ReJson(0, {"msg_list": msg_list, "user_list": userlist, "my_wxid": my_wxid})
+
+@api.route('/api/msgs', methods=["GET", 'POST'])
+@error9999
+def get_msgs():
+    msg_path = request.headers.get("msg_path")
+    micro_path = request.headers.get("micro_path")
+    if not msg_path:
+        msg_path = read_session(g.sf, "msg_path")
+    if not micro_path:
+        micro_path = read_session(g.sf, "micro_path")
+    start = request.json.get("start")
+    limit = request.json.get("limit")
+    wxid = request.json.get("wxid")
+    rdata = func_get_msgs(start, limit, wxid, msg_path, micro_path)
+    return ReJson(0, rdata)
 
 
 @api.route('/api/realtimemsg', methods=["GET", "POST"])
@@ -482,13 +492,74 @@ def export():
         else:
             return ReJson(2001, body=ret)
     elif export_type == "html":
-        chat_type_tups = []
-        for ct in chat_type:
-            tup = analyzer.get_name_typeid(ct)
-            if tup:
-                chat_type_tups += tup
-        if not chat_type_tups:
-            return ReJson(1002)
+        outpath = os.path.join(outpath, username)
+        if os.path.exists(outpath):
+            shutil.rmtree(outpath)
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+        # chat_type_tups = []
+        # for ct in chat_type:
+        #     tup = analyzer.get_name_typeid(ct)
+        #     if tup:
+        #         chat_type_tups += tup
+        # if not chat_type_tups:
+        #     return ReJson(1002)
+
+        # 复制文件 html
+        export_html = os.path.join(os.path.dirname(pywxdump.VERSION_LIST_PATH), "ui", "export")
+        export_files = os.listdir(export_html)
+        for file in export_files:
+            if os.path.isfile(os.path.join(export_html, file)):
+                shutil.copy(os.path.join(export_html, file), os.path.join(outpath, file))
+            else:
+                shutil.copytree(os.path.join(export_html, file), os.path.join(outpath, file))
+
+        rdata = func_get_msgs(0, 10000000, username, "", "")
+
+        msg_list = rdata["msg_list"]
+        for i in range(len(msg_list)):
+            if msg_list[i]["type_name"] == "语音":
+                savePath = msg_list[i]["content"]["src"]
+                MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
+                if not savePath:
+                    return ReJson(1002)
+                media_path = read_session(g.sf, "media_path")
+                wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=media_path)
+                if not wave_data:
+                    return ReJson(1001)
+                # 判断savePath路径的文件夹是否存在
+                savePath = os.path.join(outpath, savePath)
+                if not os.path.exists(os.path.dirname(savePath)):
+                    os.makedirs(os.path.dirname(savePath))
+                with open(savePath, "wb") as f:
+                    f.write(wave_data)
+            elif msg_list[i]["type_name"] == "图片":
+                img_path = msg_list[i]["content"]["src"]
+                wx_path = read_session(g.sf, "wx_path")
+                img_path_all = os.path.join(wx_path, img_path)
+
+                if os.path.exists(img_path_all):
+                    fomt, md5, out_bytes = read_img_dat(img_path_all)
+                    imgsavepath = os.path.join(outpath, "img", img_path + "_" + ".".join([md5, fomt]))
+                    if not os.path.exists(os.path.dirname(imgsavepath)):
+                        os.makedirs(os.path.dirname(imgsavepath))
+                    with open(imgsavepath, "wb") as f:
+                        f.write(out_bytes)
+                    msg_list[i]["content"]["src"] = os.path.join("img", img_path + "_" + ".".join([md5, fomt]))
+
+        rdata["msg_list"] = msg_list
+        rdata["myuserdata"] = rdata["user_list"][rdata["my_wxid"]]
+        rdata["myuserdata"]["chat_count"] = len(rdata["msg_list"])
+        save_data = rdata
+        save_json_path = os.path.join(outpath, "data")
+        if not os.path.exists(save_json_path):
+            os.makedirs(save_json_path)
+        with open(os.path.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
+            json.dump(save_data, f, ensure_ascii=False)
+
+
+
+        return ReJson(0, outpath)
 
     elif export_type == "pdf":
         pass

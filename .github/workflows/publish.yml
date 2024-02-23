@@ -56,6 +56,16 @@ jobs:
           ls -l PyWxDump/pywxdump/ui/web
           cd PyWxDump
 
+      - name: Build Export UI # 构建导出的 Web UI
+        run: |
+          cd ..
+          cd wxdump_web
+          cp src/App.vue src/t.vue
+          cp src/Appexport.vue src/App.vue
+          npm install
+          npm run build
+
+
       - name: Build package # 构建包
         run: |
           python -m build
