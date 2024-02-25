@@ -23,4 +23,6 @@ except:
     VERSION_LIST = {}
     VERSION_LIST_PATH = None
 
+PYWXDUMP_ROOT_PATH = os.path.dirname(__file__)
+
 __version__ = "2.4.41"
