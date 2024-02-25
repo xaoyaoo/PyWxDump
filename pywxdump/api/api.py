@@ -9,6 +9,7 @@ import base64
 import json
 import logging
 import os
+import re
 import time
 import shutil
 
@@ -16,7 +17,7 @@ from flask import Flask, request, render_template, g, Blueprint, send_file, make
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.analyzer.export_chat import get_contact, get_room_user_list
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump.api.utils import read_session, save_session, error9999
+from pywxdump.api.utils import read_session, save_session, error9999,gen_base64
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 import pywxdump
 
@@ -507,12 +508,33 @@ def export():
 
         # 复制文件 html
         export_html = os.path.join(os.path.dirname(pywxdump.VERSION_LIST_PATH), "ui", "export")
-        export_files = os.listdir(export_html)
-        for file in export_files:
-            if os.path.isfile(os.path.join(export_html, file)):
-                shutil.copy(os.path.join(export_html, file), os.path.join(outpath, file))
+        indexhtml_path = os.path.join(export_html, "index.html")
+        assets_path = os.path.join(export_html, "assets")
+        if not os.path.exists(indexhtml_path) or not os.path.exists(assets_path):
+            return ReJson(1001)
+        js_path = ""
+        css_path = ""
+        for file in os.listdir(assets_path):
+            if file.endswith('.js'):
+                js_path = os.path.join(assets_path, file)
+            elif file.endswith('.css'):
+                css_path = os.path.join(assets_path, file)
             else:
-                shutil.copytree(os.path.join(export_html, file), os.path.join(outpath, file))
+                continue
+        # 读取html,js,css
+        with open(indexhtml_path, 'r', encoding='utf-8') as f:
+            html = f.read()
+        with open(js_path, 'r', encoding='utf-8') as f:
+            js = f.read()
+        with open(css_path, 'r', encoding='utf-8') as f:
+            css = f.read()
+
+        html = re.sub(r'<script .*?></script>', '', html)  # 删除所有的script标签
+        html = re.sub(r'<link rel="stylesheet" .*?>', '', html)  # 删除所有的link标签
+
+        html = html.replace('</head>', f'<style>{css}</style></head>')
+        html = html.replace('</head>', f'<script type="module" crossorigin>{js}</script></head>')
+        # END 生成index.html
 
         rdata = func_get_msgs(0, 10000000, username, "", "")
 
@@ -557,8 +579,10 @@ def export():
         with open(os.path.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
             json.dump(save_data, f, ensure_ascii=False)
 
-
-
+        json_base64 = gen_base64(save_json_path)
+        html = js.replace('"./data/msg_user.json"', f'"{json_base64}"')
+        with open(os.path.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
+            f.write(html)
         return ReJson(0, outpath)
 
     elif export_type == "pdf":
