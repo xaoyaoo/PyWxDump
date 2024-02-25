@@ -60,12 +60,12 @@ jobs:
         run: |
           cd ..
           cd wxdump_web
-          cp src/App.vue src/t.vue
-          cp src/Appexport.vue src/App.vue
+          cp src/main.ts src/t.ts
+          cp src/main.ts.export src/main.ts
           npm install
           npm run build
 
-      - name: copy Export UI to pywxdump/ui/web
+      - name: copy Export UI and Export UI to pywxdump/ui/web and pywxdump/ui/export
         run: |
           cd ..
           ls -l wxdump_web/dist
