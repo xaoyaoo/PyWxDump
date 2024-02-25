@@ -1,12 +1,14 @@
-## v2.4.41.(待发布)
+## v2.4.42.(待发布)
 
 - 
 
+## v2.4.41
+
+- html fix
+- 更新 README.md
+- UPDATE CHANGELOG.md
+
 ## v2.4.40
-
-- 导出为html
-
-## v2.4.36
 
 - v2.4.35
 - 导出为html
