@@ -12,7 +12,7 @@ import time
 
 
 def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_path="", key="", my_wxid="", port=5000,
-                online=False, debug=False,isopenBrowser=True):
+                online=False, debug=False, isopenBrowser=True):
     """
     启动flask
     :param merge_path:  合并后的数据库路径
@@ -60,7 +60,7 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
 
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
 
-    @app.after_request
+    @app.after_request  # 请求后的处理 用于解决部分用户浏览器不支持flask以及vue的js文件返回问题
     def changeHeader(response):
         disposition = response.get_wsgi_headers('environ').get(
             'Content-Disposition') or ''  # 获取返回头文件名描述，如'inline; filename=index.562b9b5a.js'
