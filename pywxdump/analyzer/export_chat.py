@@ -290,6 +290,18 @@ def get_chat_count(MSG_db_path: [str, list], username: str = ""):
         chat_counts[username] = chat_count
     return chat_counts
 
+def get_all_chat_count(MSG_db_path: [str, list]):
+    """
+    获取聊天记录总数量
+    :param MSG_db_path: MSG.db 文件路径
+    :return: 聊天记录数量
+    """
+    sql = f"SELECT COUNT(*) FROM MSG;"
+    db1 = sqlite3.connect(MSG_db_path)
+    result = execute_sql(db1, sql)
+    chat_counts = result[0][0]
+    return chat_counts
+
 
 def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
     if not os.path.exists(outpath):
