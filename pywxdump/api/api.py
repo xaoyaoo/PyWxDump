@@ -579,7 +579,7 @@ def export():
         with open(os.path.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
             json.dump(save_data, f, ensure_ascii=False)
 
-        json_base64 = gen_base64(save_json_path)
+        json_base64 = gen_base64(os.path.join(save_json_path, "msg_user.json"))
         html = js.replace('"./data/msg_user.json"', f'"{json_base64}"')
         with open(os.path.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
             f.write(html)
