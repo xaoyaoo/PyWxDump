@@ -60,6 +60,14 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
 
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
 
+    @app.after_request
+    def changeHeader(response):
+        disposition = response.get_wsgi_headers('environ').get(
+            'Content-Disposition') or ''  # 获取返回头文件名描述，如'inline; filename=index.562b9b5a.js'
+        if disposition.rfind('.js') == len(disposition) - 3:
+            response.mimetype = 'application/javascript'
+        return response
+
     @app.before_request
     def before_request():
 
