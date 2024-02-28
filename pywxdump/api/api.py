@@ -17,7 +17,7 @@ from flask import Flask, request, render_template, g, Blueprint, send_file, make
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.analyzer.export_chat import get_contact, get_room_user_list
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump.api.utils import read_session, save_session, error9999,gen_base64
+from pywxdump.api.utils import read_session, save_session, error9999, gen_base64
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 import pywxdump
 
@@ -544,11 +544,11 @@ def export():
                 savePath = msg_list[i]["content"]["src"]
                 MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
                 if not savePath:
-                    return ReJson(1002)
+                    continue
                 media_path = read_session(g.sf, "media_path")
                 wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=media_path)
                 if not wave_data:
-                    return ReJson(1001)
+                    continue
                 # 判断savePath路径的文件夹是否存在
                 savePath = os.path.join(outpath, savePath)
                 if not os.path.exists(os.path.dirname(savePath)):
@@ -580,7 +580,8 @@ def export():
             json.dump(save_data, f, ensure_ascii=False)
 
         json_base64 = gen_base64(os.path.join(save_json_path, "msg_user.json"))
-        html = js.replace('"./data/msg_user.json"', f'"{json_base64}"')
+        html = html.replace('"./data/msg_user.json"', f'"{json_base64}"')
+
         with open(os.path.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
             f.write(html)
         return ReJson(0, outpath)
