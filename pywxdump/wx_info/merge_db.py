@@ -276,6 +276,7 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
             sql = f"INSERT OR IGNORE INTO {table} ({','.join([i[0] for i in col_type])}) VALUES ({','.join(['?'] * len(columns))})"
             out_cursor.executemany(sql, src_data)
             outdb.commit()
+        db.close()
     outdb.close()
     return save_path
 
@@ -373,7 +374,10 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
         raise FileNotFoundError("合并失败")
 
     a = merge_db([out_path], merge_path, CreateTime=CreateTime, endCreateTime=endCreateTime)
-
-    os.remove(out_path)
+    try:
+        os.remove(out_path)
+    except:
+        time.sleep(3)
+        os.remove(out_path)
 
     return merge_path
