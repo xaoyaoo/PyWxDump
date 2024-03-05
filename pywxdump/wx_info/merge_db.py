@@ -357,7 +357,8 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
 
     out_path = "tmp_" + ''.join(
         random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=6)) + ".db"
-
+    merge_path_base = os.path.dirname(merge_path)  # 合并后的数据库路径
+    out_path = os.path.join(merge_path_base, out_path)
     if os.path.exists(out_path):
         os.remove(out_path)
 
