@@ -6,6 +6,7 @@
 # Date:         2023/12/03
 # -------------------------------------------------------------------------------
 import os
+import random
 import shutil
 import sqlite3
 import time
@@ -350,11 +351,11 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     if platform.architecture()[0] != '64bit':
         raise Exception("System is not 64-bit.")
 
-
     if not os.path.exists(db_path):
         raise FileNotFoundError("数据库不存在")
 
-    out_path = "tmp_real_time.db"
+    out_path = "tmp_" + ''.join(
+        random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=6)) + ".db"
 
     if os.path.exists(out_path):
         os.remove(out_path)
