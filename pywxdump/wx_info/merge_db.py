@@ -9,6 +9,7 @@ import os
 import random
 import shutil
 import sqlite3
+import subprocess
 import time
 
 
@@ -369,7 +370,9 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
 
     # 调用cmd命令
     cmd = f"{real_time_exe_path} \"{key}\" \"{db_path}\" \"{out_path}\" {CreateTime} {endCreateTime}"
-    os.system(cmd)
+    # os.system(cmd)
+    p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.communicate()
 
     if not os.path.exists(out_path):
         raise FileNotFoundError("合并失败")
