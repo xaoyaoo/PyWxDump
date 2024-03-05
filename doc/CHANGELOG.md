@@ -1,6 +1,7 @@
 ## v2.4.55.(待发布)
 
 - fix
+- UPDATE CHANGELOG.md
 
 ## v2.4.54
 
