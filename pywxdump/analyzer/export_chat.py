@@ -234,7 +234,17 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             file_name = os.path.basename(url)
             content["msg"] = file_name
 
-        elif type_id == (19, 2000): # 转账消息
+        elif type_id == (49, 19):  # 合并转发的聊天记录
+            CompressContent = decompress_CompressContent(CompressContent)
+            content_tmp = parse_xml_string(CompressContent)
+            title = content_tmp.get("appmsg", {}).get("title", "")
+            des = content_tmp.get("appmsg", {}).get("des", "")
+            recorditem = content_tmp.get("appmsg", {}).get("recorditem", "")
+            recorditem = parse_xml_string(recorditem)
+            content["msg"] = f"{title}\n{des}"
+            content["src"] = recorditem
+
+        elif type_id == (49, 2000):  # 转账消息
             CompressContent = decompress_CompressContent(CompressContent)
             content_tmp = parse_xml_string(CompressContent)
             feedesc = content_tmp.get("appmsg", {}).get("wcpayinfo", {}).get("feedesc", "")
@@ -295,6 +305,7 @@ def get_chat_count(MSG_db_path: [str, list], username: str = ""):
         username, chat_count = row
         chat_counts[username] = chat_count
     return chat_counts
+
 
 def get_all_chat_count(MSG_db_path: [str, list]):
     """
