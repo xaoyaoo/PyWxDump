@@ -234,6 +234,12 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             file_name = os.path.basename(url)
             content["msg"] = file_name
 
+        elif type_id == (19, 2000): # 转账消息
+            CompressContent = decompress_CompressContent(CompressContent)
+            content_tmp = parse_xml_string(CompressContent)
+            feedesc = content_tmp.get("appmsg", {}).get("wcpayinfo", {}).get("feedesc", "")
+            content["msg"] = f"转账：{feedesc}"
+            content["src"] = ""
 
         elif type_id[0] == 49 and type_id[1] != 0:
             BytesExtra = read_BytesExtra(BytesExtra)
