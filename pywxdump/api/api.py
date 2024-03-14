@@ -459,7 +459,7 @@ def export():
             msg_path = read_session(g.sf, "msg_path")
             micro_path = read_session(g.sf, "micro_path")
             media_path = read_session(g.sf, "media_path")
-            dbpaths = [msg_path, msg_path, micro_path]
+            dbpaths = [msg_path, media_path, micro_path]
             dbpaths = list(set(dbpaths))
             mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time, end_time)
             return ReJson(0, body=mergepath)
