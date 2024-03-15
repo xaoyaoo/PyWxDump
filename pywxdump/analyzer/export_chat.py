@@ -40,6 +40,8 @@ def get_contact(MicroMsg_db_path, wx_id):
            "ORDER BY NickName ASC;")
     cursor.execute(sql)
     result = cursor.fetchone()
+    cursor.close()
+    db.close()
     print('联系人信息：', result)
     if not result:
         print('居然没找到！')
