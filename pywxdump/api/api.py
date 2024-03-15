@@ -309,6 +309,7 @@ def get_real_time_msg():
     """
     save_msg_path = read_session(g.sf, "msg_path")
     save_media_path = read_session(g.sf, "media_path")
+    save_micro_path = read_session(g.sf, "micro_path")
     wx_path = read_session(g.sf, "wx_path")
     key = read_session(g.sf, "key")
 
@@ -316,15 +317,19 @@ def get_real_time_msg():
         return ReJson(1002, body="msg_path or media_path or wx_path or key is required")
     media_paths = get_core_db(wx_path, ["MediaMSG"])
     msg_paths = get_core_db(wx_path, ["MSG"])
+    micro_paths = get_core_db(wx_path, ["MicroMsg"])
 
-    if not media_paths[0] or not msg_paths[0]:
+    if not media_paths[0] or not msg_paths[0] or not micro_paths[0]:
         return ReJson(1001, body="media_paths or msg_paths is required")
     media_paths = media_paths[1]
     media_paths.sort()
     msg_paths = msg_paths[1]
     msg_paths.sort()
+    micro_paths = micro_paths[1]
+    micro_paths.sort()
     merge_real_time_db(key=key, db_path=media_paths[-1], merge_path=save_media_path)
     merge_real_time_db(key=key, db_path=msg_paths[-1], merge_path=save_msg_path)
+    merge_real_time_db(key=key, db_path=micro_paths[-1], merge_path=save_micro_path)
     return ReJson(0, "success")
 
 

@@ -206,8 +206,11 @@ def read_audio(MsgSvrID, is_play=False, is_wave=False, DB_PATH: str = "", rate=2
     if len(DBdata) == 0:
         return False
     data = DBdata[0][0]  # [1:] + b'\xFF\xFF'
-    pcm_data = read_audio_buf(data, is_play, is_wave, rate)
-    return pcm_data
+    try:
+        pcm_data = read_audio_buf(data, is_play, is_wave, rate)
+        return pcm_data
+    except Exception as e:
+        return False
 
 
 def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\Windows\Fonts\simhei.ttf"):

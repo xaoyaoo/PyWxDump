@@ -356,6 +356,9 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     if not os.path.exists(db_path):
         raise FileNotFoundError("数据库不存在")
 
+    if "MSG" not in db_path and "MicroMsg" not in db_path and "MediaMSG" not in db_path:
+        raise FileNotFoundError("数据库不是消息数据库") # MicroMsg实时数据库
+
     out_path = "tmp_" + ''.join(
         random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=6)) + ".db"
     merge_path_base = os.path.dirname(merge_path)  # 合并后的数据库路径
