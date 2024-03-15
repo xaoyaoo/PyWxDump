@@ -25,4 +25,4 @@ except:
 
 PYWXDUMP_ROOT_PATH = os.path.dirname(__file__)
 
-__version__ = "2.4.57"
+__version__ = "2.4.58"
