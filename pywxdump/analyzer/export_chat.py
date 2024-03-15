@@ -188,9 +188,9 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             content["msg"] = StrContent
 
         elif type_id == (3, 0):  # 图片
-            BytesExtra = read_BytesExtra(BytesExtra)
-            BytesExtra = str(BytesExtra)
-            match = re.search(r"FileStorage(.*?)'", BytesExtra)
+            DictExtra = read_BytesExtra(BytesExtra)
+            DictExtra = str(DictExtra)
+            match = re.search(r"FileStorage(.*?)'", DictExtra)
             if match:
                 img_path = match.group(0).replace("'", "")
                 img_path = [i for i in img_path.split("\\") if i]
@@ -211,9 +211,9 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             content["src"] = os.path.join("audio", f"{StrTalker}",
                                           f"{CreateTime.replace(':', '-').replace(' ', '_')}_{IsSender}_{MsgSvrID}.wav")
         elif type_id == (43, 0):  # 视频
-            BytesExtra = read_BytesExtra(BytesExtra)
-            BytesExtra = str(BytesExtra)
-            match = re.search(r"FileStorage(.*?)'", BytesExtra)
+            DictExtra = read_BytesExtra(BytesExtra)
+            DictExtra = str(DictExtra)
+            match = re.search(r"FileStorage(.*?)'", DictExtra)
             if match:
                 video_path = match.group(0).replace("'", "")
                 content["src"] = video_path
@@ -228,8 +228,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 content = {"src": cdnurl, "msg": "表情"}
 
         elif type_id == (49, 0):
-            BytesExtra = read_BytesExtra(BytesExtra)
-            url = match_BytesExtra(BytesExtra)
+            DictExtra = read_BytesExtra(BytesExtra)
+            url = match_BytesExtra(DictExtra)
             content["src"] = url
             file_name = os.path.basename(url)
             content["msg"] = file_name
@@ -252,8 +252,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             content["src"] = ""
 
         elif type_id[0] == 49 and type_id[1] != 0:
-            BytesExtra = read_BytesExtra(BytesExtra)
-            url = match_BytesExtra(BytesExtra)
+            DictExtra = read_BytesExtra(BytesExtra)
+            url = match_BytesExtra(DictExtra)
             content["src"] = url
             content["msg"] = type_name
 
