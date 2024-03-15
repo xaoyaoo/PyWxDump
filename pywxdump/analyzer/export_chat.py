@@ -306,6 +306,7 @@ def get_chat_count(MSG_db_path: [str, list], username: str = ""):
     for row in result:
         username, chat_count = row
         chat_counts[username] = chat_count
+    db1.close()
     return chat_counts
 
 
@@ -318,8 +319,12 @@ def get_all_chat_count(MSG_db_path: [str, list]):
     sql = f"SELECT COUNT(*) FROM MSG;"
     db1 = sqlite3.connect(MSG_db_path)
     result = execute_sql(db1, sql)
-    chat_counts = result[0][0]
-    return chat_counts
+    if result and len(result) > 0:
+        chat_counts = result[0][0]
+        db1.close()
+        return chat_counts
+    db1.close()
+    return 0
 
 
 def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):
