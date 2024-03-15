@@ -276,6 +276,8 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 if bytes_extra:
                     try:
                         talker = bytes_extra['3'][0]['2'].decode('utf-8', errors='ignore')
+                        if "publisher-id" in talker:
+                            talker = "系统"
                     except:
                         pass
             else:
