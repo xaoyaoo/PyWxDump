@@ -357,7 +357,7 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
         raise FileNotFoundError("数据库不存在")
 
     if "MSG" not in db_path and "MicroMsg" not in db_path and "MediaMSG" not in db_path:
-        raise FileNotFoundError("数据库不是消息数据库") # MicroMsg实时数据库
+        raise FileNotFoundError("数据库不是消息数据库")  # MicroMsg实时数据库
 
     out_path = "tmp_" + ''.join(
         random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=6)) + ".db"
@@ -374,7 +374,8 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     # 调用cmd命令
     cmd = f"{real_time_exe_path} \"{key}\" \"{db_path}\" \"{out_path}\" {CreateTime} {endCreateTime}"
     # os.system(cmd)
-    p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                         creationflags=subprocess.CREATE_NO_WINDOW)
     p.communicate()
 
     if not os.path.exists(out_path):
