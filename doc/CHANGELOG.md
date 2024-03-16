@@ -1,6 +1,7 @@
 ## v2.4.61.(待发布)
 
-- 
+- UPDATE README.md
+- UPDATE CHANGELOG.md
 
 ## v2.4.60
 
