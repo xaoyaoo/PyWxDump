@@ -90,7 +90,6 @@ qq交流群：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.x
 * Web UI的仓库位置 [wxdump_web](https://github.com/xaoyaoo/wxdump_web)
 * 如果对wxdump实现原理感兴趣，请关注公众号：`逍遥之芯`，回复：`原理` 获取原理解析。
 * [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
-* 私有化定制开发请关注公众号：`逍遥之芯`，回复：`私有化定制` 。
 
 ## 5. Star History
 
