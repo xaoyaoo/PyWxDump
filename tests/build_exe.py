@@ -29,6 +29,7 @@ def base64_to_image(base64_string, image_path):
 
 
 code = """
+# -*- coding:utf-8 -*-
 from pywxdump.cli import console_run
 console_run()
 """
