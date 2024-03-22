@@ -1,6 +1,7 @@
 ## v2.4.61.(待发布)
 
 - UPDATE DOC
+- fix and add
 - 解密并合并 OpenIM*
 - OpenIM* 增加 #86
 - UPDATE README.md
