@@ -1,7 +1,13 @@
 ## v2.4.61.(待发布)
 
+- UPDATE DOC
+- 解密并合并 OpenIM*
+- OpenIM* 增加 #86
 - UPDATE README.md
+- 优化 decryption.py
 - UPDATE CHANGELOG.md
+- 数据库连接方式改为共用连接，降低时间开销
+- (backup/master) 添加编码# -*- coding:utf-8 -*-
 
 ## v2.4.60
 
