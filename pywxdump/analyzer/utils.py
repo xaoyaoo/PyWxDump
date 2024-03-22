@@ -188,9 +188,6 @@ class DBPool:
 
         if db_path not in cls.__db_pool:
             cls.__db_pool[db_path] = sqlite3.connect(db_path, check_same_thread=False)
-            print(f"数据库连接成功")
-        print(f"数据库连接成功 1")
-        print(cls.__db_pool)
         cls.connection = cls.__db_pool[db_path]
 
     def __init__(self, db_path):
