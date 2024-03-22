@@ -47,7 +47,7 @@ def get_contact(MicroMsg_db_path, wx_id):
                 "describe": result[4], "headImgUrl": result[5]}
 
 
-def get_contact_list(MicroMsg_db_path):
+def get_contact_list(MicroMsg_db_path, OpenIMContact_db_path=None):
     """
     获取联系人列表
     :param MicroMsg_db_path: MicroMsg.db 文件路径
@@ -67,8 +67,19 @@ def get_contact_list(MicroMsg_db_path):
             users.append(
                 {"username": username, "nickname": nickname, "remark": remark, "account": Alias, "describe": describe,
                  "headImgUrl": headImgUrl})
-        return users
-
+        # return users
+    if OpenIMContact_db_path:
+        with DBPool(OpenIMContact_db_path) as db:
+            sql = ("SELECT A.UserName, A.NickName, A.Remark,A.BigHeadImgUrl FROM OpenIMContact A "
+                   "ORDER BY NickName ASC;")
+            result = execute_sql(db, sql)
+            for row in result:
+                # 获取用户名、昵称、备注和聊天记录数量
+                username, nickname, remark, headImgUrl = row
+                users.append(
+                    {"username": username, "nickname": nickname, "remark": remark, "account": "", "describe": "",
+                     "headImgUrl": headImgUrl})
+    return users
 
 def get_chatroom_list(MicroMsg_db_path):
     """
@@ -148,12 +159,12 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
                 "FROM MSG WHERE StrTalker=? "
                 "ORDER BY CreateTime ASC LIMIT ?,?")
-            result1 = execute_sql(db1,sql, (selected_talker, start_index, page_size))
+            result1 = execute_sql(db1, sql, (selected_talker, start_index, page_size))
         else:
             sql = (
                 "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
                 "FROM MSG ORDER BY CreateTime ASC LIMIT ?,?")
-            result1 = execute_sql(db1,sql, (start_index, page_size))
+            result1 = execute_sql(db1, sql, (start_index, page_size))
 
         data = []
         for row in result1:
@@ -303,7 +314,6 @@ def get_all_chat_count(MSG_db_path: [str, list]):
             chat_counts = result[0][0]
             return chat_counts
         return 0
-
 
 
 def export_csv(username, outpath, MSG_ALL_db_path, page_size=5000):

@@ -263,7 +263,10 @@ def func_get_msgs(start, limit, wxid, msg_path, micro_path):
     msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
     # row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
     #             "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
-    contact_list = analyzer.get_contact_list(micro_path)
+    if "merge_all" in micro_path:
+        contact_list = analyzer.get_contact_list(micro_path,micro_path)
+    else:
+        contact_list = analyzer.get_contact_list(micro_path)
 
     userlist = {}
     my_wxid = read_session(g.sf, "my_wxid")
