@@ -190,6 +190,7 @@ class DBPool:
             cls.__db_pool[db_path] = sqlite3.connect(db_path, check_same_thread=False)
         cls.connection = cls.__db_pool[db_path]
 
+
     def __init__(self, db_path):
         if db_path == "DBPOOL_INIT":
             return
@@ -197,6 +198,10 @@ class DBPool:
         if db_path not in self.__db_pool:
             self.create_connection(db_path)
         self.connection = self.__db_pool.get(db_path)
+        # 检查数据库是否关闭
+        if not self.connection:
+            self.create_connection(db_path)
+            self.connection = self.__db_pool.get(db_path)
 
     def __enter__(self):
         return self.connection
