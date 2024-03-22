@@ -25,6 +25,6 @@ except:
 
 PYWXDUMP_ROOT_PATH = os.path.dirname(__file__)
 
-__version__ = "2.4.60"
+__version__ = "2.4.61"
 
 db_init = DBPool("DBPOOL_INIT")
