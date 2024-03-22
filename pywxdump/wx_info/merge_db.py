@@ -304,7 +304,7 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     my_wxid = os.path.basename(wx_path)
 
     # 解密
-    code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg"])
+    code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg"])
 
     # 判断out_path是否为空目录
     if os.path.exists(decrypted_path) and os.listdir(decrypted_path):
@@ -327,7 +327,8 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
         if code1:
             out_dbs.append(ret1[1])
 
-    parpare_merge_db_path = [i for i in out_dbs if "de_MicroMsg" in i or "de_MediaMSG" in i or "de_MSG" in i]
+    parpare_merge_db_path = [i for i in out_dbs if
+                             "de_MicroMsg" in i or "de_MediaMSG" in i or "de_MSG" in i or "de_OpenIMMsg" in i or "de_OpenIMMedia" in i or "de_OpenIMContact" in i]
 
     merge_save_path = merge_db(parpare_merge_db_path, merge_save_path, CreateTime=CreateTime,
                                endCreateTime=endCreateTime)
