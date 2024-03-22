@@ -6,7 +6,9 @@
 # Date:         2023/12/03
 # -------------------------------------------------------------------------------
 import hashlib
+import os
 import re
+import sqlite3
 
 
 def read_dict_all_values(data):
@@ -115,6 +117,12 @@ def get_name_typeid(type_name: str):
         (43, 0): "视频",
         (47, 0): "动画表情",
 
+        (37, 0): "添加好友",  # 感谢 https://github.com/zhyc9de
+        (42, 0): "推荐公众号",  # 感谢 https://github.com/zhyc9de
+        (48, 0): "地图信息",  # 感谢 https://github.com/zhyc9de
+        (49, 40): "分享收藏夹",  # 感谢  https://github.com/zhyc9de
+        (49, 53): "接龙",  # 感谢  https://github.com/zhyc9de
+
         (49, 0): "文件",
         (49, 1): "类似文字消息而不一样的消息",
         (49, 5): "卡片式链接",
@@ -151,6 +159,57 @@ def get_md5(data):
     md5 = hashlib.md5()
     md5.update(data)
     return md5.hexdigest()
+
+
+import threading
+
+
+def get_thread_id():
+    current_thread = threading.current_thread()
+    thread_id = current_thread.ident
+    return thread_id
+
+
+class DBPool:
+    __db_pool = {}
+    __thread_pool = {}
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            cls._instance = super(DBPool, cls).__new__(cls)
+        return cls._instance
+
+    @classmethod
+    def create_connection(cls, db_path):
+        if db_path == "DBPOOL_INIT":
+            return
+        if not os.path.exists(db_path):
+            raise FileNotFoundError(f"数据库文件不存在：{db_path}")
+
+        if db_path not in cls.__db_pool:
+            cls.__db_pool[db_path] = sqlite3.connect(db_path, check_same_thread=False)
+            print(f"数据库连接成功")
+        print(f"数据库连接成功 1")
+        print(cls.__db_pool)
+        cls.connection = cls.__db_pool[db_path]
+
+    def __init__(self, db_path):
+        if db_path == "DBPOOL_INIT":
+            return
+        self.db_path = db_path
+        if db_path not in self.__db_pool:
+            self.create_connection(db_path)
+        self.connection = self.__db_pool.get(db_path)
+
+    def __enter__(self):
+        return self.connection
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection = None
+
+    def close(self):
+        self.connection.close()
+        self.connection = None
 
 
 def attach_databases(connection, databases):
@@ -198,7 +257,7 @@ def execute_sql(connection, sql, params=None):
         else:
             cursor.execute(sql)
         return cursor.fetchall()
-    except Exception as e:
+    except Exception as e1:
         try:
             connection.text_factory = bytes
             cursor = connection.cursor()
@@ -209,8 +268,8 @@ def execute_sql(connection, sql, params=None):
             rdata = cursor.fetchall()
             connection.text_factory = str
             return rdata
-        except Exception as e:
-            print(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********")
+        except Exception as e2:
+            print(f"**********\nSQL: {sql}\nparams: {params}\n{e1}\n{e2}\n**********")
             return None
 
 
