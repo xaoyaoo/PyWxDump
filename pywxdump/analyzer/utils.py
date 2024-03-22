@@ -204,9 +204,10 @@ class DBPool:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.connection = None
 
-    def close(self):
-        self.connection.close()
-        self.connection = None
+    def close_all(self):
+        for db_path, connection in self.__db_pool.items():
+            connection.close()
+        self.__db_pool.clear()
 
 
 def attach_databases(connection, databases):
