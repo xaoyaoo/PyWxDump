@@ -80,7 +80,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 * 13.Clean up WeChat storage space and reduce the space occupied by WeChat (hopefully by selecting a person or group and finding out the media files involved in the chat logs of this group, such as pictures, videos, files, voice recordings, etc., and selectively (such as time periods) or batch-wise clearing them from the computer's cache by group conversation.)
 * 14.Automatically send messages to specified people through UI control
 
-## 4. 其他
+## 4. Other
 
 [PyWxDump](https://github.com/xaoyaoo/PyWxDump) is a refactored python language version of [SharpWxDump](https://github.com/AdminTest0/SharpWxDump), with many new features added.
 
