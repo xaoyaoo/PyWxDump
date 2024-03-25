@@ -1,3 +1,5 @@
+[![中文](https://img.shields.io/badge/README-中文-494cad.svg)](./doc/README_CN.md) [![English](https://img.shields.io/badge/README-English-494cad.svg)](./doc/README_EN.md)
+
 # <center>PyWxDump</center>
 
 [![Python](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
@@ -81,12 +83,13 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 ## 4. 其他
 
 [PyWxDump](https://github.com/xaoyaoo/PyWxDump) is a refactored python language version of [SharpWxDump](https://github.com/AdminTest0/SharpWxDump), with many new features added.
+
 * Project address: https://github.com/xaoyaoo/PyWxDump
 * Currently tested only under Windows, there may be issues under mac and Linux.
 * If you find any missing or incorrect information, bugs, or suggestions for improvement in the [version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json), please submit an issue on GitHub.
 * For common issues, please refer to [FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md), and for the update log, please refer to [CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * Web UI repository location [wxdump_web](https://github.com/xaoyaoo/wxdump_web )
-*If you are interested in the implementation principle of wxdump, please pay attention to the official account: 'Free Core', reply: 'Principle' to get the principle analysis.
+* If you are interested in the implementation principle of wxdump, please pay attention to the Official Accounts: `逍遥之芯`, reply: `原理` to get the principle analysis.
 * [:sparkling\_heart: Support Me]( https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
 
 ## 5. Star History
@@ -112,43 +115,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
   (This method can be replaced by the `wxdump bias` command, and is only used for learning principles.)
 * For database parsing, refer to [wx database brief.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/wx database brief.md)
 
-# Ⅲ. 免责声明（非常重要！！！！！！！）
-
-### 1. 使用目的
-
-* 本项目仅供学习交流使用，**请勿用于非法用途**，**请勿用于非法用途**，**请勿用于非法用途**，否则后果自负。
-* 用户理解并同意，任何违反法律法规、侵犯他人合法权益的行为，均与本项目及其开发者无关，后果由用户自行承担。
-
-### 2. 使用期限
-
-* 您应该在下载保存，编译使用本项目的24小时内，删除本项目的源代码和（编译出的）程序；超出此期限的任何使用行为，一概与本项目及其开发者无关。
-
-### 3. 操作规范
-
-* 本项目仅允许在授权情况下对数据库进行备份与查看，严禁用于非法目的，否则自行承担所有相关责任；用户如因违反此规定而引发的任何法律责任，将由用户自行承担，与本项目及其开发者无关。
-* 严禁用于窃取他人隐私，严禁用于窃取他人隐私，严禁用于窃取他人隐私，否则自行承担所有相关责任。
-* 严禁进行二次开发，严禁进行二次开发，严禁进行二次开发，否则自行承担所有相关责任。
-
-### 4. 免责声明接受
-
-* 下载、保存、进一步浏览源代码或者下载安装、编译使用本程序，表示你同意本警告，并承诺遵守它;
-
-### 5. 禁止用于非法测试或渗透
-
-* 禁止利用本项目的相关技术从事非法测试或渗透，禁止利用本项目的相关代码或相关技术从事任何非法工作，如因此产生的一切不良后果与本项目及其开发者无关。
-* 任何因此产生的不良后果，包括但不限于数据泄露、系统瘫痪、侵犯隐私等，均与本项目及其开发者无关，责任由用户自行承担。
-
-### 6. 免责声明修改
-
-* 本免责声明可能根据项目运行情况和法律法规的变化进行修改和调整。用户应定期查阅本页面以获取最新版本的免责声明，使用本项目时应遵守最新版本的免责声明。
-
-### 7. 其他
-
-* 除本免责声明规定外，用户在使用本项目过程中应遵守相关的法律法规和道德规范。对于因用户违反相关规定而引发的任何纠纷或损失，本项目及其开发者不承担任何责任。
-
-* 请用户慎重阅读并理解本免责声明的所有内容，确保在使用本项目时严格遵守相关规定。
-
-# Ⅳ. Disclaimer (VERY VERY VERY IMPORTANT ! ! ! ! ! !)
+# Ⅲ. Disclaimer (VERY VERY VERY IMPORTANT ! ! ! ! ! !)
 
 ### 1. Purpose of use
 
@@ -185,6 +152,42 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 * In addition to the provisions of this disclaimer, users should comply with relevant laws, regulations, and ethical norms during the use of this project. The project and its developers will not be held responsible for any disputes or losses caused by users' violation of relevant regulations.
 
 * Users are requested to carefully read and understand all contents of this disclaimer, and ensure that they strictly comply with relevant regulations when using this project.
+
+# Ⅳ. 免责声明（非常重要！！！！！！！）
+
+### 1. 使用目的
+
+* 本项目仅供学习交流使用，**请勿用于非法用途**，**请勿用于非法用途**，**请勿用于非法用途**，否则后果自负。
+* 用户理解并同意，任何违反法律法规、侵犯他人合法权益的行为，均与本项目及其开发者无关，后果由用户自行承担。
+
+### 2. 使用期限
+
+* 您应该在下载保存，编译使用本项目的24小时内，删除本项目的源代码和（编译出的）程序；超出此期限的任何使用行为，一概与本项目及其开发者无关。
+
+### 3. 操作规范
+
+* 本项目仅允许在授权情况下对数据库进行备份与查看，严禁用于非法目的，否则自行承担所有相关责任；用户如因违反此规定而引发的任何法律责任，将由用户自行承担，与本项目及其开发者无关。
+* 严禁用于窃取他人隐私，严禁用于窃取他人隐私，严禁用于窃取他人隐私，否则自行承担所有相关责任。
+* 严禁进行二次开发，严禁进行二次开发，严禁进行二次开发，否则自行承担所有相关责任。
+
+### 4. 免责声明接受
+
+* 下载、保存、进一步浏览源代码或者下载安装、编译使用本程序，表示你同意本警告，并承诺遵守它;
+
+### 5. 禁止用于非法测试或渗透
+
+* 禁止利用本项目的相关技术从事非法测试或渗透，禁止利用本项目的相关代码或相关技术从事任何非法工作，如因此产生的一切不良后果与本项目及其开发者无关。
+* 任何因此产生的不良后果，包括但不限于数据泄露、系统瘫痪、侵犯隐私等，均与本项目及其开发者无关，责任由用户自行承担。
+
+### 6. 免责声明修改
+
+* 本免责声明可能根据项目运行情况和法律法规的变化进行修改和调整。用户应定期查阅本页面以获取最新版本的免责声明，使用本项目时应遵守最新版本的免责声明。
+
+### 7. 其他
+
+* 除本免责声明规定外，用户在使用本项目过程中应遵守相关的法律法规和道德规范。对于因用户违反相关规定而引发的任何纠纷或损失，本项目及其开发者不承担任何责任。
+
+* 请用户慎重阅读并理解本免责声明的所有内容，确保在使用本项目时严格遵守相关规定。
 
 # Ⅴ. Acknowledgments
 
