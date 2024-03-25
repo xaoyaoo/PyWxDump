@@ -1,4 +1,4 @@
-[![中文](https://img.shields.io/badge/README-中文-494cad.svg)](./doc/README_CN.md) [![English](https://img.shields.io/badge/README-English-494cad.svg)](./doc/README_EN.md)
+[![中文](https://img.shields.io/badge/README-中文-494cad.svg)](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/README_CN.md) [![English](https://img.shields.io/badge/README-English-494cad.svg)](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/README_EN.md)
 
 # <center>PyWxDump</center>
 
@@ -111,9 +111,9 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 【注】:
 
-* For obtaining the base address using cheat engine, refer to [CE obtaining base address.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE obtaining base address.md)
+* For obtaining the base address using cheat engine, refer to [CE obtaining base address.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE获取基址.md)
   (This method can be replaced by the `wxdump bias` command, and is only used for learning principles.)
-* For database parsing, refer to [wx database brief.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/wx database brief.md)
+* For database parsing, refer to [wx database brief.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/wx数据库简述.md)
 
 # Ⅲ. Disclaimer (VERY VERY VERY IMPORTANT ! ! ! ! ! !)
 

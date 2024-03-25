@@ -1,3 +1,5 @@
+[![中文](https://img.shields.io/badge/README-中文-494cad.svg)](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/README_CN.md) [![English](https://img.shields.io/badge/README-English-494cad.svg)](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/README_EN.md)
+
 # <center>PyWxDump</center>
 
 [![Python](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
