@@ -1,5 +1,3 @@
-[![中文](https://img.shields.io/badge/README-中文-494cad.svg)](./doc/README_CN.md) [![English](https://img.shields.io/badge/README-English-494cad.svg)](./doc/README_EN.md)
-
 # <center>PyWxDump</center>
 
 [![Python](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
@@ -13,8 +11,6 @@
 [![Wheel](https://img.shields.io/pypi/wheel/pywxdump)](https://pypi.org/project/pywxdump/)
 [![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypistats.org/packages/pywxdump)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
-
-
 
 * Welcome to provide more ideas or code to improve this project together.
 
