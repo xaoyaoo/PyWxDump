@@ -1,5 +1,10 @@
-## v2.4.61.(待发布)
+## v2.4.62.(待发布)
 
+- 
+
+## v2.4.61
+
+- fix
 - UPDATE DOC
 - fix and add
 - 解密并合并 OpenIM*
