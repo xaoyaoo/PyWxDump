@@ -20,7 +20,7 @@ import json
 import time
 from functools import wraps
 
-from .utils import get_md5, attach_databases, execute_sql, get_type_name, match_BytesExtra, DBPool
+from .utils import get_md5, attach_databases, execute_sql, get_type_name, match_BytesExtra, DBPool, time_int2str
 from .db_parsing import parse_xml_string, decompress_CompressContent, read_BytesExtra
 
 
@@ -80,6 +80,7 @@ def get_contact_list(MicroMsg_db_path, OpenIMContact_db_path=None):
                     {"username": username, "nickname": nickname, "remark": remark, "account": "", "describe": "",
                      "headImgUrl": headImgUrl})
     return users
+
 
 def get_chatroom_list(MicroMsg_db_path):
     """
@@ -169,7 +170,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
         data = []
         for row in result1:
             localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra, id = row
-            CreateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(CreateTime))
+            CreateTime = time_int2str(CreateTime)
 
             type_id = (Type, SubType)
             type_name = get_type_name(type_id)
@@ -235,6 +236,20 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 recorditem = parse_xml_string(recorditem)
                 content["msg"] = f"{title}\n{des}"
                 content["src"] = recorditem
+
+            elif type_id == (49, 57):  # 带有引用的文本消息
+                CompressContent = decompress_CompressContent(CompressContent)
+                content_tmp = parse_xml_string(CompressContent)
+                appmsg = content_tmp.get("appmsg", {})
+                title = appmsg.get("title", "")
+                refermsg = appmsg.get("refermsg", {})
+                displayname = refermsg.get("displayname", "")
+                display_content = refermsg.get("content", "")
+                display_createtime = refermsg.get("createtime", "")
+                display_createtime = time_int2str(
+                    int(display_createtime)) if display_createtime.isdigit() else display_createtime
+                content["msg"] = f"{title}\n[引用]{displayname}:{display_content}({display_createtime})"
+                content["src"] = ""
 
             elif type_id == (49, 2000):  # 转账消息
                 CompressContent = decompress_CompressContent(CompressContent)

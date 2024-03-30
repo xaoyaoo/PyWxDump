@@ -9,7 +9,16 @@ import hashlib
 import os
 import re
 import sqlite3
+import time
 
+
+def time_int2str(time_int):
+    """
+    时间戳转换为时间字符串
+    :param time_int: 时间戳
+    :return: 时间字符串
+    """
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_int))
 
 def read_dict_all_values(data):
     """
