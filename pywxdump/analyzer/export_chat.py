@@ -248,7 +248,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 display_createtime = refermsg.get("createtime", "")
                 display_createtime = time_int2str(
                     int(display_createtime)) if display_createtime.isdigit() else display_createtime
-                content["msg"] = f"{title}\n[引用]{displayname}:{display_content}({display_createtime})"
+                content["msg"] = f"{title}\n\n[引用]({display_createtime}){displayname}:{display_content}"
                 content["src"] = ""
 
             elif type_id == (49, 2000):  # 转账消息
