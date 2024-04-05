@@ -20,6 +20,7 @@ def time_int2str(time_int):
     """
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_int))
 
+
 def read_dict_all_values(data):
     """
     读取字典中所有的值（单层）
@@ -198,7 +199,6 @@ class DBPool:
         if db_path not in cls.__db_pool:
             cls.__db_pool[db_path] = sqlite3.connect(db_path, check_same_thread=False)
         cls.connection = cls.__db_pool[db_path]
-
 
     def __init__(self, db_path):
         if db_path == "DBPOOL_INIT":

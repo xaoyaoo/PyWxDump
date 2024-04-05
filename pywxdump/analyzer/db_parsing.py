@@ -251,11 +251,42 @@ def wordcloud_generator(text, out_path="", is_show=False, img_path="", font="C:\
         wordcloud_img.show()
 
 
+def convert_bytes_to_str(d):
+    """
+    遍历字典并将bytes转换为字符串
+    :param d:
+    :return:
+    """
+    for k, v in d.items():
+        if isinstance(v, dict):
+            convert_bytes_to_str(v)
+        elif isinstance(v, list):
+            for item in v:
+                if isinstance(item, dict):
+                    convert_bytes_to_str(item)
+                elif isinstance(item, bytes):
+                    item = item.decode('utf-8')  # 将bytes转换为字符串
+        elif isinstance(v, bytes):
+            d[k] = v.decode('utf-8')
+
+
 def read_BytesExtra(BytesExtra):
     if BytesExtra is None or not isinstance(BytesExtra, bytes):
         return None
     try:
         deserialize_data, message_type = blackboxprotobuf.decode_message(BytesExtra)
         return deserialize_data
+    except Exception as e:
+        return None
+
+
+def read_ChatRoom_RoomData(RoomData):
+    # 读取群聊数据,主要为 wxid，以及对应昵称
+    if RoomData is None or not isinstance(RoomData, bytes):
+        return None
+    try:
+        data = read_BytesExtra(RoomData)
+        convert_bytes_to_str(data)
+        return data
     except Exception as e:
         return None
