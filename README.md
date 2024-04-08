@@ -14,6 +14,8 @@
 [![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypistats.org/packages/pywxdump)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 
+I just got dumped, Pywxdump has lost its purpose too.I will pause updates until I overcome this dark phase in my life. I hope you can understand. I'm sorry.
+
 * Welcome to provide more ideas or code to improve this project together.
 
 ### If you are a novice, please pay attention to the Official Accounts: `逍遥之芯` (the QR code is below), and reply: `PyWxDump` to get a picture text tutorial.
