@@ -317,12 +317,13 @@ def read_ExtraBuf(ExtraBuf: bytes):
             '16791C90': '37'
         }
 
-        rdata = {i: "" for i in buf_dict.values()}
+        rdata = {}
         for buf_name in buf_dict:
             rdata_name = buf_dict[buf_name]
             buf_name = bytes.fromhex(buf_name)
             offset = ExtraBuf.find(buf_name)
             if offset == -1:
+                rdata[rdata_name] = ""
                 continue
             offset += len(buf_name)
             type_id = ExtraBuf[offset: offset + 1]
@@ -341,7 +342,6 @@ def read_ExtraBuf(ExtraBuf: bytes):
 
             elif type_id == b"\x05":
                 rdata[rdata_name] = f"0x{ExtraBuf[offset: offset + 8].hex()}"
-
         return rdata
 
     except Exception as e:
