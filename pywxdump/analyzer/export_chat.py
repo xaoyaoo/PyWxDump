@@ -193,7 +193,7 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
                 else:
                     content["src"] = ""
                 content["msg"] = "图片"
-            elif type_id == (34, 0):
+            elif type_id == (34, 0):  # 语音
                 tmp_c = parse_xml_string(StrContent)
                 voicelength = tmp_c.get("voicemsg", {}).get("voicelength", "")
                 transtext = tmp_c.get("voicetrans", {}).get("transtext", "")
