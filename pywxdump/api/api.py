@@ -264,7 +264,7 @@ def func_get_msgs(start, limit, wxid, msg_path, micro_path):
     # row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
     #             "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
     if "merge_all" in micro_path:
-        contact_list = analyzer.get_contact_list(micro_path,micro_path)
+        contact_list = analyzer.get_contact_list(micro_path, micro_path)
     else:
         contact_list = analyzer.get_contact_list(micro_path)
 
@@ -330,6 +330,15 @@ def get_real_time_msg():
     msg_paths.sort()
     micro_paths = micro_paths[1]
     micro_paths.sort()
+    # for i in media_paths:
+    #     print(i)
+    #     merge_real_time_db(key=key, db_path=i, merge_path=save_media_path)
+    # for i in msg_paths:
+    #     print(i)
+    #     merge_real_time_db(key=key, db_path=i, merge_path=save_msg_path)
+    # for i in micro_paths:
+    #     print(i)
+    #     merge_real_time_db(key=key, db_path=i, merge_path=save_micro_path)
     merge_real_time_db(key=key, db_path=media_paths[-1], merge_path=save_media_path)
     merge_real_time_db(key=key, db_path=msg_paths[-1], merge_path=save_msg_path)
     merge_real_time_db(key=key, db_path=micro_paths[-1], merge_path=save_micro_path)
@@ -351,6 +360,7 @@ def get_img():
         return ReJson(1003, msg="Unsupported method")
     if not img_path:
         return ReJson(1002)
+    img_path = img_path.replace("\\\\", "\\")
     wx_path = read_session(g.sf, "wx_path")
     img_tmp_path = os.path.join(g.tmp_path, "img")
     img_path_all = os.path.join(wx_path, img_path)
