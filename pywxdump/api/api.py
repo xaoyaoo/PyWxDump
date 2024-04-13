@@ -330,18 +330,18 @@ def get_real_time_msg():
     msg_paths.sort()
     micro_paths = micro_paths[1]
     micro_paths.sort()
-    # for i in media_paths:
-    #     print(i)
-    #     merge_real_time_db(key=key, db_path=i, merge_path=save_media_path)
-    # for i in msg_paths:
-    #     print(i)
-    #     merge_real_time_db(key=key, db_path=i, merge_path=save_msg_path)
-    # for i in micro_paths:
-    #     print(i)
-    #     merge_real_time_db(key=key, db_path=i, merge_path=save_micro_path)
-    merge_real_time_db(key=key, db_path=media_paths[-1], merge_path=save_media_path)
-    merge_real_time_db(key=key, db_path=msg_paths[-1], merge_path=save_msg_path)
-    merge_real_time_db(key=key, db_path=micro_paths[-1], merge_path=save_micro_path)
+    for i in media_paths:
+        print(i)
+        merge_real_time_db(key=key, db_path=i, merge_path=save_media_path)
+    for i in msg_paths:
+        print(i)
+        merge_real_time_db(key=key, db_path=i, merge_path=save_msg_path)
+    for i in micro_paths:
+        print(i)
+        merge_real_time_db(key=key, db_path=i, merge_path=save_micro_path)
+    # merge_real_time_db(key=key, db_path=media_paths[-1], merge_path=save_media_path)
+    # merge_real_time_db(key=key, db_path=msg_paths[-1], merge_path=save_msg_path)
+    # merge_real_time_db(key=key, db_path=micro_paths[-1], merge_path=save_micro_path)
     return ReJson(0, "success")
 
 
@@ -380,6 +380,7 @@ def get_img():
 @api.route('/api/video/<path:videoPath>', methods=["GET", 'POST'])
 def get_video(videoPath):
     wx_path = read_session(g.sf, "wx_path")
+    videoPath = videoPath.replace("\\\\", "\\")
     all_video_path = os.path.join(wx_path, videoPath)
     if not os.path.exists(all_video_path):
         return ReJson(5002)

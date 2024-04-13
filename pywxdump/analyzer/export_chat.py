@@ -207,9 +207,14 @@ def get_msg_list(MSG_db_path, selected_talker="", start_index=0, page_size=500):
             elif type_id == (43, 0):  # 视频
                 DictExtra = read_BytesExtra(BytesExtra)
                 DictExtra = str(DictExtra)
-                match = re.search(r"FileStorage(.*?)'", DictExtra)
-                if match:
-                    video_path = match.group(0).replace("'", "")
+
+                DictExtra_str = str(DictExtra)
+                video_paths = [i for i in re.findall(r"(FileStorage.*?)'", DictExtra_str)]
+                video_paths = sorted(video_paths, key=lambda p: "mp4" in p, reverse=True)
+                if video_paths:
+                    video_path = video_paths[0].replace("'", "")
+                    video_path = [i for i in video_path.split("\\") if i]
+                    video_path = os.path.join(*video_path)
                     content["src"] = video_path
                 else:
                     content["src"] = ""
