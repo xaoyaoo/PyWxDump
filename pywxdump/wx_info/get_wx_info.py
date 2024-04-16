@@ -282,7 +282,7 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
     elif isinstance(require_list, list):
         pattern = {}
         for require in require_list:
-            pattern[require] = re.compile(r"%s.*\.db$" % require)
+            pattern[require] = re.compile(r"%s.*?\.db$" % require)
     else:
         error = f"[-] 参数错误: {require_list}"
         if is_logging: print(error)
