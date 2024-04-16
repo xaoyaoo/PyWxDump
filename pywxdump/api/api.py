@@ -324,20 +324,17 @@ def get_real_time_msg():
 
     if not media_paths[0] or not msg_paths[0] or not micro_paths[0]:
         return ReJson(1001, body="media_paths or msg_paths is required")
-    media_paths = media_paths[1]  # MediaMSG9.db MediaMSG10.db
+    media_paths = media_paths[1]
     media_paths.sort(key=lambda x: int(re.findall(r"\d+", x)[-1]))
     msg_paths = msg_paths[1]
     msg_paths.sort(key=lambda x: int(re.findall(r"\d+", x)[-1]))
     micro_paths = micro_paths[1]
     micro_paths.sort(key=lambda x: int(re.findall(r"\d+", x)[-1]))
     # for i in media_paths:
-    #     print(i)
     #     merge_real_time_db(key=key, db_path=i, merge_path=save_media_path)
     # for i in msg_paths:
-    #     print(i)
     #     merge_real_time_db(key=key, db_path=i, merge_path=save_msg_path)
     # for i in micro_paths:
-    #     print(i)
     #     merge_real_time_db(key=key, db_path=i, merge_path=save_micro_path)
     merge_real_time_db(key=key, db_path=media_paths[-1], merge_path=save_media_path)
     merge_real_time_db(key=key, db_path=msg_paths[-1], merge_path=save_msg_path)
