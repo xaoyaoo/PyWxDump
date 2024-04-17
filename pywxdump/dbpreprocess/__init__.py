@@ -8,5 +8,6 @@
 from .parsingMSG import ParsingMSG
 from .parsingMicroMsg import ParsingMicroMsg
 from .parsingMediaMSG import ParsingMediaMSG
+from .parsingOpenIMContact import ParsingOpenIMContact
 
 
