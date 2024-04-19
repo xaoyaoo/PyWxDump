@@ -51,7 +51,6 @@ class ParsingOpenIMContact(DatabaseBase):
         :param MicroMsg_db_path: MicroMsg.db 文件路径
         :return: 联系人列表
         """
-        users = []
         sql = ("SELECT A.UserName, A.NickName, A.Remark,A.BigHeadImgUrl FROM OpenIMContact A "
                "ORDER BY NickName ASC;")
         if word:
@@ -62,6 +61,10 @@ class ParsingOpenIMContact(DatabaseBase):
                               f"OR Remark LIKE '%{word}%' "
                               "ORDER BY NickName ASC;")
         result = self.execute_sql(sql)
+        if not result:
+            return []
+
+        users = []
         for row in result:
             # 获取用户名、昵称、备注和聊天记录数量
             username, nickname, remark, headImgUrl = row
