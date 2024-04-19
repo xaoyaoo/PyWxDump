@@ -1,6 +1,8 @@
 ## v3.0.7.(待发布)
 
-- 
+- 增加数据库查询失败的容错
+- UPDATE CHANGELOG.md
+- OpenIMContact表中不到的问题
 
 ## v3.0.6
 
