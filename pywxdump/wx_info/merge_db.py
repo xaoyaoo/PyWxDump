@@ -389,4 +389,4 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
         time.sleep(3)
         os.remove(out_path)
 
-    return merge_path
+    return True, merge_path
