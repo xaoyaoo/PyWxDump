@@ -1,6 +1,37 @@
-## v3.0.1.(待发布)
+## v3.0.7.(待发布)
 
 - 
+
+## v3.0.6
+
+- fix
+
+## v3.0.5
+
+- fix
+- fix 数据库合并的问题
+- UI 偏移地址获取 fix
+- UPDATE README.md
+
+## v3.0.4
+
+- fix
+
+## v3.0.3
+
+- fix
+
+## v3.0.2
+
+- fix
+
+## v3.0.1
+
+- fix
+- 优化代码
+- 增加注释
+- UPDATE README.md
+- UPDATE CHANGELOG.md
 
 ## v3.0.0
 
