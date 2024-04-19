@@ -11,6 +11,7 @@ from .parsingMSG import ParsingMSG
 from .parsingMicroMsg import ParsingMicroMsg
 from .parsingMediaMSG import ParsingMediaMSG
 from .parsingOpenIMContact import ParsingOpenIMContact
+from .utils import download_file
 
 
 def get_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, word=None):

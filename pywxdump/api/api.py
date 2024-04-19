@@ -20,8 +20,8 @@ from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, get_session_wxids, save_session, error9999, gen_base64, validate_title
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 import pywxdump
-from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG
-from pywxdump.dbpreprocess.utils import download_file
+from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
+    download_file
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 

@@ -13,6 +13,7 @@ from .analyzer import export_csv, export_json, DBPool
 from .ui import app_show_chat, get_user_list, export
 from .dbpreprocess import get_user_list, get_recent_user_list, wxid2userinfo, ParsingMSG, ParsingMicroMsg, \
     ParsingMediaMSG, ParsingOpenIMContact
+
 from .server import start_falsk
 
 import os, json
