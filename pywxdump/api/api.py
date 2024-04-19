@@ -529,6 +529,8 @@ def export():
     end_time = request.json.get("end_time", 0)
     chat_type = request.json.get("chat_type")
     username = request.json.get("username")
+
+
     wx_path = request.json.get("wx_path", read_session(g.sf, "wx_path"))
     key = request.json.get("key", read_session(g.sf, "key"))
 

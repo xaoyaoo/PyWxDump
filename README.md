@@ -14,6 +14,7 @@
 [![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypistats.org/packages/pywxdump)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 
+V3.0.0 有很多bug，如果你有问题，请使用V2.4.71版本，或者等待V3.0.1版本（发现bug请提交issue）
 
 * Welcome to provide more ideas or code to improve this project together.
 
