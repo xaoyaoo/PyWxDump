@@ -267,7 +267,7 @@ def msg_count():
 @api.route('/api/imgsrc/<path:imgsrc>', methods=["GET", 'POST'])
 def get_imgsrc(imgsrc):
     """
-    获取图片
+    获取图片,从网络获取图片，主要功能只是下载图片，缓存到本地
     :return:
     """
     if not imgsrc:
