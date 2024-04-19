@@ -66,13 +66,13 @@ def init_key():
     key = request.json.get("key", "").strip().strip("'").strip('"')
     my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
     if not wx_path:
-        return ReJson(1001, body=f"wx_path is required: {wx_path}")
+        return ReJson(1002, body=f"wx_path is required: {wx_path}")
     if not os.path.exists(wx_path):
-        return ReJson(1002, body=f"wx_path not exists: {wx_path}")
+        return ReJson(1001, body=f"wx_path not exists: {wx_path}")
     if not key:
-        return ReJson(1001, body=f"key is required: {key}")
+        return ReJson(1002, body=f"key is required: {key}")
     if not my_wxid:
-        return ReJson(1001, body=f"my_wxid is required: {my_wxid}")
+        return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path, "decrypted")
     if os.path.exists(out_path):
@@ -110,13 +110,13 @@ def init_nokey():
     my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
 
     if not wx_path:
-        return ReJson(1002)
+        return ReJson(1002, body=f"wx_path is required: {wx_path}")
     if not os.path.exists(wx_path):
-        return ReJson(1001, body=wx_path)
+        return ReJson(1001, body=f"wx_path not exists: {wx_path}")
     if not merge_path:
-        return ReJson(1002)
+        return ReJson(1002, body=f"merge_path is required: {merge_path}")
     if not my_wxid:
-        return ReJson(1002)
+        return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     key = read_session(g.sf, my_wxid, "key")
 
