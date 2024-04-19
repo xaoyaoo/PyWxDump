@@ -29,6 +29,7 @@ api = Blueprint('api', __name__, template_folder='../ui/web', static_folder='../
 api.debug = False
 
 
+# 以下为初始化相关 *******************************************************************************************************
 @api.route('/api/init_last', methods=["GET", 'POST'])
 @error9999
 def init_last():
@@ -133,17 +134,10 @@ def init_nokey():
     return ReJson(0, rdata)
 
 
-@api.route('/api/version', methods=["GET", 'POST'])
-@error9999
-def version():
-    """
-    版本
-    :return:
-    """
-    return ReJson(0, pywxdump.__version__)
+# END 以上为初始化相关 ****************************************************************************************************
 
 
-# start 以下为聊天联系人相关api
+# start 以下为聊天联系人相关api ******************************************************************************************
 
 @api.route('/api/recent_user_list', methods=["GET", 'POST'])
 @error9999
@@ -212,9 +206,9 @@ def mywxid():
     return ReJson(0, {"my_wxid": my_wxid})
 
 
-# end 以上为聊天联系人相关api
+# end 以上为聊天联系人相关api *********************************************************************************************
 
-# start 以下为聊天记录相关api
+# start 以下为聊天记录相关api *********************************************************************************************
 
 @api.route('/api/realtimemsg', methods=["GET", "POST"])
 @error9999
@@ -440,81 +434,7 @@ def get_file(filePath):
     return send_file(all_file_path)
 
 
-# end 以上为聊天记录相关api
-
-@api.route('/api/msgs_user_list', methods=['GET', 'POST'])
-@error9999
-def get_msg_user_list():
-    """
-    获取消息联系人列表
-    :return:
-    """
-    msg_path = request.headers.get("msg_path")
-    micro_path = request.headers.get("micro_path")
-    if not msg_path:
-        msg_path = read_session(g.sf, "msg_path")
-    if not micro_path:
-        micro_path = read_session(g.sf, "micro_path")
-    wxid = request.json.get("wxid")
-    # msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
-    my_wxid = read_session(g.sf, "my_wxid")
-    userlist = []
-    if wxid.endswith("@chatroom"):
-        # 群聊
-        userlist = get_room_user_list(msg_path, wxid)
-    else:
-        # 单聊
-        user = get_contact(micro_path, wxid)
-        my_user = get_contact(micro_path, my_wxid)
-        userlist.append(user)
-        userlist.append(my_user)
-    return ReJson(0, {"user_list": userlist})
-
-
-@api.route('/api/msgs_list', methods=['GET', 'POST'])
-@error9999
-def get_msg_list():
-    msg_path = request.headers.get("msg_path")
-    micro_path = request.headers.get("micro_path")
-    if not msg_path:
-        msg_path = read_session(g.sf, "msg_path")
-    if not micro_path:
-        micro_path = read_session(g.sf, "micro_path")
-    start = request.json.get("start")
-    limit = request.json.get("limit")
-    wxid = request.json.get("wxid")
-    my_wxid = read_session(g.sf, "test", "last")
-    msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
-    return ReJson(0, {"msg_list": msg_list, 'my_wxid': my_wxid})
-
-
-def func_get_msgs(start, limit, wxid, msg_path, micro_path):
-    msg_list = analyzer.get_msg_list(msg_path, wxid, start_index=start, page_size=limit)
-    # row_data = {"MsgSvrID": MsgSvrID, "type_name": type_name, "is_sender": IsSender, "talker": talker,
-    #             "room_name": StrTalker, "content": content, "CreateTime": CreateTime}
-    if "merge_all" in micro_path:
-        contact_list = analyzer.get_contact_list(micro_path, micro_path)
-    else:
-        contact_list = analyzer.get_contact_list(micro_path)
-
-    userlist = {}
-    my_wxid = read_session(g.sf, "my_wxid")
-    if wxid.endswith("@chatroom"):
-        # 群聊
-        talkers = [msg["talker"] for msg in msg_list] + [wxid, my_wxid]
-        talkers = list(set(talkers))
-        for user in contact_list:
-            if user["username"] in talkers:
-                userlist[user["username"]] = user
-    else:
-        # 单聊
-        for user in contact_list:
-            if user["username"] == wxid or user["username"] == my_wxid:
-                userlist[user["username"]] = user
-            if len(userlist) == 2:
-                break
-    return {"msg_list": msg_list, "user_list": userlist, "my_wxid": my_wxid}
-
+# end 以上为聊天记录相关api *********************************************************************************************
 
 # 导出聊天记录
 @api.route('/api/export', methods=["GET", 'POST'])
@@ -529,7 +449,6 @@ def export():
     end_time = request.json.get("end_time", 0)
     chat_type = request.json.get("chat_type")
     username = request.json.get("username")
-
 
     wx_path = request.json.get("wx_path", read_session(g.sf, "wx_path"))
     key = request.json.get("key", read_session(g.sf, "key"))
@@ -798,6 +717,16 @@ def check_update():
             return ReJson(2001, body="status_code is not 200")
     except Exception as e:
         return ReJson(9999, msg=str(e))
+
+
+@api.route('/api/version', methods=["GET", 'POST'])
+@error9999
+def version():
+    """
+    版本
+    :return:
+    """
+    return ReJson(0, pywxdump.__version__)
 
 
 # END 关于、帮助、设置
