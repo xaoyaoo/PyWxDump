@@ -45,6 +45,7 @@ jobs:
           Compress-Archive -Path wxdump_web -DestinationPath wxdump_web.zip
           Compress-Archive -Path PyWxDump -DestinationPath PyWxDump.zip
           cd wxdump_web
+          npm list -g
           npm install
           npm run build
 
