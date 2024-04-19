@@ -58,6 +58,8 @@ class ParsingMSG(DatabaseBase):
             sql = f"SELECT StrTalker, COUNT(*) FROM MSG GROUP BY StrTalker ORDER BY COUNT(*) DESC;"
 
         result = self.execute_sql(sql)
+        if not result:
+            return {}
         df = pd.DataFrame(result, columns=["wxid", "msg_count"])
         # # 排序
         df = df.sort_values(by="msg_count", ascending=False)
@@ -257,7 +259,8 @@ class ParsingMSG(DatabaseBase):
                 "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
                 "FROM MSG ORDER BY CreateTime ASC LIMIT ?,?")
             result1 = self.execute_sql(sql, (start_index, page_size))
-
+        if not result1:
+            return [], []
         data = []
         wxid_list = []
         for row in result1:

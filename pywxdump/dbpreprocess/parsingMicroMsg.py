@@ -88,6 +88,8 @@ class ParsingMicroMsg(DatabaseBase):
                               # f"OR A.Reserved6 LIKE '%{word}%' "
                               "ORDER BY A.NickName DESC;")
         result = self.execute_sql(sql)
+        if not result:
+            return []
         for row in result:
             # 获取wxid,昵称，备注，描述，头像
             username, nickname, remark, Alias, describe, headImgUrl = row
@@ -107,6 +109,8 @@ class ParsingMicroMsg(DatabaseBase):
             "FROM ChatInfo C "
             "ORDER BY C.LastReadedCreateTime DESC;")
         result = self.execute_sql(sql)
+        if not result:
+            return []
         for row in result:
             # 获取用户名、昵称、备注和聊天记录数量
             username, LastReadedCreateTime, LastReadedSvrId = row
@@ -133,6 +137,8 @@ class ParsingMicroMsg(DatabaseBase):
                               f"where A.ChatRoomName LIKE '%{roomwxid}%' "
                               "ORDER BY A.ChatRoomName ASC;")
         result = self.execute_sql(sql)
+        if not result:
+            return []
         room_datas = []
         for row in result:
             # 获取用户名、昵称、备注和聊天记录数量
