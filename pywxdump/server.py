@@ -75,13 +75,14 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
         g.tmp_path = tmp_path  # 临时文件夹,用于存放图片等
         g.sf = session_file  # 用于存放各种基础信息
 
-    if msg_path: save_session(session_file, "msg_path", msg_path)
-    if micro_path: save_session(session_file, "micro_path", micro_path)
-    if media_path: save_session(session_file, "media_path", media_path)
-    if wx_path: save_session(session_file, "wx_path", wx_path)
-    if key: save_session(session_file, "key", key)
-    if my_wxid: save_session(session_file, "my_wxid", my_wxid)
-    save_session(session_file, "test", my_wxid)
+    if msg_path: save_session(session_file, "test", "msg_path", msg_path)
+    if micro_path: save_session(session_file, "test", "micro_path", micro_path)
+    if media_path: save_session(session_file, "test", "media_path", media_path)
+    if wx_path: save_session(session_file, "test", "wx_path", wx_path)
+    if key: save_session(session_file, "test", "key", key)
+    if my_wxid: save_session(session_file, "test", "my_wxid", my_wxid)
+    if not os.path.exists(session_file):
+        save_session(session_file, "test", "last", my_wxid)
 
     app.register_blueprint(api)
     if isopenBrowser:

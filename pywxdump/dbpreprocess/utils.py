@@ -6,6 +6,7 @@
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
 import hashlib
+import os
 import re
 import time
 import wave
@@ -238,6 +239,9 @@ def download_file(url, save_path=None):
         return None
     data = r.content
     if save_path and isinstance(save_path, str):
+        # 创建文件夹
+        if not os.path.exists(os.path.dirname(save_path)):
+            os.makedirs(os.path.dirname(save_path))
         with open(save_path, "wb") as f:
             f.write(data)
     return data
@@ -334,6 +338,8 @@ def silk2audio(buf_data, is_play=False, is_wave=False, save_path=None, rate=2400
 
         play_audio(pcm_data, rate)
 
+    print(is_play, is_wave, save_path)
+
     if is_wave:  # 转换为wav文件
         wave_file = BytesIO()  # 创建wav文件
         with wave.open(wave_file, 'wb') as wf:
@@ -344,6 +350,7 @@ def silk2audio(buf_data, is_play=False, is_wave=False, save_path=None, rate=2400
         if save_path and isinstance(save_path, str):
             with open(save_path, "wb") as f:
                 f.write(rdata)
+            print('saved wav file')
         return rdata
 
     return pcm_data

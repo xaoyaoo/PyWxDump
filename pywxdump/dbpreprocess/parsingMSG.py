@@ -17,6 +17,7 @@ import blackboxprotobuf
 
 
 class ParsingMSG(DatabaseBase):
+    _class_name = "MSG"
     def __init__(self, db_path):
         super().__init__(db_path)
 
@@ -45,24 +46,26 @@ class ParsingMSG(DatabaseBase):
         except Exception as e:
             return None
 
-    def chat_count(self, wxid: str = ""):
+    def msg_count(self, wxid: str = ""):
         """
         获取聊天记录数量,根据wxid获取单个联系人的聊天记录数量，不传wxid则获取所有联系人的聊天记录数量
         :param MSG_db_path: MSG.db 文件路径
         :return: 聊天记录数量列表
         """
         if wxid:
-            sql = f"SELECT StrTalker,COUNT(*) FROM MSG WHERE StrTalker='{wxid}';"
+            sql = f"SELECT StrTalker, COUNT(*) FROM MSG WHERE StrTalker='{wxid}';"
         else:
             sql = f"SELECT StrTalker, COUNT(*) FROM MSG GROUP BY StrTalker ORDER BY COUNT(*) DESC;"
 
         result = self.execute_sql(sql)
-        df = pd.DataFrame(result, columns=["wxid", "chat_count"])
+        df = pd.DataFrame(result, columns=["wxid", "msg_count"])
+        # # 排序
+        df = df.sort_values(by="msg_count", ascending=False)
         # chat_counts ： {wxid: chat_count}
-        chat_counts = df.set_index("wxid").to_dict()["chat_count"]
+        chat_counts = df.set_index("wxid").to_dict()["msg_count"]
         return chat_counts
 
-    def chat_count_total(self):
+    def msg_count_total(self):
         """
         获取聊天记录总数
         :return: 聊天记录总数
@@ -255,18 +258,11 @@ class ParsingMSG(DatabaseBase):
                 "FROM MSG ORDER BY CreateTime ASC LIMIT ?,?")
             result1 = self.execute_sql(sql, (start_index, page_size))
 
-        # df = pd.DataFrame(result1, columns=[
-        #     'localId', 'IsSender', 'StrContent', 'StrTalker', 'Sequence', 'Type', 'SubType', 'CreateTime', 'MsgSvrID',
-        #     'DisplayContent', 'CompressContent', 'BytesExtra', 'id'
-        # ])
-        # df['msg_detail'] = df.apply(lambda row: self.msg_detail(row), axis=1)
-        # return df['msg_detail'].tolist()
-
         data = []
+        wxid_list = []
         for row in result1:
-            data.append(self.msg_detail(row))
-        return data
-
-        # return rdata
-
-
+            tmpdata = self.msg_detail(row)
+            wxid_list.append(tmpdata["talker"])
+            data.append(tmpdata)
+        wxid_list = list(set(wxid_list))
+        return data, wxid_list

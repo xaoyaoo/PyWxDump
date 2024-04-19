@@ -12,11 +12,13 @@ import logging
 
 class DatabaseBase:
     _singleton_instances = {}  # 使用字典存储不同db_path对应的单例实例
+    _connection_pool = {}  # 使用字典存储不同db_path对应的连接池
+    _class_name = "DatabaseBase"
 
     def __new__(cls, db_path):
-        if db_path not in cls._singleton_instances:
-            cls._singleton_instances[db_path] = super().__new__(cls)
-        return cls._singleton_instances[db_path]
+        if cls._class_name not in cls._singleton_instances:
+            cls._singleton_instances[cls._class_name] = super().__new__(cls)
+        return cls._singleton_instances[cls._class_name]
 
     def __init__(self, db_path):
         self._db_path = db_path
@@ -26,6 +28,8 @@ class DatabaseBase:
     def _connect_to_database(cls, db_path):
         if not os.path.exists(db_path):
             raise FileNotFoundError(f"文件不存在: {db_path}")
+        if db_path in cls._connection_pool and cls._connection_pool[db_path] is not None:
+            return cls._connection_pool[db_path]
         connection = sqlite3.connect(db_path, check_same_thread=False)
         logging.info(f"{connection} 连接句柄创建 {db_path}")
         return connection
@@ -70,7 +74,7 @@ class DatabaseBase:
 
     def __del__(self):
         self.close_connection()
-        del self._singleton_instances[self._db_path]
+        # del self._singleton_instances[self._db_path]
 
 
 if __name__ == '__main__':

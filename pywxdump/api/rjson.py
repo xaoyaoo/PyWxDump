@@ -31,7 +31,7 @@ def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = N
     }
     rjson = situation.get(code, {'code': 9999, 'body': None, 'msg': "code错误", "extra": {}})
     if code != 0:
-        logging.warning((code, rjson['body'], msg if msg else None))
+        logging.warning(f"\n{code} \n{rjson['body']}\n{msg if msg else None}")
     if body:
         rjson['body'] = body
     if msg:
