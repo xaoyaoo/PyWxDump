@@ -50,12 +50,15 @@ def save_session(session_file, wxid, arg, value):
     except json.JSONDecodeError as e:
         logging.error(f"Error decoding JSON file: {e}")
         return False
+
     if wxid not in session:
+        session[wxid] = {}
+    if not isinstance(session[wxid], dict):
         session[wxid] = {}
     session[wxid][arg] = value
     try:
         with open(session_file, 'w') as f:
-            json.dump(session, f, indent=4)
+            json.dump(session, f, indent=4, ensure_ascii=False)
     except Exception as e:
         logging.error(f"Error writing to file: {e}")
         return False
