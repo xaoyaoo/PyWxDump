@@ -6,7 +6,9 @@
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
 from .dbbase import DatabaseBase
-from .utils import timestamp2str
+from .utils import timestamp2str, bytes2str
+
+import blackboxprotobuf
 
 
 class ParsingMicroMsg(DatabaseBase):
@@ -14,6 +16,26 @@ class ParsingMicroMsg(DatabaseBase):
 
     def __init__(self, db_path):
         super().__init__(db_path)
+
+    def get_BytesExtra(self, BytesExtra):
+        if BytesExtra is None or not isinstance(BytesExtra, bytes):
+            return None
+        try:
+            deserialize_data, message_type = blackboxprotobuf.decode_message(BytesExtra)
+            return deserialize_data
+        except Exception as e:
+            return None
+
+    def ChatRoom_RoomData(self, RoomData):
+        # 读取群聊数据,主要为 wxid，以及对应昵称
+        if RoomData is None or not isinstance(RoomData, bytes):
+            return None
+        try:
+            data = self.get_BytesExtra(RoomData)
+            bytes2str(data)
+            return data
+        except Exception as e:
+            return None
 
     def wxid2userinfo(self, wxid):
         """
@@ -93,7 +115,7 @@ class ParsingMicroMsg(DatabaseBase):
                 {"wxid": username, "LastReadedCreateTime": LastReadedCreateTime, "LastReadedSvrId": LastReadedSvrId})
         return users
 
-    def chatroom_list(self):
+    def chatroom_list(self, roomwxid=None):
         """
         获取群聊列表
         :param MicroMsg_db_path: MicroMsg.db 文件路径
@@ -101,19 +123,32 @@ class ParsingMicroMsg(DatabaseBase):
         """
         rooms = []
         # 连接 MicroMsg.db 数据库，并执行查询
-        sql = ("SELECT A.ChatRoomName,A.UserNameList, A.DisplayNameList, B.Announcement,B.AnnouncementEditor "
-               "FROM ChatRoom A,ChatRoomInfo B "
-               "where A.ChatRoomName==B.ChatRoomName "
-               "ORDER BY A.ChatRoomName ASC;")
+        sql = (
+            "SELECT A.ChatRoomName,A.UserNameList, A.DisplayNameList,A.RoomData, B.Announcement,B.AnnouncementEditor "
+            "FROM ChatRoom A,ChatRoomInfo B "
+            "where A.ChatRoomName==B.ChatRoomName "
+            "ORDER BY A.ChatRoomName ASC;")
+        if roomwxid:
+            sql = sql.replace("ORDER BY A.ChatRoomName ASC;",
+                              f"where A.ChatRoomName LIKE '%{roomwxid}%' "
+                              "ORDER BY A.ChatRoomName ASC;")
         result = self.execute_sql(sql)
+        room_datas = []
         for row in result:
             # 获取用户名、昵称、备注和聊天记录数量
-            ChatRoomName, UserNameList, DisplayNameList, Announcement, AnnouncementEditor = row
+            ChatRoomName, UserNameList, DisplayNameList, RoomData, Announcement, AnnouncementEditor = row
             UserNameList = UserNameList.split("^G")
             DisplayNameList = DisplayNameList.split("^G")
+            RoomData = self.ChatRoom_RoomData(RoomData)
+            rd = []
+            if RoomData:
+                for k, v in RoomData.items():
+                    if isinstance(v, list):
+                        rd += v
+                room_datas.append(rd)
+            else:
+                print(f"ChatRoomName:{ChatRoomName} RoomData is None")
             rooms.append(
                 {"ChatRoomName": ChatRoomName, "UserNameList": UserNameList, "DisplayNameList": DisplayNameList,
                  "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor})
         return rooms
-
-
