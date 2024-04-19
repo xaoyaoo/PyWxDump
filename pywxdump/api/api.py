@@ -636,6 +636,25 @@ def get_wxinfo():
     return ReJson(0, wxinfos)
 
 
+@api.route('/api/biasaddr', methods=["GET", 'POST'])
+@error9999
+def biasaddr():
+    """
+    BiasAddr
+    :return:
+    """
+    mobile = request.json.get("mobile")
+    name = request.json.get("name")
+    account = request.json.get("account")
+    key = request.json.get("key", "")
+    wxdbPath = request.json.get("wxdbPath", "")
+    if not mobile or not name or not account:
+        return ReJson(1002)
+    pythoncom.CoInitialize()
+    rdata = BiasAddr(account, mobile, name, key, wxdbPath).run()
+    return ReJson(0, str(rdata))
+
+
 @api.route('/api/decrypt', methods=["GET", 'POST'])
 @error9999
 def decrypt():
@@ -654,25 +673,6 @@ def decrypt():
         out_path = g.tmp_path
     wxinfos = batch_decrypt(key, wxdb_path, out_path=out_path)
     return ReJson(0, str(wxinfos))
-
-
-@api.route('/api/biasaddr', methods=["GET", 'POST'])
-@error9999
-def biasaddr():
-    """
-    BiasAddr
-    :return:
-    """
-    mobile = request.json.get("mobile")
-    name = request.json.get("name")
-    account = request.json.get("account")
-    key = request.json.get("key", "")
-    wxdbPath = request.json.get("wxdbPath", "")
-    if not mobile or not name or not account:
-        return ReJson(1002)
-    pythoncom.CoInitialize()
-    rdata = BiasAddr(account, mobile, name, key, wxdbPath).run()
-    return ReJson(0, str(rdata))
 
 
 @api.route('/api/merge', methods=["GET", 'POST'])

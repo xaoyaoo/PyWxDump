@@ -216,7 +216,14 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
         # alias, file_path
         databases = {f"MSG{i}": db_path for i, db_path in enumerate(db_paths)}
     elif isinstance(db_paths, str):
-        databases = {"MSG": db_paths}
+        # 判断是否是文件or文件夹
+        if os.path.isdir(db_paths):
+            db_paths = [os.path.join(db_paths, i) for i in os.listdir(db_paths) if i.endswith(".db")]
+            databases = {f"MSG{i}": db_path for i, db_path in enumerate(db_paths)}
+        elif os.path.isfile(db_paths):
+            databases = {"MSG": db_paths}
+        else:
+            raise FileNotFoundError("db_paths 不存在")
     else:
         raise TypeError("db_paths 类型错误")
 
