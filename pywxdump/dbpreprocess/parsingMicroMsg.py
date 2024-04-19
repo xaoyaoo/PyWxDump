@@ -5,6 +5,8 @@
 # Author:       xaoyaoo
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
+import logging
+
 from .dbbase import DatabaseBase
 from .utils import timestamp2str, bytes2str
 
@@ -134,7 +136,7 @@ class ParsingMicroMsg(DatabaseBase):
             "ORDER BY A.ChatRoomName ASC;")
         if roomwxid:
             sql = sql.replace("ORDER BY A.ChatRoomName ASC;",
-                              f"where A.ChatRoomName LIKE '%{roomwxid}%' "
+                              f"and A.ChatRoomName LIKE '%{roomwxid}%' "
                               "ORDER BY A.ChatRoomName ASC;")
         result = self.execute_sql(sql)
         if not result:
@@ -146,15 +148,19 @@ class ParsingMicroMsg(DatabaseBase):
             UserNameList = UserNameList.split("^G")
             DisplayNameList = DisplayNameList.split("^G")
             RoomData = self.ChatRoom_RoomData(RoomData)
-            rd = []
+            wxid2remark = {}
             if RoomData:
+                rd = []
                 for k, v in RoomData.items():
                     if isinstance(v, list):
                         rd += v
-                room_datas.append(rd)
-            else:
-                print(f"ChatRoomName:{ChatRoomName} RoomData is None")
+                for i in rd:
+                    try:
+                        if isinstance(i, dict) and isinstance(i.get('1'),str) and i.get('2'):
+                            wxid2remark[i['1']] = i["2"]
+                    except Exception as e:
+                        logging.error(f"wxid2remark: ChatRoomName:{ChatRoomName}, {i} error:{e}")
             rooms.append(
                 {"ChatRoomName": ChatRoomName, "UserNameList": UserNameList, "DisplayNameList": DisplayNameList,
-                 "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor})
+                 "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor, "wxid2remark": wxid2remark})
         return rooms
