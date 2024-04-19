@@ -13,6 +13,7 @@ import re
 import time
 import shutil
 
+import pythoncom
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
 from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
 from pywxdump.analyzer.export_chat import get_contact, get_room_user_list
@@ -669,6 +670,7 @@ def biasaddr():
     wxdbPath = request.json.get("wxdbPath", "")
     if not mobile or not name or not account:
         return ReJson(1002)
+    pythoncom.CoInitialize()
     rdata = BiasAddr(account, mobile, name, key, wxdbPath).run()
     return ReJson(0, str(rdata))
 

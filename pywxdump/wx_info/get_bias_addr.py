@@ -158,7 +158,7 @@ class BiasAddr:
         name_bias = self.search_memory_value(self.name, self.module_name)
         account_bias = self.search_memory_value(self.account, self.module_name)
         key_bias = 0
-        key_bias = self.get_key_bias1()
+        key_bias = self.get_key_bias1() if key_bias <= 0 else key_bias
         key_bias = self.search_key(self.key) if key_bias <= 0 and self.key else key_bias
         key_bias = self.get_key_bias2(self.db_path) if key_bias <= 0 and self.db_path else key_bias
 
