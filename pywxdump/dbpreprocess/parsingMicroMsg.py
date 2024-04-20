@@ -42,7 +42,7 @@ class ParsingMicroMsg(DatabaseBase):
     def wxid2userinfo(self, wxid):
         """
         获取单个联系人信息
-        :param wxid: 微信id
+        :param wxid: 微信id,可以是单个id，也可以是id列表
         :return: 联系人信息
         """
         if isinstance(wxid, str):

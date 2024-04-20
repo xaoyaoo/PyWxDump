@@ -291,7 +291,7 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
 
 def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0) -> (bool, str):
     """
-    解密合并数据库 msg.db, microMsg.db, media.db
+    解密合并数据库 msg.db, microMsg.db, media.db,注意：会删除原数据库
     :param wx_path: 微信路径 eg: C:\*******\WeChat Files\wxid_*********
     :param key: 解密密钥
     :return: (true,解密后的数据库路径) or (false,错误信息)

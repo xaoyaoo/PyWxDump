@@ -50,7 +50,7 @@ class ParsingMSG(DatabaseBase):
         """
         获取聊天记录数量,根据wxid获取单个联系人的聊天记录数量，不传wxid则获取所有联系人的聊天记录数量
         :param MSG_db_path: MSG.db 文件路径
-        :return: 聊天记录数量列表
+        :return: 聊天记录数量列表 {wxid: chat_count}
         """
         if wxid:
             sql = f"SELECT StrTalker, COUNT(*) FROM MSG WHERE StrTalker='{wxid}';"

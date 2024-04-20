@@ -23,6 +23,7 @@ from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db,
 import pywxdump
 from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
     download_file
+from pywxdump.dbpreprocess import export_csv
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -440,7 +441,7 @@ def get_file(filePath):
 # start 导出聊天记录 *****************************************************************************************************
 
 @api.route('/api/export_endb', methods=["GET", 'POST'])
-def export_endb():
+def get_export_endb():
     """
     导出加密数据库
     :return:
@@ -472,7 +473,7 @@ def export_endb():
 
 
 @api.route('/api/export_dedb', methods=["GET", "POST"])
-def export_dedb():
+def get_export_dedb():
     """
     导出解密数据库
     :return:
@@ -483,15 +484,47 @@ def export_dedb():
     key = request.json.get("key", read_session(g.sf, my_wxid, "key"))
     wx_path = request.json.get("wx_path", read_session(g.sf, my_wxid, "wx_path"))
 
+    if not key:
+        return ReJson(1002, body=f"key is required: {key}")
+    if not wx_path:
+        return ReJson(1002, body=f"wx_path is required: {wx_path}")
+    if not os.path.exists(wx_path):
+        return ReJson(1001, body=f"wx_path not exists: {wx_path}")
+
     outpath = os.path.join(g.tmp_path, "export", my_wxid, "dedb")
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    merge_path = read_session(g.sf, my_wxid, "merge_path")
-    assert isinstance(outpath, str)  # 为了解决pycharm的警告, 无实际意义
-    shutil.copy(merge_path, os.path.join(outpath, os.path.basename(merge_path)))
+    code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=outpath)
+    time.sleep(1)
+    if code:
+        return ReJson(0, body=merge_save_path)
+    else:
+        return ReJson(2001, body=merge_save_path)
 
-    return ReJson(0, body=outpath)
+
+@api.route('/api/export_csv', methods=["GET", 'POST'])
+def get_export_csv():
+    """
+    导出csv
+    :return:
+    """
+    my_wxid = read_session(g.sf, "test", "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+    wxid = request.json.get("wxid")
+    if not wxid:
+        return ReJson(1002, body=f"username is required: {wxid}")
+
+    outpath = os.path.join(g.tmp_path, "export", my_wxid, "csv", wxid)
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    code, ret = export_csv(wxid, outpath, read_session(g.sf, my_wxid, "msg_path"))
+    if code:
+        return ReJson(0, ret)
+    else:
+        return ReJson(2001, body=ret)
 
 
 @api.route('/api/export', methods=["GET", 'POST'])
