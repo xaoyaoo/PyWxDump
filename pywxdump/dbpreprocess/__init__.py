@@ -14,6 +14,7 @@ from .parsingOpenIMContact import ParsingOpenIMContact
 from .utils import download_file
 
 from .export.exportCSV import export_csv
+from .export.exportJSON import export_json
 
 
 def get_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, word=None):

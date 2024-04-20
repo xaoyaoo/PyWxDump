@@ -23,7 +23,7 @@ from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db,
 import pywxdump
 from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
     download_file
-from pywxdump.dbpreprocess import export_csv
+from pywxdump.dbpreprocess import export_csv,export_json
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -513,14 +513,44 @@ def get_export_csv():
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
 
     wxid = request.json.get("wxid")
+    # st_ed_time = request.json.get("datetime", [0, 0])
     if not wxid:
         return ReJson(1002, body=f"username is required: {wxid}")
+    # if not isinstance(st_ed_time, list) or len(st_ed_time) != 2:
+    #     return ReJson(1002, body=f"datetime is required: {st_ed_time}")
+    # start, end = st_ed_time
+    # if not isinstance(start, int) or not isinstance(end, int) or start >= end:
+    #     return ReJson(1002, body=f"datetime is required: {st_ed_time}")
 
     outpath = os.path.join(g.tmp_path, "export", my_wxid, "csv", wxid)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    code, ret = export_csv(wxid, outpath, read_session(g.sf, my_wxid, "msg_path"))
+    code, ret = export_csv(wxid, outpath, read_session(g.sf, my_wxid, "merge_path"))
+    if code:
+        return ReJson(0, ret)
+    else:
+        return ReJson(2001, body=ret)
+
+
+@api.route('/api/export_json', methods=["GET", 'POST'])
+def get_export_json():
+    """
+    导出json
+    :return:
+    """
+    my_wxid = read_session(g.sf, "test", "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+    wxid = request.json.get("wxid")
+    if not wxid:
+        return ReJson(1002, body=f"username is required: {wxid}")
+
+    outpath = os.path.join(g.tmp_path, "export", my_wxid, "json", wxid)
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    code, ret = export_json(wxid, outpath, read_session(g.sf, my_wxid, "merge_path"))
     if code:
         return ReJson(0, ret)
     else:
