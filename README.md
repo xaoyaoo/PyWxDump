@@ -60,7 +60,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 #### 2.4 Other functions
 
-* (1) Added a minimalist version of pywxdumpmini, which provides only the ability to obtain database keys and database locations
+* (1) Added a minimalist version of [pywxdumpmini](https://github.com/xaoyaoo/pywxdumpmini), which provides only the ability to obtain database keys and database locations
 * (2) Support multiple WeChat opening scenarios, obtain multiple user information, etc.
 
 **Utilize the scene**
@@ -77,7 +77,6 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 * 3.Analyze the monthly and annual chat volume of different people and generate a line chart
 * 4.Generate annual visualization reports
 * 8.Increase support for enterprise WeChat
-* 11.Back up chat history and restore it to WeChat
 * 12.Viewing and backing up of the circle of friends
 * 13.Clean up WeChat storage space and reduce the space occupied by WeChat (hopefully by selecting a person or group and finding out the media files involved in the chat logs of this group, such as pictures, videos, files, voice recordings, etc., and selectively (such as time periods) or batch-wise clearing them from the computer's cache by group conversation.)
 * 14.Automatically send messages to specified people through UI control
