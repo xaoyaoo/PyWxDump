@@ -110,12 +110,10 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
 
 
 if __name__ == '__main__':
-    msg_path = r"****.db"
-    micro_path = r"****.db"
-    media_path = r"****.db"
+    merge_path = r"****.db"
 
     wx_path = r"****"
     my_wxid = "****"
 
-    start_falsk(msg_path=msg_path, micro_path=micro_path, media_path=media_path, wx_path=wx_path, my_wxid=my_wxid,
+    start_falsk(merge_path=merge_path, wx_path=wx_path, my_wxid=my_wxid,
                 port=5000, online=False, debug=False, isopenBrowser=False)
