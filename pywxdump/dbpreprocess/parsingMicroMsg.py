@@ -156,7 +156,7 @@ class ParsingMicroMsg(DatabaseBase):
                         rd += v
                 for i in rd:
                     try:
-                        if isinstance(i, dict) and isinstance(i.get('1'),str) and i.get('2'):
+                        if isinstance(i, dict) and isinstance(i.get('1'), str) and i.get('2'):
                             wxid2remark[i['1']] = i["2"]
                     except Exception as e:
                         logging.error(f"wxid2remark: ChatRoomName:{ChatRoomName}, {i} error:{e}")
@@ -164,3 +164,59 @@ class ParsingMicroMsg(DatabaseBase):
                 {"ChatRoomName": ChatRoomName, "UserNameList": UserNameList, "DisplayNameList": DisplayNameList,
                  "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor, "wxid2remark": wxid2remark})
         return rooms
+
+    def get_ExtraBuf(self, ExtraBuf: bytes):
+        """
+        读取ExtraBuf（联系人表）
+        :param ExtraBuf:
+        :return:
+        """
+        if not ExtraBuf:
+            return None
+        try:
+            buf_dict = {
+                'DDF32683': '0', '74752C06': '性别[1男2女]', '88E28FCE': '2', '761A1D2D': '3', '0263A0CB': '4',
+                '0451FF12': '5',
+                '228C66A8': '6', '46CF10C4': '个性签名', 'A4D9024A': '国', 'E2EAA8D1': '省', '1D025BBF': '市',
+                '4D6C4570': '11',
+                'F917BCC0': '公司名称', '759378AD': '手机号', '4335DFDD': '14', 'DE4CDAEB': '15', 'A72BC20A': '16',
+                '069FED52': '17',
+                '9B0F4299': '18', '3D641E22': '19', '1249822C': '20', '4EB96D85': '企微属性', 'B4F73ACB': '22',
+                '0959EB92': '23',
+                '3CF4A315': '24', 'C9477AC60201E44CD0E8': '26', 'B7ACF0F5': '28', '57A7B5A8': '29',
+                '81AE19B4': '朋友圈背景',
+                '695F3170': '31', 'FB083DD9': '32', '0240E37F': '33', '315D02A3': '34', '7DEC0BC3': '35',
+                '0E719F13': '备注图片',
+                '16791C90': '37'
+            }
+
+            rdata = {}
+            for buf_name in buf_dict:
+                rdata_name = buf_dict[buf_name]
+                buf_name = bytes.fromhex(buf_name)
+                offset = ExtraBuf.find(buf_name)
+                if offset == -1:
+                    rdata[rdata_name] = ""
+                    continue
+                offset += len(buf_name)
+                type_id = ExtraBuf[offset: offset + 1]
+                offset += 1
+
+                if type_id == b"\x04":
+                    rdata[rdata_name] = int.from_bytes(ExtraBuf[offset: offset + 4], "little")
+
+                elif type_id == b"\x18":
+                    length = int.from_bytes(ExtraBuf[offset: offset + 4], "little")
+                    rdata[rdata_name] = ExtraBuf[offset + 4: offset + 4 + length].decode("utf-16").rstrip("\x00")
+
+                elif type_id == b"\x17":
+                    length = int.from_bytes(ExtraBuf[offset: offset + 4], "little")
+                    rdata[rdata_name] = ExtraBuf[offset + 4: offset + 4 + length].decode("utf-8").rstrip("\x00")
+
+                elif type_id == b"\x05":
+                    rdata[rdata_name] = f"0x{ExtraBuf[offset: offset + 8].hex()}"
+            return rdata
+
+        except Exception as e:
+            print(f'解析错误:\n{e}')
+            return None

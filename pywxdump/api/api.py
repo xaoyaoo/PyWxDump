@@ -12,18 +12,18 @@ import os
 import re
 import time
 import shutil
-
 import pythoncom
+import pywxdump
+
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
-from pywxdump import analyzer, read_img_dat, read_audio, get_wechat_db, get_core_db
-from pywxdump.analyzer.export_chat import get_contact, get_room_user_list
+from pywxdump import get_core_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, get_session_wxids, save_session, error9999, gen_base64, validate_title
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
-import pywxdump
+
 from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
-    download_file
-from pywxdump.dbpreprocess import export_csv,export_json
+    download_file,export_csv, export_json
+from pywxdump.dbpreprocess.utils import dat2img
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -345,7 +345,7 @@ def get_img(img_path):
     original_img_path = os.path.join(wx_path, img_path)
 
     if os.path.exists(original_img_path):
-        fomt, md5, out_bytes = read_img_dat(original_img_path)
+        fomt, md5, out_bytes = dat2img(original_img_path)
         imgsavepath = os.path.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
         if not os.path.exists(os.path.dirname(imgsavepath)):
             os.makedirs(os.path.dirname(imgsavepath))
@@ -559,187 +559,187 @@ def get_export_json():
         return ReJson(2001, body=ret)
 
 
-@api.route('/api/export', methods=["GET", 'POST'])
-@error9999
-def export():
-    """
-    导出聊天记录
-    :return:
-    """
-    export_type = request.json.get("export_type")
-    start_time = request.json.get("start_time", 0)
-    end_time = request.json.get("end_time", 0)
-    chat_type = request.json.get("chat_type")
-    username = request.json.get("username")
-
-    wx_path = request.json.get("wx_path", read_session(g.sf, "wx_path"))
-    key = request.json.get("key", read_session(g.sf, "key"))
-
-    if not export_type or not isinstance(export_type, str):
-        return ReJson(1002)
-
-    # 导出路径
-    outpath = os.path.join(g.tmp_path, "export", export_type)
-    if not os.path.exists(outpath):
-        os.makedirs(outpath)
-
-    if export_type == "endb":  # 导出加密数据库
-        # 获取微信文件夹路径
-        if not wx_path:
-            return ReJson(1002)
-        if not os.path.exists(wx_path):
-            return ReJson(1001, body=wx_path)
-
-        # 分割wx_path的文件名和父目录
-        code, wxdbpaths = get_core_db(wx_path)
-        if not code:
-            return ReJson(2001, body=wxdbpaths)
-
-        for wxdb in wxdbpaths:
-            # 复制wxdb->outpath, os.path.basename(wxdb)
-            shutil.copy(wxdb, os.path.join(outpath, os.path.basename(wxdb)))
-        return ReJson(0, body=outpath)
-
-    elif export_type == "dedb":
-        if isinstance(start_time, int) and isinstance(end_time, int):
-            msg_path = read_session(g.sf, "msg_path")
-            micro_path = read_session(g.sf, "micro_path")
-            media_path = read_session(g.sf, "media_path")
-            dbpaths = [msg_path, media_path, micro_path]
-            dbpaths = list(set(dbpaths))
-            mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time, end_time)
-            return ReJson(0, body=mergepath)
-            # if msg_path == media_path and msg_path == media_path:
-            #     shutil.copy(msg_path, os.path.join(outpath, "merge.db"))
-            #     return ReJson(0, body=msg_path)
-            # else:
-            #     dbpaths = [msg_path, msg_path, micro_path]
-            #     dbpaths = list(set(dbpaths))
-            #     mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time,  end_time)
-            #     return ReJson(0, body=mergepath)
-        else:
-            return ReJson(1002, body={"start_time": start_time, "end_time": end_time})
-
-    elif export_type == "csv":
-        outpath = os.path.join(outpath, username)
-        if not os.path.exists(outpath):
-            os.makedirs(outpath)
-        code, ret = analyzer.export_csv(username, outpath, read_session(g.sf, "msg_path"))
-        if code:
-            return ReJson(0, ret)
-        else:
-            return ReJson(2001, body=ret)
-    elif export_type == "json":
-        outpath = os.path.join(outpath, username)
-        if not os.path.exists(outpath):
-            os.makedirs(outpath)
-        code, ret = analyzer.export_json(username, outpath, read_session(g.sf, "msg_path"))
-        if code:
-            return ReJson(0, ret)
-        else:
-            return ReJson(2001, body=ret)
-    elif export_type == "html":
-        outpath = os.path.join(outpath, username)
-        if os.path.exists(outpath):
-            shutil.rmtree(outpath)
-        if not os.path.exists(outpath):
-            os.makedirs(outpath)
-        # chat_type_tups = []
-        # for ct in chat_type:
-        #     tup = analyzer.get_name_typeid(ct)
-        #     if tup:
-        #         chat_type_tups += tup
-        # if not chat_type_tups:
-        #     return ReJson(1002)
-
-        # 复制文件 html
-        export_html = os.path.join(os.path.dirname(pywxdump.VERSION_LIST_PATH), "ui", "export")
-        indexhtml_path = os.path.join(export_html, "index.html")
-        assets_path = os.path.join(export_html, "assets")
-        if not os.path.exists(indexhtml_path) or not os.path.exists(assets_path):
-            return ReJson(1001)
-        js_path = ""
-        css_path = ""
-        for file in os.listdir(assets_path):
-            if file.endswith('.js'):
-                js_path = os.path.join(assets_path, file)
-            elif file.endswith('.css'):
-                css_path = os.path.join(assets_path, file)
-            else:
-                continue
-        # 读取html,js,css
-        with open(indexhtml_path, 'r', encoding='utf-8') as f:
-            html = f.read()
-        with open(js_path, 'r', encoding='utf-8') as f:
-            js = f.read()
-        with open(css_path, 'r', encoding='utf-8') as f:
-            css = f.read()
-
-        html = re.sub(r'<script .*?></script>', '', html)  # 删除所有的script标签
-        html = re.sub(r'<link rel="stylesheet" .*?>', '', html)  # 删除所有的link标签
-
-        html = html.replace('</head>', f'<style>{css}</style></head>')
-        html = html.replace('</head>', f'<script type="module" crossorigin>{js}</script></head>')
-        # END 生成index.html
-
-        rdata = func_get_msgs(0, 10000000, username, "", "")
-
-        msg_list = rdata["msg_list"]
-        for i in range(len(msg_list)):
-            if msg_list[i]["type_name"] == "语音":
-                savePath = msg_list[i]["content"]["src"]
-                MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
-                if not savePath:
-                    continue
-                media_path = read_session(g.sf, "media_path")
-                wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=media_path)
-                if not wave_data:
-                    continue
-                # 判断savePath路径的文件夹是否存在
-                savePath = os.path.join(outpath, savePath)
-                if not os.path.exists(os.path.dirname(savePath)):
-                    os.makedirs(os.path.dirname(savePath))
-                with open(savePath, "wb") as f:
-                    f.write(wave_data)
-            elif msg_list[i]["type_name"] == "图片":
-                img_path = msg_list[i]["content"]["src"]
-                wx_path = read_session(g.sf, "wx_path")
-                img_path_all = os.path.join(wx_path, img_path)
-
-                if os.path.exists(img_path_all):
-                    fomt, md5, out_bytes = read_img_dat(img_path_all)
-                    imgsavepath = os.path.join(outpath, "img", img_path + "_" + ".".join([md5, fomt]))
-                    if not os.path.exists(os.path.dirname(imgsavepath)):
-                        os.makedirs(os.path.dirname(imgsavepath))
-                    with open(imgsavepath, "wb") as f:
-                        f.write(out_bytes)
-                    msg_list[i]["content"]["src"] = os.path.join("img", img_path + "_" + ".".join([md5, fomt]))
-
-        rdata["msg_list"] = msg_list
-        rdata["myuserdata"] = rdata["user_list"][rdata["my_wxid"]]
-        rdata["myuserdata"]["chat_count"] = len(rdata["msg_list"])
-        save_data = rdata
-        save_json_path = os.path.join(outpath, "data")
-        if not os.path.exists(save_json_path):
-            os.makedirs(save_json_path)
-        with open(os.path.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
-            json.dump(save_data, f, ensure_ascii=False)
-
-        json_base64 = gen_base64(os.path.join(save_json_path, "msg_user.json"))
-        html = html.replace('"./data/msg_user.json"', f'"{json_base64}"')
-
-        with open(os.path.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
-            f.write(html)
-        return ReJson(0, outpath)
-
-    elif export_type == "pdf":
-        pass
-    elif export_type == "docx":
-        pass
-    else:
-        return ReJson(1002)
-
-    return ReJson(9999, "")
+# @api.route('/api/export', methods=["GET", 'POST'])
+# @error9999
+# def export():
+#     """
+#     导出聊天记录
+#     :return:
+#     """
+#     export_type = request.json.get("export_type")
+#     start_time = request.json.get("start_time", 0)
+#     end_time = request.json.get("end_time", 0)
+#     chat_type = request.json.get("chat_type")
+#     username = request.json.get("username")
+#
+#     wx_path = request.json.get("wx_path", read_session(g.sf, "wx_path"))
+#     key = request.json.get("key", read_session(g.sf, "key"))
+#
+#     if not export_type or not isinstance(export_type, str):
+#         return ReJson(1002)
+#
+#     # 导出路径
+#     outpath = os.path.join(g.tmp_path, "export", export_type)
+#     if not os.path.exists(outpath):
+#         os.makedirs(outpath)
+#
+#     if export_type == "endb":  # 导出加密数据库
+#         # 获取微信文件夹路径
+#         if not wx_path:
+#             return ReJson(1002)
+#         if not os.path.exists(wx_path):
+#             return ReJson(1001, body=wx_path)
+#
+#         # 分割wx_path的文件名和父目录
+#         code, wxdbpaths = get_core_db(wx_path)
+#         if not code:
+#             return ReJson(2001, body=wxdbpaths)
+#
+#         for wxdb in wxdbpaths:
+#             # 复制wxdb->outpath, os.path.basename(wxdb)
+#             shutil.copy(wxdb, os.path.join(outpath, os.path.basename(wxdb)))
+#         return ReJson(0, body=outpath)
+#
+#     elif export_type == "dedb":
+#         if isinstance(start_time, int) and isinstance(end_time, int):
+#             msg_path = read_session(g.sf, "msg_path")
+#             micro_path = read_session(g.sf, "micro_path")
+#             media_path = read_session(g.sf, "media_path")
+#             dbpaths = [msg_path, media_path, micro_path]
+#             dbpaths = list(set(dbpaths))
+#             mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time, end_time)
+#             return ReJson(0, body=mergepath)
+#             # if msg_path == media_path and msg_path == media_path:
+#             #     shutil.copy(msg_path, os.path.join(outpath, "merge.db"))
+#             #     return ReJson(0, body=msg_path)
+#             # else:
+#             #     dbpaths = [msg_path, msg_path, micro_path]
+#             #     dbpaths = list(set(dbpaths))
+#             #     mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time,  end_time)
+#             #     return ReJson(0, body=mergepath)
+#         else:
+#             return ReJson(1002, body={"start_time": start_time, "end_time": end_time})
+#
+#     elif export_type == "csv":
+#         outpath = os.path.join(outpath, username)
+#         if not os.path.exists(outpath):
+#             os.makedirs(outpath)
+#         code, ret = analyzer.export_csv(username, outpath, read_session(g.sf, "msg_path"))
+#         if code:
+#             return ReJson(0, ret)
+#         else:
+#             return ReJson(2001, body=ret)
+#     elif export_type == "json":
+#         outpath = os.path.join(outpath, username)
+#         if not os.path.exists(outpath):
+#             os.makedirs(outpath)
+#         code, ret = analyzer.export_json(username, outpath, read_session(g.sf, "msg_path"))
+#         if code:
+#             return ReJson(0, ret)
+#         else:
+#             return ReJson(2001, body=ret)
+#     elif export_type == "html":
+#         outpath = os.path.join(outpath, username)
+#         if os.path.exists(outpath):
+#             shutil.rmtree(outpath)
+#         if not os.path.exists(outpath):
+#             os.makedirs(outpath)
+#         # chat_type_tups = []
+#         # for ct in chat_type:
+#         #     tup = analyzer.get_name_typeid(ct)
+#         #     if tup:
+#         #         chat_type_tups += tup
+#         # if not chat_type_tups:
+#         #     return ReJson(1002)
+#
+#         # 复制文件 html
+#         export_html = os.path.join(os.path.dirname(pywxdump.VERSION_LIST_PATH), "ui", "export")
+#         indexhtml_path = os.path.join(export_html, "index.html")
+#         assets_path = os.path.join(export_html, "assets")
+#         if not os.path.exists(indexhtml_path) or not os.path.exists(assets_path):
+#             return ReJson(1001)
+#         js_path = ""
+#         css_path = ""
+#         for file in os.listdir(assets_path):
+#             if file.endswith('.js'):
+#                 js_path = os.path.join(assets_path, file)
+#             elif file.endswith('.css'):
+#                 css_path = os.path.join(assets_path, file)
+#             else:
+#                 continue
+#         # 读取html,js,css
+#         with open(indexhtml_path, 'r', encoding='utf-8') as f:
+#             html = f.read()
+#         with open(js_path, 'r', encoding='utf-8') as f:
+#             js = f.read()
+#         with open(css_path, 'r', encoding='utf-8') as f:
+#             css = f.read()
+#
+#         html = re.sub(r'<script .*?></script>', '', html)  # 删除所有的script标签
+#         html = re.sub(r'<link rel="stylesheet" .*?>', '', html)  # 删除所有的link标签
+#
+#         html = html.replace('</head>', f'<style>{css}</style></head>')
+#         html = html.replace('</head>', f'<script type="module" crossorigin>{js}</script></head>')
+#         # END 生成index.html
+#
+#         rdata = func_get_msgs(0, 10000000, username, "", "")
+#
+#         msg_list = rdata["msg_list"]
+#         for i in range(len(msg_list)):
+#             if msg_list[i]["type_name"] == "语音":
+#                 savePath = msg_list[i]["content"]["src"]
+#                 MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
+#                 if not savePath:
+#                     continue
+#                 media_path = read_session(g.sf, "media_path")
+#                 wave_data = read_audio(MsgSvrID, is_wave=True, DB_PATH=media_path)
+#                 if not wave_data:
+#                     continue
+#                 # 判断savePath路径的文件夹是否存在
+#                 savePath = os.path.join(outpath, savePath)
+#                 if not os.path.exists(os.path.dirname(savePath)):
+#                     os.makedirs(os.path.dirname(savePath))
+#                 with open(savePath, "wb") as f:
+#                     f.write(wave_data)
+#             elif msg_list[i]["type_name"] == "图片":
+#                 img_path = msg_list[i]["content"]["src"]
+#                 wx_path = read_session(g.sf, "wx_path")
+#                 img_path_all = os.path.join(wx_path, img_path)
+#
+#                 if os.path.exists(img_path_all):
+#                     fomt, md5, out_bytes = read_img_dat(img_path_all)
+#                     imgsavepath = os.path.join(outpath, "img", img_path + "_" + ".".join([md5, fomt]))
+#                     if not os.path.exists(os.path.dirname(imgsavepath)):
+#                         os.makedirs(os.path.dirname(imgsavepath))
+#                     with open(imgsavepath, "wb") as f:
+#                         f.write(out_bytes)
+#                     msg_list[i]["content"]["src"] = os.path.join("img", img_path + "_" + ".".join([md5, fomt]))
+#
+#         rdata["msg_list"] = msg_list
+#         rdata["myuserdata"] = rdata["user_list"][rdata["my_wxid"]]
+#         rdata["myuserdata"]["chat_count"] = len(rdata["msg_list"])
+#         save_data = rdata
+#         save_json_path = os.path.join(outpath, "data")
+#         if not os.path.exists(save_json_path):
+#             os.makedirs(save_json_path)
+#         with open(os.path.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
+#             json.dump(save_data, f, ensure_ascii=False)
+#
+#         json_base64 = gen_base64(os.path.join(save_json_path, "msg_user.json"))
+#         html = html.replace('"./data/msg_user.json"', f'"{json_base64}"')
+#
+#         with open(os.path.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
+#             f.write(html)
+#         return ReJson(0, outpath)
+#
+#     elif export_type == "pdf":
+#         pass
+#     elif export_type == "docx":
+#         pass
+#     else:
+#         return ReJson(1002)
+#
+#     return ReJson(9999, "")
 
 
 # end 导出聊天记录 *******************************************************************************************************
