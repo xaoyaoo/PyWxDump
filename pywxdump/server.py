@@ -11,14 +11,11 @@ import sys
 import time
 
 
-def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_path="", key="", my_wxid="", port=5000,
+def start_falsk(merge_path="",  wx_path="", key="", my_wxid="", port=5000,
                 online=False, debug=False, isopenBrowser=True):
     """
     启动flask
     :param merge_path:  合并后的数据库路径
-    :param msg_path:  MSG.db 的路径
-    :param micro_path:  MicroMsg.db 的路径
-    :param media_path:  MediaMSG.db 的路径
     :param wx_path:  微信文件夹的路径（用于显示图片）
     :param key:  密钥
     :param my_wxid:  微信账号(本人微信id)
@@ -40,10 +37,6 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
     from pywxdump.api import api, read_session, save_session
     import logging
 
-    if merge_path:
-        msg_path = merge_path
-        micro_path = merge_path
-        media_path = merge_path
 
     # 检查端口是否被占用
     if online:
@@ -75,9 +68,7 @@ def start_falsk(merge_path="", msg_path="", micro_path="", media_path="", wx_pat
         g.tmp_path = tmp_path  # 临时文件夹,用于存放图片等
         g.sf = session_file  # 用于存放各种基础信息
 
-    if msg_path: save_session(session_file, "test", "msg_path", msg_path)
-    if micro_path: save_session(session_file, "test", "micro_path", micro_path)
-    if media_path: save_session(session_file, "test", "media_path", media_path)
+    if merge_path: save_session(session_file, "test", "merge_path", merge_path)
     if wx_path: save_session(session_file, "test", "wx_path", wx_path)
     if key: save_session(session_file, "test", "key", key)
     if my_wxid: save_session(session_file, "test", "my_wxid", my_wxid)

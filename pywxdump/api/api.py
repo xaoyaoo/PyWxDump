@@ -372,6 +372,8 @@ def get_video(videoPath):
     video_save_path = os.path.join(video_tmp_path, videoPath)
     if not os.path.exists(os.path.dirname(video_save_path)):
         os.makedirs(os.path.dirname(video_save_path))
+    if os.path.exists(video_save_path):
+        return send_file(video_save_path)
     shutil.copy(original_img_path, video_save_path)
     return send_file(original_img_path)
 

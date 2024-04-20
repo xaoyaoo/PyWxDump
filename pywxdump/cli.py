@@ -148,7 +148,7 @@ class MainWxInfo(BaseSubMainClass):
 
 
 class MainWxDbPath(BaseSubMainClass):
-    mode = "db_path"
+    mode = "wx_path"
     parser_kwargs = {"help": "获取微信文件夹路径"}
 
     def init_parses(self, parser):
@@ -258,13 +258,6 @@ class MainShowChatRecords(BaseSubMainClass):
         parser.add_argument("-merge", "--merge_path", type=str, help="解密后的 merge_all.db 的路径", required=False,
                             metavar="")
 
-        parser.add_argument("-msg", "--msg_path", type=str, help="解密后的 MSG.db 的路径", required=False,
-                            metavar="")
-        parser.add_argument("-micro", "--micro_path", type=str, help="解密后的 MicroMsg.db 的路径", required=False,
-                            metavar="")
-        parser.add_argument("-media", "--media_path", type=str, help="解密后的 MediaMSG.db 的路径", required=False,
-                            metavar="")
-
         parser.add_argument("-wid", "--wx_path", type=str,
                             help="(可选)微信文件夹的路径（用于显示图片）", required=False,
                             metavar="")
@@ -283,10 +276,6 @@ class MainShowChatRecords(BaseSubMainClass):
 
         # 从命令行参数获取值
         merge_path = args.merge_path
-        if merge_path:
-            args.msg_path = merge_path
-            args.micro_path = merge_path
-            args.media_path = merge_path
 
         online = args.online
 
@@ -295,8 +284,7 @@ class MainShowChatRecords(BaseSubMainClass):
             print("[-] 输入数据库路径不存在")
             return
 
-        start_falsk(msg_path=args.msg_path, micro_path=args.micro_path, media_path=args.media_path,
-                    wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
+        start_falsk(merge_path=merge_path, wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
 
 
 class MainExportChatRecords(BaseSubMainClass):
