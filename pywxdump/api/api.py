@@ -135,10 +135,10 @@ def init_nokey():
     return ReJson(0, rdata)
 
 
-# END 以上为初始化相关 ****************************************************************************************************
+# END 以上为初始化相关 ***************************************************************************************************
 
 
-# start 以下为聊天联系人相关api ******************************************************************************************
+# start 以下为聊天联系人相关api *******************************************************************************************
 
 @api.route('/api/recent_user_list', methods=["GET", 'POST'])
 @error9999
@@ -437,7 +437,63 @@ def get_file(filePath):
 
 # end 以上为聊天记录相关api *********************************************************************************************
 
-# 导出聊天记录
+# start 导出聊天记录 *****************************************************************************************************
+
+@api.route('/api/export_endb', methods=["GET", 'POST'])
+def export_endb():
+    """
+    导出加密数据库
+    :return:
+    """
+    my_wxid = read_session(g.sf, "test", "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    wx_path = read_session(g.sf, my_wxid, "wx_path")
+    wx_path = request.json.get("wx_path", wx_path)
+
+    if not wx_path:
+        return ReJson(1002, body=f"wx_path is required: {wx_path}")
+    if not os.path.exists(wx_path):
+        return ReJson(1001, body=f"wx_path not exists: {wx_path}")
+
+    # 分割wx_path的文件名和父目录
+    code, wxdbpaths = get_core_db(wx_path)
+    if not code:
+        return ReJson(2001, body=wxdbpaths)
+
+    outpath = os.path.join(g.tmp_path, "export", my_wxid, "endb")
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    for wxdb in wxdbpaths:
+        # 复制wxdb->outpath, os.path.basename(wxdb)
+        assert isinstance(outpath, str)  # 为了解决pycharm的警告, 无实际意义
+        shutil.copy(wxdb, os.path.join(outpath, os.path.basename(wxdb)))
+    return ReJson(0, body=outpath)
+
+
+@api.route('/api/export_dedb', methods=["GET", "POST"])
+def export_dedb():
+    """
+    导出解密数据库
+    :return:
+    """
+    my_wxid = read_session(g.sf, "test", "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+    key = request.json.get("key", read_session(g.sf, my_wxid, "key"))
+    wx_path = request.json.get("wx_path", read_session(g.sf, my_wxid, "wx_path"))
+
+    outpath = os.path.join(g.tmp_path, "export", my_wxid, "dedb")
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    merge_path = read_session(g.sf, my_wxid, "merge_path")
+    assert isinstance(outpath, str)  # 为了解决pycharm的警告, 无实际意义
+    shutil.copy(merge_path, os.path.join(outpath, os.path.basename(merge_path)))
+
+    return ReJson(0, body=outpath)
+
+
 @api.route('/api/export', methods=["GET", 'POST'])
 @error9999
 def export():
@@ -621,7 +677,10 @@ def export():
     return ReJson(9999, "")
 
 
-# 这部分为专业工具的api
+# end 导出聊天记录 *******************************************************************************************************
+
+# start 这部分为专业工具的api *********************************************************************************************
+
 @api.route('/api/wxinfo', methods=["GET", 'POST'])
 @error9999
 def get_wxinfo():
@@ -692,9 +751,9 @@ def merge():
     return ReJson(0, str(rdata))
 
 
-# END 这部分为专业工具的api
+# END 这部分为专业工具的api ***********************************************************************************************
 
-# 关于、帮助、设置
+# 关于、帮助、设置 *******************************************************************************************************
 @api.route('/api/check_update', methods=["GET", 'POST'])
 @error9999
 def check_update():
@@ -731,7 +790,7 @@ def version():
     return ReJson(0, pywxdump.__version__)
 
 
-# END 关于、帮助、设置
+# END 关于、帮助、设置 ***************************************************************************************************
 
 
 @api.route('/')
