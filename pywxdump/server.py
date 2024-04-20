@@ -11,8 +11,8 @@ import sys
 import time
 
 
-def start_falsk(merge_path="",  wx_path="", key="", my_wxid="", port=5000,
-                online=False, debug=False, isopenBrowser=True):
+def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online=False, debug=False,
+                isopenBrowser=True):
     """
     启动flask
     :param merge_path:  合并后的数据库路径
@@ -36,7 +36,6 @@ def start_falsk(merge_path="",  wx_path="", key="", my_wxid="", port=5000,
     from flask_cors import CORS
     from pywxdump.api import api, read_session, save_session
     import logging
-
 
     # 检查端口是否被占用
     if online:
