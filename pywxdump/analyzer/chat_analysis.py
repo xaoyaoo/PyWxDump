@@ -10,7 +10,7 @@ import time
 from collections import Counter
 import pandas as pd
 
-from .db_parsing import parse_xml_string
+from pywxdump.dbpreprocess.utils import xml2dict
 
 
 def read_msgs(MSG_path, selected_talker=None, start_time=time.time() * 3600 * 24 * 365, end_time=time.time()):
@@ -59,7 +59,7 @@ def read_msgs(MSG_path, selected_talker=None, start_time=time.time() * 3600 * 24
 
     def get_emoji_cdnurl(row):
         if row["type_name"] == "动画表情":
-            parsed_content = parse_xml_string(row["StrContent"])
+            parsed_content = xml2dict(row["StrContent"])
             if isinstance(parsed_content, dict) and "emoji" in parsed_content:
                 return parsed_content["emoji"].get("cdnurl", "")
         return row["content"]
