@@ -1,6 +1,6 @@
 ## v3.0.12.(待发布)
 
-- 
+- UPDATE CHANGELOG.md
 
 ## v3.0.11
 
