@@ -11,6 +11,46 @@ from collections import Counter
 import pandas as pd
 
 from pywxdump.dbpreprocess.utils import xml2dict
+from pywxdump.dbpreprocess import parsingMSG
+
+def date_chat_count(chat_data, interval="W"):
+    """
+    获取每个时间段的聊天数量
+    :param chat_data: 聊天数据 json {"CreateTime":时间,"Type":消息类型,"SubType":消息子类型,"StrContent":消息内容,"StrTalker":聊天对象,"IsSender":是否发送者}
+    :param interval: 时间间隔 可选值：day、month、year、week
+    """
+    chat_data = pd.DataFrame(chat_data)
+    chat_data["CreateTime"] = pd.to_datetime(chat_data["CreateTime"])
+    chat_data["AdjustedTime"] = pd.to_datetime(chat_data["CreateTime"]) - pd.Timedelta(hours=4)
+    chat_data["AdjustedTime"] = chat_data["AdjustedTime"].dt.strftime("%Y-%m-%d %H:%M:%S")
+    chat_data["CreateTime"] = chat_data["CreateTime"].dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    interval_dict = {"day": "%Y-%m-%d", "month": "%Y-%m", "year": "%Y", "week": "%Y-%W",
+                     "d": "%Y-%m-%d", "m": "%Y-%m", "y": "%Y", "W": "%Y-%W"
+                     }
+    if interval not in interval_dict:
+        raise ValueError("interval参数错误，可选值为day、month、year、week")
+    chat_data["interval"] = chat_data["AdjustedTime"].dt.strftime(interval_dict[interval])
+
+    # 根据chat_data["interval"]最大值和最小值，生成一个时间间隔列表
+    interval_list = pd.date_range(chat_data["AdjustedTime"].min(), chat_data["AdjustedTime"].max(), freq=interval)
+    interval_list = interval_list.append(pd.Index([interval_list[-1] + pd.Timedelta(days=1)]))  # 最后一天加一天
+
+    # 构建数据集
+    # interval type_name1 type_name2 type_name3
+    # 2021-01 文本数量 其他类型数量 其他类型数量
+    # 2021-02 文本数量 其他类型数量 其他类型数量
+    type_data = pd.DataFrame(columns=["interval"] + list(chat_data["type_name"].unique()))
+    type_data["interval"] = interval_list.strftime(interval_dict[interval])
+    type_data = type_data.set_index("interval")
+    for type_name in chat_data["type_name"].unique():
+        type_data[type_name] = chat_data[chat_data["type_name"] == type_name].groupby("interval").size()
+    type_data["全部类型"] = type_data.sum(axis=1)
+    type_data["发送"] = chat_data[chat_data["IsSender"] == 1].groupby("interval").size()
+    type_data["接收"] = chat_data[chat_data["IsSender"] == 0].groupby("interval").size()
+
+    return type_data
+
 
 
 def read_msgs(MSG_path, selected_talker=None, start_time=time.time() * 3600 * 24 * 365, end_time=time.time()):
