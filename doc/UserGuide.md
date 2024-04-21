@@ -1,10 +1,10 @@
 # 用户指南
 
-##  小白教程（大佬请看下面）
+## 小白教程（大佬请看下面）
 
 ### 1. 安装
 
-下载[release](https://github.com/xaoyaoo/PyWxDump/releases)中的exe文件
+下载[release](https://github.com/xaoyaoo/PyWxDump/releases)中的exe文件(选择最新版)
 
 ### 2. 使用
 
@@ -12,6 +12,7 @@
 * 2.进入下载的exe文件所在目录
 * 3.双击wx_dump.exe运行
 * 4.打开浏览器，访问 http://127.0.0.1:5000/ 使用图形界面
+* 5.根据提示操作
 
 【注】更多详细使用方法关注公众号：`逍遥之芯`，回复：`PyWxDump` 获取图文教程。
 
@@ -48,13 +49,14 @@ python -m pip install -U .
 
 #### 1.3 打包可执行文件exe
 
-* 打包前需要在python环境中安装pywwxdump，参考[1.2 从源码安装](#12-从源码安装安装最新版)或[1.1 从pypi安装](#11-从pypi安装安装稳定版)
-* 自行打包，打包脚本见： [/tests/build_exe.py](https://github.com/xaoyaoo/PyWxDump/blob/master/tests/build_exe.py)
+* 默认你已经安装好python环境，并且下载了源码，进入项目根目录，同时已经安装了pyinstaller
+* 并且完成了[1.2 从源码安装](#12-从源码安装安装最新版)
 
 ```shell
 cd tests
 python build_exe.py
 # 接着执行输出的打包脚本
+pyinstaller --clean --distpath=dist dist/pywxdump.spec
 ```
 
 * 直接下载打包好的exe文件：[release](https://github.com/xaoyaoo/PyWxDump/releases)
@@ -75,10 +77,9 @@ wxdump -h  # 查看具体帮助
 #    db_path      获取微信文件夹路径
 #    decrypt      解密微信数据库
 #    merge        [测试功能]合并微信数据库(MSG.db or MediaMSG.db)
-#    dbshow       聊天记录查看
-#    export       聊天记录导出为html
 #    all          获取微信信息，解密微信数据库，查看聊天记录
 #    ui           启动网页图形界面
+#    api          启动API服务, 默认端口5000,无图形界面
 ```
 
 *示例*
@@ -116,20 +117,6 @@ wxdump decrypt -h # 查看具体帮助
 wxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路径>]
 ```
 
-##### 查看聊天记录
-
-```bash
-wxdump dbshow -h # 查看具体帮助
-wxdump dbshow -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
-```
-
-##### 导出聊天记录为 HTML
-
-```bash
-wxdump export -h # 查看具体帮助
-wxdump export -u <微信账号> -o <导出路径> -msg <解密后的 MSG.db 的路径> -micro <解密后的 MicroMsg.db 的路径> -media <解密后的 MediaMSG.db 的路径> [-fs <FileStorage 路径>]
-```
-
 ##### 获取微信信息、解密数据库、查看聊天记录，一条命令搞定，开放端口5000，浏览器访问查看聊天记录（支持局域网其他机器访问）
 
 ```bash
@@ -141,7 +128,14 @@ wxdump all
 
 ```bash
 wxdump ui -h # 查看具体帮助
-pywxdump ui
+wxdump ui
+```
+
+##### 启动API服务
+
+```bash
+wxdump api -h # 查看具体帮助
+wxdump api
 ```
 
 </details>
@@ -192,46 +186,6 @@ args = {
 }
 result = batch_decrypt(args["key"], args["db_path"], args["out_path"], True)
 # ************************************************************************************************ #
-# 查看聊天记录
-args = {
-    "mode": "dbshow",
-    "msg_path": "解密后的 MSG.db 的路径",  # 解密后的 MSG.db 的路径
-    "micro_path": "解密后的 MicroMsg.db 的路径",  # 解密后的 MicroMsg.db 的路径
-    "media_path": "解密后的 MediaMSG.db 的路径",  # 解密后的 MediaMSG.db 的路径
-    "filestorage_path": "文件夹FileStorage的路径"  # 文件夹 FileStorage 的路径（用于显示图片）
-}
-from flask import Flask, request, jsonify, render_template, g
-import logging
-
-app = Flask(__name__, template_folder='./show_chat/templates')
-app.logger.setLevel(logging.ERROR)
-
-
-@app.before_request
-def before_request():
-    g.MSG_ALL_db_path = args["msg_path"]
-    g.MicroMsg_db_path = args["micro_path"]
-    g.MediaMSG_all_db_path = args["media_path"]
-    g.FileStorage_path = args["filestorage_path"]
-    g.USER_LIST = get_user_list(args["msg_path"], args["micro_path"])
-
-
-app.register_blueprint(app_show_chat)
-print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
-app.run(debug=False)
-# ************************************************************************************************ #
-# 导出聊天记录为 HTML
-args = {
-    "mode": "export",
-    "username": "微信账号",  # 微信账号（聊天对象账号）
-    "outpath": "/path/to/export",  # 导出路径
-    "msg_path": "解密后的 MSG.db 的路径",  # 解密后的 MSG.db 的路径
-    "micro_path": "解密后的 MicroMsg.db 的路径",  # 解密后的 MicroMsg.db 的路径
-    "media_path": "解密后的 MediaMSG.db 的路径",  # 解密后的 MediaMSG.db 的路径
-    "filestorage_path": "文件夹FileStorage的路径"  # 文件夹 FileStorage 的路径（用于显示图片）
-}
-export(args["username"], args["outpath"], args["msg_path"], args["micro_path"], args["media_path"],
-       args["filestorage_path"])
 ```
 
 </details>
