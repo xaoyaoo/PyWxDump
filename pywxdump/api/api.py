@@ -76,8 +76,12 @@ def init_key():
         return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path, "decrypted")
+    # 检查文件夹中文件是否被占用
     if os.path.exists(out_path):
-        shutil.rmtree(out_path)
+        try:
+            shutil.rmtree(out_path)
+        except PermissionError as e:
+            return ReJson(2001, body=str(e))
 
     code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=out_path)
     time.sleep(1)
