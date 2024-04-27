@@ -5,6 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2023/12/03
 # -------------------------------------------------------------------------------
+import logging
 import os
 import random
 import shutil
@@ -282,7 +283,11 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
                 continue
             # 插入数据
             sql = f"INSERT OR IGNORE INTO {table} ({','.join([i[0] for i in col_type])}) VALUES ({','.join(['?'] * len(columns))})"
-            out_cursor.executemany(sql, src_data)
+            try:
+                out_cursor.executemany(sql, src_data)
+            except Exception as e:
+                logging.error(f"error: {alias}\n{table}\n{sql}\n{src_data}\n{len(src_data)}\n{e}\n**********")
+                raise e
             outdb.commit()
         db.close()
     outdb.close()
