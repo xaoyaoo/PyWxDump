@@ -287,7 +287,6 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
                 out_cursor.executemany(sql, src_data)
             except Exception as e:
                 logging.error(f"error: {alias}\n{table}\n{sql}\n{src_data}\n{len(src_data)}\n{e}\n**********")
-                raise e
             outdb.commit()
         db.close()
     outdb.close()
