@@ -1,5 +1,27 @@
-## v3.0.12.(待发布)
+## v3.0.16.(待发布)
 
+- 
+
+## v3.0.15
+
+- 增加合并数据库的容错
+- (backup/master) 增加合并数据库的容错
+
+## v3.0.14
+
+- fix auto无法使用的问题。
+
+## v3.0.13
+
+- test 聊天记录分析
+- fix 无法auto无法使用的问题。
+
+## v3.0.12
+
+- 调整显示样式
+- 增加数据展示的包
+- 更新 FAQ.md
+- 更新 UserGuide.md
 - UPDATE CHANGELOG.md
 
 ## v3.0.11
@@ -107,7 +129,7 @@
 - 优化 decryption.py
 - UPDATE CHANGELOG.md
 - 数据库连接方式改为共用连接，降低时间开销
-- (backup/master) 添加编码# -*- coding:utf-8 -*-
+- 添加编码# -*- coding:utf-8 -*-
 
 ## v2.4.60
 
