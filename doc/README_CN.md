@@ -89,6 +89,7 @@ QQ交流群：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.x
 * Web UI的仓库位置 [wxdump_web](https://github.com/xaoyaoo/wxdump_web)
 * 如果对wxdump实现原理感兴趣，请关注公众号：`逍遥之芯`，回复：`原理` 获取原理解析。
 * [:sparkling\_heart: Support Me](https://github.com/xaoyaoo/xaoyaoo/blob/main/donate.md)
+* 关于系统支持版本：Windows 10 64位及以上、 python 3.8及以上，其他版本遇到错误需要自行解决
 
 ## 5. Star History
 

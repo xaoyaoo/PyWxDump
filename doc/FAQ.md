@@ -149,3 +149,9 @@ https://blog.csdn.net/qq_46106285/article/details/124749512
 
 参看[UserGuide](./UserGuide.md)中的打包exe文件部分
 本项目具体打包流程，参看[../.github/workflows/publish.yml](../.github/workflows/publish.yml)文件
+
+### 二十三、关于系统支持版本
+
+1. Windows 10 64位及以上
+2. python 3.8及以上
+3. 其他版本遇到错误需要自行解决

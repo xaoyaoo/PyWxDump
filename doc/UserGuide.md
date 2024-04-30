@@ -207,3 +207,4 @@ result = batch_decrypt(args["key"], args["db_path"], args["out_path"], True)
 ### 5. 其他
 
 进群密码请查看[FAQ](./FAQ.md)
+关于系统支持版本：Windows 10 64位及以上、 python 3.8及以上，其他版本遇到错误需要自行解决
