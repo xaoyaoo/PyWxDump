@@ -255,7 +255,7 @@ class MainShowChatRecords(BaseSubMainClass):
 
     def init_parses(self, parser):
         # 添加 'decrypt' 子命令解析器
-        parser.add_argument("-merge", "--merge_path", type=str, help="解密后的 merge_all.db 的路径", required=False,
+        parser.add_argument("-merge", "--merge_path", type=str, help="解密并合并后的 merge_all.db 的路径", required=False,
                             metavar="")
 
         parser.add_argument("-wid", "--wx_path", type=str,
