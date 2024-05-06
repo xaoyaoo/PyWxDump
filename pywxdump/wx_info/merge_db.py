@@ -403,3 +403,21 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
         os.remove(out_path)
 
     return True, merge_path
+
+
+def all_merge_real_time_db(key, wx_path, merge_path):
+    if not merge_path or not key or not wx_path or not wx_path:
+        return False, "msg_path or media_path or wx_path or key is required"
+    try:
+        from pywxdump import get_core_db
+    except ImportError:
+        return False, "未找到模块 pywxdump"
+
+    db_paths = get_core_db(wx_path, ["MediaMSG", "MSG", "MicroMsg"])
+    if not db_paths[0]:
+        # return ReJson(1001, body="media_paths or msg_paths is required")
+        return False, "media_paths or msg_paths is required"
+    db_paths = db_paths[1]
+    for i in db_paths:
+        merge_real_time_db(key=key, db_path=i, merge_path=merge_path)
+    return True, merge_path

@@ -9,7 +9,7 @@
 #     parse_xml_string, read_BytesExtra
 # from .ui import app_show_chat, get_user_list, export
 from .wx_info import BiasAddr, read_info, get_wechat_db, batch_decrypt, decrypt, get_core_db
-from .wx_info import merge_copy_db, merge_msg_db, merge_media_msg_db, merge_db, decrypt_merge, merge_real_time_db
+from .wx_info import merge_copy_db, merge_msg_db, merge_media_msg_db, merge_db, decrypt_merge, merge_real_time_db,all_merge_real_time_db
 from .analyzer import DBPool
 from .dbpreprocess import get_user_list, get_recent_user_list, wxid2userinfo, ParsingMSG, ParsingMicroMsg, \
     ParsingMediaMSG, ParsingOpenIMContact
