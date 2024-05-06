@@ -16,7 +16,7 @@ import pythoncom
 import pywxdump
 
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
-from pywxdump import get_core_db
+from pywxdump import get_core_db, all_merge_real_time_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import read_session, get_session_wxids, save_session, error9999, gen_base64, validate_title
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
@@ -233,14 +233,11 @@ def get_real_time_msg():
     if not merge_path or not key or not wx_path or not wx_path:
         return ReJson(1002, body="msg_path or media_path or wx_path or key is required")
 
-    db_paths = get_core_db(wx_path, ["MediaMSG", "MSG", "MicroMsg"])
-    if not db_paths[0]:
-        return ReJson(1001, body="media_paths or msg_paths is required")
-    db_paths = db_paths[1]
-
-    for i in db_paths:
-        merge_real_time_db(key=key, db_path=i, merge_path=merge_path)
-    return ReJson(0, "success")
+    code, ret = all_merge_real_time_db(wx_path, key, merge_path)
+    if code:
+        return ReJson(0, ret)
+    else:
+        return ReJson(2001, body=ret)
 
 
 @api.route('/api/msg_count', methods=["GET", 'POST'])
