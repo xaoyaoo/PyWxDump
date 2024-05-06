@@ -419,8 +419,8 @@ def all_merge_real_time_db(key, wx_path, merge_path):
 
     db_paths = get_core_db(wx_path, ["MediaMSG", "MSG", "MicroMsg"])
     if not db_paths[0]:
-        # return ReJson(1001, body="media_paths or msg_paths is required")
-        return False, "media_paths or msg_paths is required"
+        print(wx_path)
+        return False, db_paths[1]
     db_paths = db_paths[1]
     for i in db_paths:
         merge_real_time_db(key=key, db_path=i, merge_path=merge_path)
