@@ -74,10 +74,10 @@ wxdump -h  # 查看具体帮助
 #  mode           运行模式:
 #    bias         获取微信基址偏移
 #    info         获取微信信息
-#    db_path      获取微信文件夹路径
+#    wx_path      获取微信文件夹路径
 #    decrypt      解密微信数据库
 #    merge        [测试功能]合并微信数据库(MSG.db or MediaMSG.db)
-#    all          获取微信信息，解密微信数据库，查看聊天记录
+#    all          【已废弃】获取微信信息，解密微信数据库，查看聊天记录
 #    ui           启动网页图形界面
 #    api          启动API服务, 默认端口5000,无图形界面
 ```
@@ -106,8 +106,8 @@ wxdump info [--version_list_path <微信版本偏移文件路径>]
 ##### 获取微信文件夹路径
 
 ```bash
-wxdump db_path -h # 查看具体帮助
-wxdump db_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
+wxdump wx_path -h # 查看具体帮助
+wxdump wx_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
 ```
 
 ##### 解密微信数据库
@@ -120,7 +120,7 @@ wxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路�
 ##### 获取微信信息、解密数据库、查看聊天记录，一条命令搞定，开放端口5000，浏览器访问查看聊天记录（支持局域网其他机器访问）
 
 ```bash
-wxdump all -h # 查看具体帮助
+wxdump all -h # 【已废弃】查看具体帮助
 wxdump all
 ```
 
