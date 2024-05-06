@@ -69,6 +69,13 @@ class DatabaseBase:
             logging.info(f"关闭数据库 - {self._db_path}")
             self._db_connection = None
 
+    def close_all_connection(self):
+        for db_path in self._connection_pool:
+            if self._connection_pool[db_path]:
+                self._connection_pool[db_path].close()
+                logging.info(f"关闭数据库 - {db_path}")
+                self._connection_pool[db_path] = None
+
     def show__singleton_instances(self):
         print(self._singleton_instances)
 
