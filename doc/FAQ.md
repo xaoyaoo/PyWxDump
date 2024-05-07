@@ -155,3 +155,7 @@ https://blog.csdn.net/qq_46106285/article/details/124749512
 1. Windows 10 64位及以上
 2. python 3.8及以上
 3. 其他版本遇到错误需要自行解决
+
+### 二十四、实时聊天记录怎么获取
+
+1. `/api/realtimemsg`接口，更新最新数据到数据库中
