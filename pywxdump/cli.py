@@ -279,8 +279,7 @@ class MainShowChatRecords(BaseSubMainClass):
 
         online = args.online
 
-        if not os.path.exists(args.msg_path) or not os.path.exists(args.micro_path) or not os.path.exists(
-                args.media_path):
+        if not os.path.exists(merge_path):
             print("[-] 输入数据库路径不存在")
             return
 
