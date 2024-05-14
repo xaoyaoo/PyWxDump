@@ -76,7 +76,7 @@ def init_key():
         return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     old_merge_save_path = read_session(g.sf, my_wxid, "merge_path")
-    if isinstance(old_merge_save_path, str) and os.path.exists(old_merge_save_path):
+    if isinstance(old_merge_save_path, str) and old_merge_save_path and os.path.exists(old_merge_save_path):
         pmsg = ParsingMSG(old_merge_save_path)
         pmsg.close_all_connection()
 
