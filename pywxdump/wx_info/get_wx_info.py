@@ -232,7 +232,6 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
         isKey = verify_key(bytes.fromhex(rd["key"]),
                            os.path.join(rd['filePath'], "MSG", "MicroMsg.db")) if rd['key'] != "None" and rd[
             'filePath'] != "None" else False
-
         if rd['filePath'] != "None" and rd['key'] == "None" and not isKey:
             rd['key'] = get_key(rd['pid'], rd['filePath'], addrLen)
 
