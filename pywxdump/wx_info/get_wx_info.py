@@ -19,15 +19,7 @@ ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
 
 
-# 读取内存中的字符串(非key部分)
-def get_info_without_key(h_process, address, n_size=64):
-    array = ctypes.create_string_buffer(n_size)
-    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
-    array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
-    text = array.decode('utf-8', errors='ignore')
-    return text.strip() if text.strip() != "" else "None"
-
-
+# 读取内存中的字符串(key部分)
 def get_info_with_key(h_process, address, address_len=8):
     array = ctypes.create_string_buffer(address_len)
     if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
@@ -36,6 +28,15 @@ def get_info_with_key(h_process, address, address_len=8):
     if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
     key_string = bytes(key).hex()
     return key_string
+
+
+# 读取内存中的字符串(非key部分)
+def get_info_without_key(h_process, address, n_size=64):
+    array = ctypes.create_string_buffer(n_size)
+    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
+    array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
+    text = array.decode('utf-8', errors='ignore')
+    return text.strip() if text.strip() != "" else "None"
 
 
 def get_info_wxid(h_process):
