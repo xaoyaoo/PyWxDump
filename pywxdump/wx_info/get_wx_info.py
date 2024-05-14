@@ -31,12 +31,24 @@ def get_info_with_key(h_process, address, address_len=8):
 
 
 # 读取内存中的字符串(非key部分)
-def get_info_without_key(h_process, address, n_size=64):
+def get_info_string(h_process, address, n_size=64):
     array = ctypes.create_string_buffer(n_size)
     if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
     array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
     text = array.decode('utf-8', errors='ignore')
     return text.strip() if text.strip() != "" else "None"
+
+
+def get_info_name(h_process, address, address_len=8, n_size=64):
+    array = ctypes.create_string_buffer(n_size)
+    if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
+    address = int.from_bytes(array[:address_len], byteorder='little')  # 逆序转换为int地址（key地址）
+    try:
+        array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
+        text = array.decode('utf-8')
+        return text.strip() if text.strip() != "" else "None"
+    except:
+        return get_info_string(h_process, address, n_size)
 
 
 def get_info_wxid(h_process):
@@ -183,10 +195,9 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
         return error
 
     for process in wechat_process:
-        rd = {}
-
-        rd['pid'] = process.pid
-        rd['version'] = get_exe_version(process.exe())
+        rd = {'pid': process.pid, 'version': get_exe_version(process.exe()),
+              "account": "None", "mobile": "None", "name": "None", "mail": "None",
+              "wxid": "None", "key": "None", "filePath": "None"}
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
 
@@ -196,11 +207,6 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
         if not isinstance(bias_list, list) or len(bias_list) <= 4:
             error = f"[-] WeChat Current Version Is Not Supported(maybe not get account,mobile,name,mail)"
             if is_logging: print(error)
-            rd['account'] = "None"
-            rd['mobile'] = "None"
-            rd['name'] = "None"
-            rd['mail'] = "None"
-            rd['key'] = "None"
         else:
             wechat_base_address = 0
             for module in process.memory_maps(grouped=False):
@@ -218,10 +224,10 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
             mail_baseaddr = wechat_base_address + bias_list[3]
             key_baseaddr = wechat_base_address + bias_list[4]
 
-            rd['account'] = get_info_without_key(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
-            rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
-            rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
-            rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
+            rd['account'] = get_info_string(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
+            rd['mobile'] = get_info_string(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
+            rd['name'] = get_info_name(Handle, name_baseaddr, addrLen, 64) if bias_list[0] != 0 else "None"
+            rd['mail'] = get_info_string(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
             rd['key'] = get_info_with_key(Handle, key_baseaddr, addrLen) if bias_list[4] != 0 else "None"
 
         rd['wxid'] = get_info_wxid(Handle)
