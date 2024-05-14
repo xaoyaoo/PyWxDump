@@ -28,6 +28,16 @@ def get_info_without_key(h_process, address, n_size=64):
     return text.strip() if text.strip() != "" else "None"
 
 
+def get_info_with_key(h_process, address, address_len=8):
+    array = ctypes.create_string_buffer(address_len)
+    if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
+    address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
+    key = ctypes.create_string_buffer(32)
+    if ReadProcessMemory(h_process, void_p(address), key, 32, 0) == 0: return "None"
+    key_string = bytes(key).hex()
+    return key_string
+
+
 def get_info_wxid(h_process):
     find_num = 100
     addrs = pattern_scan_all(h_process, br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
@@ -172,21 +182,24 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
         return error
 
     for process in wechat_process:
-        tmp_rd = {}
+        rd = {}
 
-        tmp_rd['pid'] = process.pid
-        tmp_rd['version'] = get_exe_version(process.exe())
+        rd['pid'] = process.pid
+        rd['version'] = get_exe_version(process.exe())
 
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
 
-        bias_list = version_list.get(tmp_rd['version'], None)
+        bias_list = version_list.get(rd['version'], None)
+
+        addrLen = get_exe_bit(process.exe()) // 8
         if not isinstance(bias_list, list) or len(bias_list) <= 4:
             error = f"[-] WeChat Current Version Is Not Supported(maybe not get account,mobile,name,mail)"
             if is_logging: print(error)
-            tmp_rd['account'] = "None"
-            tmp_rd['mobile'] = "None"
-            tmp_rd['name'] = "None"
-            tmp_rd['mail'] = "None"
+            rd['account'] = "None"
+            rd['mobile'] = "None"
+            rd['name'] = "None"
+            rd['mail'] = "None"
+            rd['key'] = "None"
         else:
             wechat_base_address = 0
             for module in process.memory_maps(grouped=False):
@@ -202,21 +215,28 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
             account__baseaddr = wechat_base_address + bias_list[1]
             mobile_baseaddr = wechat_base_address + bias_list[2]
             mail_baseaddr = wechat_base_address + bias_list[3]
-            # key_baseaddr = wechat_base_address + bias_list[4]
+            key_baseaddr = wechat_base_address + bias_list[4]
 
-            tmp_rd['account'] = get_info_without_key(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
-            tmp_rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
-            tmp_rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
-            tmp_rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
+            rd['account'] = get_info_without_key(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
+            rd['mobile'] = get_info_without_key(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
+            rd['name'] = get_info_without_key(Handle, name_baseaddr, 64) if bias_list[0] != 0 else "None"
+            rd['mail'] = get_info_without_key(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
+            rd['key'] = get_info_with_key(Handle, key_baseaddr, addrLen) if bias_list[4] != 0 else "None"
 
-        addrLen = get_exe_bit(process.exe()) // 8
+        rd['wxid'] = get_info_wxid(Handle)
 
-        tmp_rd['wxid'] = get_info_wxid(Handle)
-        tmp_rd['filePath'] = get_info_filePath_base_wxid(Handle, tmp_rd['wxid']) if tmp_rd['wxid'] != "None" else "None"
-        tmp_rd['filePath'] = get_info_filePath(tmp_rd['wxid']) if tmp_rd['wxid'] != "None" and tmp_rd[
-            'filePath'] == "None" else tmp_rd['filePath']
-        tmp_rd['key'] = get_key(tmp_rd['pid'], tmp_rd['filePath'], addrLen) if tmp_rd['filePath'] != "None" else "None"
-        result.append(tmp_rd)
+        rd['filePath'] = get_info_filePath(rd['wxid']) if rd['wxid'] != "None" else "None"
+        if rd['wxid'] != "None" and rd['filePath'] == "None":  # 通过wxid获取filePath,如果filePath为空则通过wxid获取filePath
+            rd['filePath'] = get_info_filePath_base_wxid(Handle, rd['wxid'])
+
+        isKey = verify_key(bytes.fromhex(rd["key"]),
+                           os.path.join(rd['filePath'], "MSG", "MicroMsg.db")) if rd['key'] != "None" and rd[
+            'filePath'] != "None" else False
+
+        if rd['filePath'] != "None" and rd['key'] == "None" and not isKey:
+            rd['key'] = get_key(rd['pid'], rd['filePath'], addrLen)
+
+        result.append(rd)
 
     if is_logging:
         print("=" * 32)
