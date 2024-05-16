@@ -42,13 +42,13 @@ def get_info_string(h_process, address, n_size=64):
 def get_info_name(h_process, address, address_len=8, n_size=64):
     array = ctypes.create_string_buffer(n_size)
     if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
-    address = int.from_bytes(array[:address_len], byteorder='little')  # 逆序转换为int地址（key地址）
-    try:
-        array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
-        text = array.decode('utf-8')
-        return text.strip() if text.strip() != "" else "None"
-    except:
-        return get_info_string(h_process, address, n_size)
+    address1 = int.from_bytes(array[:address_len], byteorder='little')  # 逆序转换为int地址（key地址）
+    info_name = get_info_string(h_process, address1, n_size)
+    if info_name != "None":
+        return info_name
+    array = bytes(array).split(b"\x00")[0] if b"\x00" in array else bytes(array)
+    text = array.decode('utf-8', errors='ignore')
+    return text.strip() if text.strip() != "" else "None"
 
 
 def get_info_wxid(h_process):
