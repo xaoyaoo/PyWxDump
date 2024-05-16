@@ -27,6 +27,7 @@ install_requires = [
     "blackboxprotobuf",
     "lxml",
     "flask_cors",
+    "pandas",
 ]
 
 setup(
