@@ -7,6 +7,7 @@
 # -------------------------------------------------------------------------------
 import pandas as pd
 
+from .parsingFavorite import ParsingFavorite
 from .parsingMSG import ParsingMSG
 from .parsingMicroMsg import ParsingMicroMsg
 from .parsingMediaMSG import ParsingMediaMSG
@@ -21,6 +22,8 @@ def get_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, word=None):
     """
     获取联系人列表
     :param MicroMsg_db_path: MicroMsg.db 文件路径
+    :param OpenIMContact_db_path: OpenIMContact.db 文件路径
+    :param word: 搜索关键字
     :return: 联系人列表
     """
     # 连接 MicroMsg.db 数据库，并执行查询
@@ -41,6 +44,8 @@ def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None,limit=200)
     """
     获取联系人列表
     :param MicroMsg_db_path: MicroMsg.db 文件路径
+    :param OpenIMContact_db_path: OpenIMContact.db 文件路径
+    :param limit: 最大数量
     :return: 联系人列表
     """
     # 连接 MicroMsg.db 数据库，并执行查询
@@ -68,6 +73,7 @@ def wxid2userinfo(MicroMsg_db_path, OpenIMContact_db_path, wxid):
     """
     获取联系人信息
     :param MicroMsg_db_path: MicroMsg.db 文件路径
+    :param OpenIMContact_db_path: OpenIMContact.db 文件路径
     :param wxid: 微信id,可以是单个id，也可以是多个id，使用list传入
     :return: 联系人信息 {wxid: {wxid: wxid, nickname: nickname, remark: remark, account: account, describe: describe, headImgUrl: headImgUrl}}
     """
