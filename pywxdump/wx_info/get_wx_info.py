@@ -39,6 +39,7 @@ def get_info_string(h_process, address, n_size=64):
     return text.strip() if text.strip() != "" else "None"
 
 
+# 读取内存中的字符串(昵称部分name)
 def get_info_name(h_process, address, address_len=8, n_size=64):
     array = ctypes.create_string_buffer(n_size)
     if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
@@ -51,6 +52,7 @@ def get_info_name(h_process, address, address_len=8, n_size=64):
     return text.strip() if text.strip() != "" else "None"
 
 
+# 读取内存中的wxid
 def get_info_wxid(h_process):
     find_num = 100
     addrs = pattern_scan_all(h_process, br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
@@ -66,6 +68,7 @@ def get_info_wxid(h_process):
     return wxid
 
 
+# 读取内存中的filePath基于wxid（慢）
 def get_info_filePath_base_wxid(h_process, wxid=""):
     find_num = 10
     addrs = pattern_scan_all(h_process, wxid.encode() + br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
@@ -82,6 +85,11 @@ def get_info_filePath_base_wxid(h_process, wxid=""):
 
 
 def get_info_filePath(wxid="all"):
+    """
+    # 读取filePath (微信文件路径) （快）
+    :param wxid: 微信id
+    :return: 返回filePath
+    """
     if not wxid:
         return "None"
     w_dir = "MyDocument:"
@@ -135,6 +143,14 @@ def get_info_filePath(wxid="all"):
 
 
 def get_key(pid, db_path, addr_len):
+    """
+    获取key （慢）
+    :param pid: 进程id
+    :param db_path: 微信数据库路径
+    :param addr_len: 地址长度
+    :return: 返回key
+    """
+
     def read_key_bytes(h_process, address, address_len=8):
         array = ctypes.create_string_buffer(address_len)
         if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
@@ -179,6 +195,15 @@ def get_key(pid, db_path, addr_len):
 
 # 读取微信信息(account,mobile,name,mail,wxid,key)
 def read_info(version_list: dict = None, is_logging: bool = False, save_path: str = None):
+    """
+    读取微信信息(account,mobile,name,mail,wxid,key)
+    :param version_list:  版本偏移量
+    :param is_logging:  是否打印日志
+    :param save_path:  保存路径
+    :return: 返回微信信息 [{"pid": pid, "version": version, "account": account,
+                          "mobile": mobile, "name": name, "mail": mail, "wxid": wxid,
+                          "key": key, "filePath": filePath}, ...]
+    """
     if version_list is None:
         version_list = {}
 
