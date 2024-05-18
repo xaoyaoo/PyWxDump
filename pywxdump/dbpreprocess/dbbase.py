@@ -35,6 +35,12 @@ class DatabaseBase:
         return connection
 
     def execute_sql(self, sql, params=None):
+        """
+        执行SQL语句
+        :param sql: SQL语句 (str)
+        :param params: 参数 (tuple)
+        :return: 查询结果 (list)
+        """
         # 检测数据库连接是否关闭
         if not self._db_connection:
             logging.warning(f"重新连接数据库 - {self._db_path}")
