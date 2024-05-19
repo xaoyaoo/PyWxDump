@@ -415,6 +415,10 @@ def all_merge_real_time_db(key, wx_path, merge_path):
     """
     合并所有实时数据库
     注：这是全量合并，会有可能产生重复数据，需要自行去重
+    :param key:  解密密钥
+    :param wx_path:  微信路径
+    :param merge_path:  合并后的数据库路径 eg: C:\*******\WeChat Files\wxid_*********\merge.db
+    :return:
     """
     if not merge_path or not key or not wx_path or not wx_path:
         return False, "msg_path or media_path or wx_path or key is required"
@@ -425,7 +429,6 @@ def all_merge_real_time_db(key, wx_path, merge_path):
 
     db_paths = get_core_db(wx_path, ["MediaMSG", "MSG", "MicroMsg"])
     if not db_paths[0]:
-        print(wx_path)
         return False, db_paths[1]
     db_paths = db_paths[1]
     for i in db_paths:
