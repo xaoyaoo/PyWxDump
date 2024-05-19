@@ -319,10 +319,9 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     # 分割wx_path的文件名和父目录
     msg_dir = os.path.dirname(wx_path)
     my_wxid = os.path.basename(wx_path)
-
+    db_type = ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"]
     # 解密
-    code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia",
-                                            "OpenIMMsg", "Favorite"])
+    code, wxdbpaths = get_core_db(wx_path, db_type)
     if not code:
         return False, wxdbpaths
     # 判断out_path是否为空目录
@@ -345,9 +344,14 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     for code1, ret1 in ret:
         if code1:
             out_dbs.append(ret1[1])
-
-    parpare_merge_db_path = [i for i in out_dbs if
-                             "de_MicroMsg" in i or "de_MediaMSG" in i or "de_MSG" in i or "de_OpenIMMsg" in i or "de_OpenIMMedia" in i or "de_OpenIMContact" in i]
+    parpare_merge_db_path = []
+    for i in out_dbs:
+        for j in db_type:
+            if j in i:
+                parpare_merge_db_path.append(i)
+                break
+    de_db_type = [f"de_{i}" for i in db_type]
+    parpare_merge_db_path = [i for i in out_dbs if any(keyword in i for keyword in de_db_type)]
 
     merge_save_path = merge_db(parpare_merge_db_path, merge_save_path, CreateTime=CreateTime,
                                endCreateTime=endCreateTime)
