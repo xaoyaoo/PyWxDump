@@ -247,7 +247,8 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
                 if not columns or len(columns) < 1:
                     continue
                 col_type = {
-                    (i[1] if isinstance(i[1], str) else i[1].decode(), i[2] if isinstance(i[2], str) else i[2].decode()) for
+                    (i[1] if isinstance(i[1], str) else i[1].decode(), i[2] if isinstance(i[2], str) else i[2].decode())
+                    for
                     i in columns}
                 columns = [i[1] if isinstance(i[1], str) else i[1].decode() for i in columns]
                 if not columns or len(columns) < 1:
@@ -320,7 +321,8 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     my_wxid = os.path.basename(wx_path)
 
     # 解密
-    code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"])
+    code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia",
+                                            "OpenIMMsg", "Favorite"])
     if not code:
         return False, wxdbpaths
     # 判断out_path是否为空目录
