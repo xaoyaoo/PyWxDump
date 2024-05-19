@@ -5,6 +5,8 @@
 # Author:       xaoyaoo
 # Date:         2024/05/18
 # -------------------------------------------------------------------------------
+import pandas as pd
+
 from .dbbase import DatabaseBase
 from .utils import timestamp2str, xml2dict
 
