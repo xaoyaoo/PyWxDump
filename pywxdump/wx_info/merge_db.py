@@ -321,7 +321,8 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
 
     # 解密
     code, wxdbpaths = get_core_db(wx_path, ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"])
-
+    if not code:
+        return False, wxdbpaths
     # 判断out_path是否为空目录
     if os.path.exists(decrypted_path) and os.listdir(decrypted_path):
         for root, dirs, files in os.walk(decrypted_path, topdown=False):
