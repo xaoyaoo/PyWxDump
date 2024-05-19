@@ -41,11 +41,14 @@ class ParsingFavorite(DatabaseBase):
     def __init__(self, db_path):
         super().__init__(db_path)
 
-    def get_tags(self):
+    def get_tags(self, LocalID):
         """
         return: {LocalID: TagName}
         """
-        sql = "select LocalID, TagName from FavTagDatas order by ServerSeq"
+        if LocalID is None:
+            sql = "select LocalID, TagName from FavTagDatas order by ServerSeq"
+        else:
+            sql = "select LocalID, TagName from FavTagDatas where LocalID = '%s' order by ServerSeq " % LocalID
         tags = self.execute_sql(sql)  # [(1, 797940830, '程序语言类'), (2, 806153863, '账单')]
         # 转换为字典
         tags = {tag[0]: tag[1] for tag in tags}
