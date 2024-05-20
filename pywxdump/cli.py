@@ -210,7 +210,7 @@ class MainMerge(BaseSubMainClass):
     parser_kwargs = {"help": "[测试功能]合并微信数据库(MSG.db or MediaMSG.db)"}
 
     def init_parses(self, parser):
-        # 添加 'decrypt' 子命令解析器
+        # 添加 'merge' 子命令解析器
         parser.add_argument("-i", "--db_path", type=str, help="数据库路径(文件路径，使用英文[,]分割)", required=True,
                             metavar="")
         parser.add_argument("-o", "--out_path", type=str, default=os.path.join(os.getcwd(), "decrypted"),
@@ -254,7 +254,7 @@ class MainShowChatRecords(BaseSubMainClass):
     parser_kwargs = {"help": "聊天记录查看"}
 
     def init_parses(self, parser):
-        # 添加 'decrypt' 子命令解析器
+        # 添加 'dbshow' 子命令解析器
         parser.add_argument("-merge", "--merge_path", type=str, help="解密并合并后的 merge_all.db 的路径", required=False,
                             metavar="")
 
@@ -270,8 +270,13 @@ class MainShowChatRecords(BaseSubMainClass):
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
         # (merge)和(msg_path,micro_path,media_path) 二选一
-        if not args.merge_path and not (args.msg_path and args.micro_path and args.media_path):
-            print("[-] 请输入数据库路径（[merge_path] or [msg_path, micro_path, media_path]）")
+        # if not args.merge_path and not (args.msg_path and args.micro_path and args.media_path):
+        #     print("[-] 请输入数据库路径（[merge_path] or [msg_path, micro_path, media_path]）")
+        #     return
+
+        # 目前仅能支持merge database
+        if not args.merge_path:
+            print("[-] 请输入数据库路径（[merge_path]）")
             return
 
         # 从命令行参数获取值
@@ -291,7 +296,7 @@ class MainExportChatRecords(BaseSubMainClass):
     parser_kwargs = {"help": "[已废弃]聊天记录导出为html"}
 
     def init_parses(self, parser):
-        # 添加 'decrypt' 子命令解析器
+        # 添加 'export' 子命令解析器
         return parser
 
     def run(self, args):
