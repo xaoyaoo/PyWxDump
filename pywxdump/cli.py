@@ -255,14 +255,13 @@ class MainShowChatRecords(BaseSubMainClass):
 
     def init_parses(self, parser):
         # 添加 'dbshow' 子命令解析器
-        parser.add_argument("-merge", "--merge_path", type=str, help="解密并合并后的 merge_all.db 的路径", required=False,
-                            metavar="")
-
+        parser.add_argument("-merge", "--merge_path", type=str, help="解密并合并后的 merge_all.db 的路径",
+                            required=False, metavar="")
         parser.add_argument("-wid", "--wx_path", type=str,
                             help="(可选)微信文件夹的路径（用于显示图片）", required=False,
                             metavar="")
         parser.add_argument("-myid", "--my_wxid", type=str, help="(可选)微信账号(本人微信id)", required=False,
-                            default="wxid_vzzcn5fevion22", metavar="")
+                            default="", metavar="")
         parser.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", required=False,
                             default=False)
         return parser
@@ -302,7 +301,6 @@ class MainExportChatRecords(BaseSubMainClass):
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
         print("[+] export命令已废弃，请使用ui命令[wxdump ui]或api命令[wxdump api]启动服务")
-
 
 
 class MainAll(BaseSubMainClass):
