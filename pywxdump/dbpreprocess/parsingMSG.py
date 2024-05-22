@@ -247,17 +247,23 @@ class ParsingMSG(DatabaseBase):
                     "room_name": StrTalker, "content": content, "CreateTime": CreateTime, "id": id}
         return row_data
 
-    def msg_list(self, wxid="", start_index=0, page_size=500):
+    def msg_list(self, wxid="", start_index=0, page_size=500, msg_type: str = ""):
         if wxid:
             sql = (
                 "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
                 "FROM MSG WHERE StrTalker=? "
                 "ORDER BY CreateTime ASC LIMIT ?,?")
+            if msg_type:
+                sql = sql.replace("ORDER BY CreateTime ASC LIMIT ?,?",
+                            f"AND Type={msg_type} ORDER BY CreateTime ASC LIMIT ?,?")
             result1 = self.execute_sql(sql, (wxid, start_index, page_size))
         else:
             sql = (
                 "SELECT localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType,CreateTime,MsgSvrID,DisplayContent,CompressContent,BytesExtra,ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
                 "FROM MSG ORDER BY CreateTime ASC LIMIT ?,?")
+            if msg_type:
+                sql = sql.replace("ORDER BY CreateTime ASC LIMIT ?,?",
+                            f"AND Type={msg_type} ORDER BY CreateTime ASC LIMIT ?,?")
             result1 = self.execute_sql(sql, (start_index, page_size))
         if not result1:
             return [], []
