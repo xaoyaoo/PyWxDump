@@ -72,7 +72,7 @@ class ParsingMicroMsg(DatabaseBase):
     def user_list(self, word=None):
         """
         获取联系人列表
-        :param MicroMsg_db_path: MicroMsg.db 文件路径
+        :param word 查询关键字，可以是用户名、昵称、备注、描述，允许拼音
         :return: 联系人列表
         """
         users = []
@@ -87,6 +87,8 @@ class ParsingMicroMsg(DatabaseBase):
                               f"OR A.NickName LIKE '%{word}%' "
                               f"OR A.Remark LIKE '%{word}%' "
                               f"OR A.Alias LIKE '%{word}%' "
+                              f"OR A.QuanPin LIKE LOWER('%{word}%') "
+                              f"OR LOWER(A.PYInitial) LIKE LOWER('%{word}%') "
                               # f"OR A.Reserved6 LIKE '%{word}%' "
                               "ORDER BY A.NickName DESC;")
         result = self.execute_sql(sql)
