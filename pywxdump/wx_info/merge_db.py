@@ -299,7 +299,7 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
     return save_path
 
 
-def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0) -> (bool, str):
+def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0, db_type: list[str] = []) -> (bool, str):
     """
     解密合并数据库 msg.db, microMsg.db, media.db,注意：会删除原数据库
     :param wx_path: 微信路径 eg: C:\*******\WeChat Files\wxid_*********
@@ -319,7 +319,13 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     # 分割wx_path的文件名和父目录
     msg_dir = os.path.dirname(wx_path)
     my_wxid = os.path.basename(wx_path)
-    db_type = ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"]
+    db_type_set: set[str] = {"MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"}
+    if len(db_type) == 0:
+        db_type = list(db_type_set)
+    else:
+        for i in db_type:
+            if i not in db_type_set:
+                return False, f"db_type参数错误, 可用选项 {db_type_set}"
     # 解密
     code, wxdbpaths = get_core_db(wx_path, db_type)
     if not code:
