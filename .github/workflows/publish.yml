@@ -82,6 +82,8 @@ jobs:
       - name: Generate File pywxdump.spec # 生成 pywxdump.spec 文件
         run: |
           python tests/build_exe.py
+          ls 
+          ls dist
           cat dist/pywxdump.spec
 
       - name: Build Executable
