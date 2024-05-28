@@ -12,7 +12,7 @@ import shutil
 import sqlite3
 import subprocess
 import time
-
+from typing import List
 
 def merge_copy_db(db_path, save_path):
     if isinstance(db_path, list) and len(db_path) == 1:
