@@ -325,7 +325,8 @@ class MainUi(BaseSubMainClass):
         parser.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
         parser.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
         parser.add_argument("--debug", help="(可选)是否开启debug模式", default=False, action='store_true')
-        parser.add_argument("--openBrowser", help="(可选)是否自动打开浏览器", default=True, action='store_true')
+        parser.add_argument("--noOpenBrowser", dest='isOpenBrowser', action='store_false', default=True,
+                            help="(可选)用于禁用自动打开浏览器")
         return parser
 
     def run(self, args):
@@ -334,7 +335,7 @@ class MainUi(BaseSubMainClass):
         online = args.online
         port = args.port
         debug = args.debug
-        isopenBrowser = args.openBrowser
+        isopenBrowser = args.isOpenBrowser
 
         start_falsk(port=port, online=online, debug=debug, isopenBrowser=isopenBrowser)
 
