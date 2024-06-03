@@ -211,6 +211,7 @@ def get_details(process, version_list: dict = None, is_logging: bool = False):
             for module in process.memory_maps(grouped=False):
                 if module.path and 'WeChatWin.dll' in module.path:
                     wechat_base_address = int(module.addr, 16)
+                    rd['version'] = get_exe_version(module.path) if os.path.exists(module.path) else rd['version']
                     break
             if wechat_base_address == 0:
                 error = f"[-] WeChat WeChatWin.dll Not Found"
