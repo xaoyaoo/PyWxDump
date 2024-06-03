@@ -5,6 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2023/12/25
 # -------------------------------------------------------------------------------
+import os
 import re
 import sys
 import hmac
@@ -40,6 +41,8 @@ def get_exe_version(file_path):
     :param file_path:  PE 文件路径(可执行文件)
     :return: 如果遇到错误则返回
     """
+    if not os.path.exists(file_path):
+        return "None"
     file_version = Dispatch("Scripting.FileSystemObject").GetFileVersion(file_path)
     return file_version
 
