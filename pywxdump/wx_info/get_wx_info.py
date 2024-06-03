@@ -193,37 +193,11 @@ def get_key(pid, db_path, addr_len):
     return "None"
 
 
-# 读取微信信息(account,mobile,name,mail,wxid,key)
-def read_info(version_list: dict = None, is_logging: bool = False, save_path: str = None):
-    """
-    读取微信信息(account,mobile,name,mail,wxid,key)
-    :param version_list:  版本偏移量
-    :param is_logging:  是否打印日志
-    :param save_path:  保存路径
-    :return: 返回微信信息 [{"pid": pid, "version": version, "account": account,
-                          "mobile": mobile, "name": name, "mail": mail, "wxid": wxid,
-                          "key": key, "filePath": filePath}, ...]
-    """
-    if version_list is None:
-        version_list = {}
-
-    wechat_process = []
-    result = []
-    error = ""
-    for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
-        if process.name() == 'WeChat.exe':
-            wechat_process.append(process)
-
-    if len(wechat_process) <= 0:
-        error = "[-] WeChat No Run"
-        if is_logging: print(error)
-        return error
-
-    for process in wechat_process:
-        rd = {'pid': process.pid, 'version': get_exe_version(process.exe()),
-              "account": "None", "mobile": "None", "name": "None", "mail": "None",
-              "wxid": "None", "key": "None", "filePath": "None"}
-
+def get_details(process, version_list: dict = None, is_logging: bool = False):
+    rd = {'pid': process.pid, 'version': get_exe_version(process.exe()),
+          "account": "None", "mobile": "None", "name": "None", "mail": "None",
+          "wxid": "None", "key": "None", "filePath": "None"}
+    try:
         Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
 
         bias_list = version_list.get(rd['version'], None)
@@ -266,7 +240,40 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
             'filePath'] != "None" else False
         if rd['filePath'] != "None" and rd['key'] == "None" and not isKey:
             rd['key'] = get_key(rd['pid'], rd['filePath'], addrLen)
+    except Exception as e:
+        error = f"[-] WeChat Get Info Error:{e}"
+        if is_logging: print(error)
+    return rd
 
+
+# 读取微信信息(account,mobile,name,mail,wxid,key)
+def read_info(version_list: dict = None, is_logging: bool = False, save_path: str = None):
+    """
+    读取微信信息(account,mobile,name,mail,wxid,key)
+    :param version_list:  版本偏移量
+    :param is_logging:  是否打印日志
+    :param save_path:  保存路径
+    :return: 返回微信信息 [{"pid": pid, "version": version, "account": account,
+                          "mobile": mobile, "name": name, "mail": mail, "wxid": wxid,
+                          "key": key, "filePath": filePath}, ...]
+    """
+    if version_list is None:
+        version_list = {}
+
+    wechat_process = []
+    result = []
+    error = ""
+    for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
+        if process.name() == 'WeChat.exe':
+            wechat_process.append(process)
+
+    if len(wechat_process) <= 0:
+        error = "[-] WeChat No Run"
+        if is_logging: print(error)
+        return error
+
+    for process in wechat_process:
+        rd = get_details(process, version_list, is_logging)
         result.append(rd)
 
     if is_logging:
