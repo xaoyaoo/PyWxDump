@@ -40,7 +40,7 @@ def get_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, word=None):
     return users
 
 
-def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None,limit=200):
+def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, limit=200):
     """
     获取联系人列表
     :param MicroMsg_db_path: MicroMsg.db 文件路径
@@ -54,7 +54,8 @@ def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None,limit=200)
     parsing_micromsg = ParsingMicroMsg(MicroMsg_db_path)
     recent_users = parsing_micromsg.recent_chat_wxid()  # [{"wxid": username, "LastReadedCreateTime": LastReadedCreateTime, "LastReadedSvrId": LastReadedSvrId},]
     recent_users = pd.DataFrame(recent_users)
-    recent_users = recent_users.sort_values(by="LastReadedCreateTime", ascending=False)
+    recent_users = recent_users.sort_values(by="LastReadedCreateTime",
+                                            ascending=False) if not recent_users.empty else recent_users
     recent_users = recent_users.drop_duplicates(subset=["wxid"], keep="first").head(limit)
 
     users = get_user_list(MicroMsg_db_path, OpenIMContact_db_path)
@@ -62,7 +63,7 @@ def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None,limit=200)
 
     users = pd.merge(users, recent_users, on="wxid", how="right")
     # users = users.drop_duplicates(subset=["wxid"], keep="last")  # 保留最新的
-    users = users.sort_values(by="LastReadedCreateTime", ascending=False)  # 按照最新的排序
+    users = users.sort_values(by="LastReadedCreateTime", ascending=False) if not users.empty else users
     users = users.drop_duplicates(subset=["wxid"], keep="first")  # 保留最新的
     users = users.fillna("")
     users = users.to_dict(orient="records")
