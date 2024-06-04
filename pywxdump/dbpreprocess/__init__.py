@@ -53,9 +53,8 @@ def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, limit=200
         return []
     parsing_micromsg = ParsingMicroMsg(MicroMsg_db_path)
     recent_users = parsing_micromsg.recent_chat_wxid()  # [{"wxid": username, "LastReadedCreateTime": LastReadedCreateTime, "LastReadedSvrId": LastReadedSvrId},]
-    recent_users = pd.DataFrame(recent_users)
-    recent_users = recent_users.sort_values(by="LastReadedCreateTime",
-                                            ascending=False) if not recent_users.empty else recent_users
+    recent_users = pd.DataFrame(recent_users, columns=["wxid", "LastReadedCreateTime", "LastReadedSvrId"])
+    recent_users = recent_users.sort_values(by="LastReadedCreateTime", ascending=False)
     recent_users = recent_users.drop_duplicates(subset=["wxid"], keep="first").head(limit)
 
     users = get_user_list(MicroMsg_db_path, OpenIMContact_db_path)
