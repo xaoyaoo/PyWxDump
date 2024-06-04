@@ -1,5 +1,31 @@
-## v3.0.24.(待发布)
+## v3.0.28.(待发布)
 
+- 
+
+## v3.0.27
+
+- fix
+- 增加容错
+- fix 浏览器打开参数
+
+## v3.0.26
+
+- fix
+- fix test
+
+## v3.0.25
+
+- fix
+- fix Favorite
+- fix wx 3.9.10.27
+- feat: 数据库合并与查询优化 (#97)
+- fix: fix bug on cli dbshow command (#96)
+- Merge branch 'master' of github.com:xaoyaoo/PyWxDump
+
+## v3.0.24
+
+- 增加说明
+- 增加收藏夹的库
 - UPDATE CHANGELOG.md
 
 ## v3.0.23
