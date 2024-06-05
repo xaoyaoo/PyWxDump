@@ -13,13 +13,14 @@ import winreg
 import psutil
 import pymem
 from typing import List, Union
-from .utils import pattern_scan_all, verify_key, get_exe_version, get_exe_bit
+from .utils import pattern_scan_all, verify_key, get_exe_version, get_exe_bit, info_error
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 void_p = ctypes.c_void_p
 
 
 # 读取内存中的字符串(key部分)
+@info_error
 def get_info_with_key(h_process, address, address_len=8):
     array = ctypes.create_string_buffer(address_len)
     if ReadProcessMemory(h_process, void_p(address), array, address_len, 0) == 0: return "None"
@@ -31,6 +32,7 @@ def get_info_with_key(h_process, address, address_len=8):
 
 
 # 读取内存中的字符串(非key部分)
+@info_error
 def get_info_string(h_process, address, n_size=64):
     array = ctypes.create_string_buffer(n_size)
     if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
@@ -40,6 +42,7 @@ def get_info_string(h_process, address, n_size=64):
 
 
 # 读取内存中的字符串(昵称部分name)
+@info_error
 def get_info_name(h_process, address, address_len=8, n_size=64):
     array = ctypes.create_string_buffer(n_size)
     if ReadProcessMemory(h_process, void_p(address), array, n_size, 0) == 0: return "None"
@@ -53,6 +56,7 @@ def get_info_name(h_process, address, address_len=8, n_size=64):
 
 
 # 读取内存中的wxid
+@info_error
 def get_info_wxid(h_process):
     find_num = 100
     addrs = pattern_scan_all(h_process, br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
@@ -69,6 +73,7 @@ def get_info_wxid(h_process):
 
 
 # 读取内存中的filePath基于wxid（慢）
+@info_error
 def get_info_filePath_base_wxid(h_process, wxid=""):
     find_num = 10
     addrs = pattern_scan_all(h_process, wxid.encode() + br'\\Msg\\FTSContact', return_multiple=True, find_num=find_num)
@@ -84,6 +89,7 @@ def get_info_filePath_base_wxid(h_process, wxid=""):
     return filePath
 
 
+@info_error
 def get_info_filePath(wxid="all"):
     """
     # 读取filePath (微信文件路径) （快）
@@ -142,6 +148,7 @@ def get_info_filePath(wxid="all"):
     return filePath if os.path.exists(filePath) else "None"
 
 
+@info_error
 def get_key(pid, db_path, addr_len):
     """
     获取key （慢）

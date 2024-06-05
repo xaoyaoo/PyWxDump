@@ -14,6 +14,23 @@ import hashlib
 from win32com.client import Dispatch
 
 
+def info_error(func):
+    """
+    错误处理装饰器
+    :param func:
+    :return:
+    """
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"error9999: {e}")
+            return "None"
+
+    return wrapper
+
+
 def verify_key(key, wx_db_path):
     """
     验证key是否正确
