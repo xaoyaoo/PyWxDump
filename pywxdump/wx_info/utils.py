@@ -25,7 +25,7 @@ def info_error(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            print(f"error9999: {e}")
+            print(f"info_error: {e}")
             return "None"
 
     return wrapper
