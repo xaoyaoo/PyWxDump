@@ -9,6 +9,8 @@ import os
 import re
 import sys
 import hmac
+import traceback
+
 import pymem
 import hashlib
 from win32com.client import Dispatch
@@ -25,7 +27,9 @@ def info_error(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            print(f"info_error: {e}")
+            traceback_data = traceback.format_exc()
+            rdata = f"{traceback_data}"
+            print(f"info_error: \n{rdata}")
             return "None"
 
     return wrapper
@@ -51,7 +55,7 @@ def verify_key(key, wx_db_path):
         return False
     return True
 
-
+@info_error
 def get_exe_version(file_path):
     """
     获取 PE 文件的版本号
