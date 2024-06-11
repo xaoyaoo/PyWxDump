@@ -36,8 +36,9 @@ def get_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, word=None):
         parsing_openimcontact = ParsingOpenIMContact(OpenIMContact_db_path)
         users += parsing_openimcontact.user_list(word=word)
     # 去重
-    users = [dict(t) for t in {tuple(d.items()) for d in users}]
-    return users
+    # print(users)
+    unique_users = [dict(t) for t in {tuple(d.items()) for d in users}]
+    return unique_users
 
 
 def get_recent_user_list(MicroMsg_db_path, OpenIMContact_db_path=None, limit=200):

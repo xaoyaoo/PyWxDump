@@ -22,7 +22,7 @@ from pywxdump.api.utils import read_session, get_session_wxids, save_session, er
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
 from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
-    download_file, export_csv, export_json
+    download_file, export_csv, export_json, ParsingMicroMsg
 from pywxdump.dbpreprocess.utils import dat2img
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
@@ -178,7 +178,18 @@ def recent_user_list():
     merge_path = read_session(g.sf, my_wxid, "merge_path")
     user_list = get_recent_user_list(merge_path, merge_path, limit=200)
     return ReJson(0, user_list)
-
+@api.route('/api/user_labels_dict', methods=["GET", 'POST'])
+@error9999
+def user_labels_dict():
+    """
+    获取标签字典
+    :return:
+    """
+    my_wxid = read_session(g.sf, "test", "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    merge_path = read_session(g.sf, my_wxid, "merge_path")
+    user_labels_dict = ParsingMicroMsg(merge_path).labels_dict()
+    return ReJson(0, user_labels_dict)
 
 @api.route('/api/user_list', methods=["GET", 'POST'])
 @error9999
@@ -225,7 +236,7 @@ def wxid2user():
 @error9999
 def mywxid():
     """
-    获取联系人列表
+    获取我的微信id
     :return:
     """
     my_wxid = read_session(g.sf, "test", "last")

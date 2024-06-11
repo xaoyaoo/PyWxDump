@@ -42,7 +42,7 @@ class ParsingOpenIMContact(DatabaseBase):
             # 获取用户名、昵称、备注和聊天记录数量
             username, nickname, remark, headImgUrl = row
             users[username] = {"wxid": username, "nickname": nickname, "remark": remark, "account": "", "describe": "",
-                               "headImgUrl": headImgUrl}
+                               "headImgUrl": headImgUrl, "LabelIDList": ()}
         return users
 
     def user_list(self, word=None):
@@ -70,5 +70,5 @@ class ParsingOpenIMContact(DatabaseBase):
             username, nickname, remark, headImgUrl = row
             users.append(
                 {"wxid": username, "nickname": nickname, "remark": remark, "account": "", "describe": "",
-                 "headImgUrl": headImgUrl})
+                 "headImgUrl": headImgUrl, "LabelIDList": ()})
         return users
