@@ -154,7 +154,7 @@ if package_path:
     require_path = os.path.join(os.path.dirname(current_path), "requirements.txt")  # requirements.txt 路径
     with open(require_path, "r", encoding="utf-8") as f:
         hidden_imports = f.read().splitlines()
-    hidden_imports = [i for i in hidden_imports if i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
+    hidden_imports = [i.replace('-','_') for i in hidden_imports if i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
 
     # 获取 ui 文件夹下的所有文件 用于打包
     root_path = os.path.join(package_path, 'pywxdump')
