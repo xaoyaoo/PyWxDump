@@ -1,6 +1,13 @@
-## v3.0.28.(待发布)
+## v3.0.29.(待发布)
 
 - 
+
+## v3.0.28
+
+- 修复打包问题
+- 增加联系人标签显示
+- UPDATE CHANGELOG.md
+- get info add decorator info_error
 
 ## v3.0.27
 
