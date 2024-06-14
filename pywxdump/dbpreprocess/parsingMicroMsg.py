@@ -156,7 +156,33 @@ class ParsingMicroMsg(DatabaseBase):
             LabelIDList = LabelIDList.split(",") if LabelIDList else []
             users.append(
                 {"wxid": username, "nickname": nickname, "remark": remark, "account": Alias,
-                 "describe": describe, "headImgUrl": headImgUrl if headImgUrl else "", "LabelIDList": tuple(LabelIDList)})
+                 "describe": describe, "headImgUrl": headImgUrl if headImgUrl else "",
+                 "LabelIDList": tuple(LabelIDList)})
+        return users
+
+    def user_list_by_label(self, label_id):
+        """
+        获取标签联系人列表
+        :param label_id: 标签id
+        :return: 标签联系人列表
+        """
+        users = []
+        sql = (
+            "SELECT A.UserName, A.NickName, A.Remark,A.Alias,A.Reserved6,B.bigHeadImgUrl,A.LabelIDList "
+            "FROM Contact A left join ContactHeadImgUrl B on A.UserName==B.usrName "
+            f"where A.LabelIDList LIKE '%{label_id}%' "
+            "ORDER BY A.NickName DESC;")
+        result = self.execute_sql(sql)
+        if not result:
+            return []
+        for row in result:
+            # 获取wxid,昵称，备注，描述，头像,标签
+            username, nickname, remark, Alias, describe, headImgUrl, LabelIDList = row
+            LabelIDList = LabelIDList.split(",") if LabelIDList else []
+            users.append(
+                {"wxid": username, "nickname": nickname, "remark": remark, "account": Alias,
+                 "describe": describe, "headImgUrl": headImgUrl if headImgUrl else "",
+                 "LabelIDList": tuple(LabelIDList)})
         return users
 
     def recent_chat_wxid(self):
