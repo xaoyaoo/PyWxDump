@@ -264,6 +264,7 @@ class MainShowChatRecords(BaseSubMainClass):
                             default="", metavar="")
         parser.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", required=False,
                             default=False)
+        # parser.add_argument("-k", "--key", type=str, help="(可选)密钥", required=False, metavar="")
         return parser
 
     def run(self, args):
