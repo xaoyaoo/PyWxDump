@@ -1,6 +1,12 @@
-## v3.0.29.(待发布)
+## v3.0.30.(待发布)
 
 - 
+
+## v3.0.29
+
+- wx 3.9.11.17支持
+- user_list_by_label
+- UPDATE CHANGELOG.md
 
 ## v3.0.28
 
