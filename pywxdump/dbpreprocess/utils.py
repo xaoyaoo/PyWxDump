@@ -19,6 +19,13 @@ from collections import defaultdict
 
 
 def type_converter(type_id_or_name: [str,tuple]):
+    """
+    消息类型ID与名称转换
+    名称(str)=>ID(tuple)
+    ID(tuple)=>名称(str)
+    :param type_id_or_name: 消息类型ID或名称
+    :return: 消息类型ID或名称
+    """
     type_name_dict = defaultdict(lambda: "未知", {
         (1, 0): "文本",
         (3, 0): "图片",
