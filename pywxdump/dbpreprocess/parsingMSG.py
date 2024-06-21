@@ -5,6 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
+import json
 import os
 import re
 
@@ -18,6 +19,7 @@ import blackboxprotobuf
 
 class ParsingMSG(DatabaseBase):
     _class_name = "MSG"
+
     def __init__(self, db_path):
         super().__init__(db_path)
 
@@ -172,7 +174,13 @@ class ParsingMSG(DatabaseBase):
             cdnurl = content_tmp.get("emoji", {}).get("cdnurl", "")
             if cdnurl:
                 content = {"src": cdnurl, "msg": "表情"}
-
+        elif type_id == (48, 0):  # 地图信息
+            content_tmp = xml2dict(StrContent)
+            location = content_tmp.get("location", {})
+            content["msg"] = (f"纬度:【{location.pop('x')}】 经度:【{location.pop('y')}】\n"
+                              f"位置：{location.pop('label')} {location.pop('poiname')}\n"
+                              f"其他信息：{json.dumps(location, ensure_ascii=False, indent=4)}"
+                              )
         elif type_id == (49, 0):
             DictExtra = self.get_BytesExtra(BytesExtra)
             url = match_BytesExtra(DictExtra)
@@ -255,7 +263,7 @@ class ParsingMSG(DatabaseBase):
                 "ORDER BY CreateTime ASC LIMIT ?,?")
             if msg_type:
                 sql = sql.replace("ORDER BY CreateTime ASC LIMIT ?,?",
-                            f"AND Type={msg_type} ORDER BY CreateTime ASC LIMIT ?,?")
+                                  f"AND Type={msg_type} ORDER BY CreateTime ASC LIMIT ?,?")
             result1 = self.execute_sql(sql, (wxid, start_index, page_size))
         else:
             sql = (
@@ -263,7 +271,7 @@ class ParsingMSG(DatabaseBase):
                 "FROM MSG ORDER BY CreateTime ASC LIMIT ?,?")
             if msg_type:
                 sql = sql.replace("ORDER BY CreateTime ASC LIMIT ?,?",
-                            f"AND Type={msg_type} ORDER BY CreateTime ASC LIMIT ?,?")
+                                  f"AND Type={msg_type} ORDER BY CreateTime ASC LIMIT ?,?")
             result1 = self.execute_sql(sql, (start_index, page_size))
         if not result1:
             return [], []
