@@ -15,6 +15,20 @@ from .rjson import ReJson
 from functools import wraps
 
 
+def read_session_local_wxid(session_file):
+    try:
+        with open(session_file, 'r') as f:
+            session = json.load(f)
+    except FileNotFoundError:
+        logging.error(f"Session file not found: {session_file}")
+        return None
+    except json.JSONDecodeError as e:
+        logging.error(f"Error decoding JSON file: {e}")
+        return None
+    rdata = [k for k in session.keys() if k != "test"]
+    return rdata
+
+
 def read_session(session_file, wxid, arg):
     try:
         with open(session_file, 'r') as f:

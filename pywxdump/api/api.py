@@ -18,7 +18,8 @@ import pywxdump
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
 from pywxdump import get_core_db, all_merge_real_time_db
 from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump.api.utils import read_session, get_session_wxids, save_session, error9999, gen_base64, validate_title
+from pywxdump.api.utils import read_session, get_session_wxids, save_session, error9999, gen_base64, validate_title, \
+    read_session_local_wxid
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
 from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
@@ -32,6 +33,18 @@ api.debug = False
 
 
 # 以下为初始化相关 *******************************************************************************************************
+@api.route('/api/init_last_local_wxid', methods=["GET", 'POST'])
+@error9999
+def init_last_local_wxid():
+    """
+    初始化，包括key
+    :return:
+    """
+    local_wxid = read_session_local_wxid(g.sf)
+    if local_wxid:
+        return ReJson(0, {"local_wxids": local_wxid})
+    return ReJson(0, {"local_wxids": []})
+
 @api.route('/api/init_last', methods=["GET", 'POST'])
 @error9999
 def init_last():
@@ -39,7 +52,9 @@ def init_last():
     是否初始化
     :return:
     """
-    my_wxid = read_session(g.sf, "test", "last")
+    my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
+    if not my_wxid:
+        my_wxid = read_session(g.sf, "test", "last")
     if my_wxid:
         merge_path = read_session(g.sf, my_wxid, "merge_path")
         wx_path = read_session(g.sf, my_wxid, "wx_path")
@@ -178,6 +193,8 @@ def recent_user_list():
     merge_path = read_session(g.sf, my_wxid, "merge_path")
     user_list = get_recent_user_list(merge_path, merge_path, limit=200)
     return ReJson(0, user_list)
+
+
 @api.route('/api/user_labels_dict', methods=["GET", 'POST'])
 @error9999
 def user_labels_dict():
@@ -190,6 +207,7 @@ def user_labels_dict():
     merge_path = read_session(g.sf, my_wxid, "merge_path")
     user_labels_dict = ParsingMicroMsg(merge_path).labels_dict()
     return ReJson(0, user_labels_dict)
+
 
 @api.route('/api/user_list', methods=["GET", 'POST'])
 @error9999
