@@ -15,6 +15,50 @@ import requests
 from io import BytesIO
 import pysilk
 import lxml.etree as ET  # 这个模块更健壮些，微信XML格式有时有非标格式，会导致xml.etree.ElementTree处理失败
+from collections import defaultdict
+
+
+def type_converter(type_id_or_name: [str,tuple]):
+    type_name_dict = defaultdict(lambda: "未知", {
+        (1, 0): "文本",
+        (3, 0): "图片",
+        (34, 0): "语音",
+        (43, 0): "视频",
+        (47, 0): "动画表情",
+
+        (37, 0): "添加好友",
+        (42, 0): "推荐公众号",
+        (48, 0): "地图信息",
+        (49, 40): "分享收藏夹",
+        (49, 53): "接龙",
+
+        (49, 0): "文件",
+        (49, 1): "类似文字消息而不一样的消息",
+        (49, 5): "卡片式链接",
+        (49, 6): "文件",
+        (49, 8): "用户上传的GIF表情",
+        (49, 19): "合并转发的聊天记录",
+        (49, 33): "分享的小程序",
+        (49, 36): "分享的小程序",
+        (49, 57): "带有引用的文本消息",
+        (49, 63): "视频号直播或直播回放等",
+        (49, 87): "群公告",
+        (49, 88): "视频号直播或直播回放等",
+        (49, 2000): "转账消息",
+        (49, 2003): "赠送红包封面",
+
+        (50, 0): "语音通话",
+        (10000, 0): "系统通知",
+        (10000, 4): "拍一拍",
+        (10000, 8000): "系统通知"
+    })
+
+    if isinstance(type_id_or_name, tuple):
+        return type_name_dict[type_id_or_name]
+    elif isinstance(type_id_or_name, str):
+        return next((k for k, v in type_name_dict.items() if v == type_id_or_name), (0, 0))
+    else:
+        raise ValueError("Invalid input type")
 
 
 def typeid2name(type_id: tuple):
@@ -23,90 +67,16 @@ def typeid2name(type_id: tuple):
     :param type_id: 消息类型ID 元组 eg: (1, 0)
     :return:
     """
-    type_name_dict = {
-        (1, 0): "文本",
-        (3, 0): "图片",
-        (34, 0): "语音",
-        (43, 0): "视频",
-        (47, 0): "动画表情",
-
-        (37, 0): "添加好友",  # 感谢 https://github.com/zhyc9de
-        (42, 0): "推荐公众号",  # 感谢 https://github.com/zhyc9de
-        (48, 0): "地图信息",  # 感谢 https://github.com/zhyc9de
-        (49, 40): "分享收藏夹",  # 感谢  https://github.com/zhyc9de
-        (49, 53): "接龙",  # 感谢  https://github.com/zhyc9de
-
-        (49, 0): "文件",
-        (49, 1): "类似文字消息而不一样的消息",
-        (49, 5): "卡片式链接",
-        (49, 6): "文件",
-        (49, 8): "用户上传的GIF表情",
-        (49, 19): "合并转发的聊天记录",
-        (49, 33): "分享的小程序",
-        (49, 36): "分享的小程序",
-        (49, 57): "带有引用的文本消息",
-        (49, 63): "视频号直播或直播回放等",
-        (49, 87): "群公告",
-        (49, 88): "视频号直播或直播回放等",
-        (49, 2000): "转账消息",
-        (49, 2003): "赠送红包封面",
-
-        (50, 0): "语音通话",
-        (10000, 0): "系统通知",
-        (10000, 4): "拍一拍",
-        (10000, 8000): "系统通知"
-    }
-
-    if type_id in type_name_dict:
-        return type_name_dict[type_id]
-    else:
-        return "未知"
+    return type_converter(type_id)
 
 
 def name2typeid(type_name: str):
     """
-    获取消息类型名称
-    :param type_id: 消息类型ID 元组 eg: (1, 0)
+    获取消息类型ID
+    :param type_name: 消息类型名称
     :return:
     """
-    type_name_dict = {
-        (1, 0): "文本",
-        (3, 0): "图片",
-        (34, 0): "语音",
-        (43, 0): "视频",
-        (47, 0): "动画表情",
-
-        (37, 0): "添加好友",  # 感谢 https://github.com/zhyc9de
-        (42, 0): "推荐公众号",  # 感谢 https://github.com/zhyc9de
-        (48, 0): "地图信息",  # 感谢 https://github.com/zhyc9de
-        (49, 40): "分享收藏夹",  # 感谢  https://github.com/zhyc9de
-        (49, 53): "接龙",  # 感谢  https://github.com/zhyc9de
-
-        (49, 0): "文件",
-        (49, 1): "类似文字消息而不一样的消息",
-        (49, 5): "卡片式链接",
-        (49, 6): "文件",
-        (49, 8): "用户上传的GIF表情",
-        (49, 19): "合并转发的聊天记录",
-        (49, 33): "分享的小程序",
-        (49, 36): "分享的小程序",
-        (49, 57): "带有引用的文本消息",
-        (49, 63): "视频号直播或直播回放等",
-        (49, 87): "群公告",
-        (49, 88): "视频号直播或直播回放等",
-        (49, 2000): "转账消息",
-        (49, 2003): "赠送红包封面",
-
-        (50, 0): "语音通话",
-        (10000, 0): "系统通知",
-        (10000, 4): "拍一拍",
-        (10000, 8000): "系统通知"
-    }
-    type_tup = []
-    for k, v in type_name_dict.items():
-        if v == type_name:
-            type_tup.append(k)
-    return type_tup
+    return type_converter(type_name)
 
 
 def get_md5(data):

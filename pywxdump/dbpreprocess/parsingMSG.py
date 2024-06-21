@@ -12,7 +12,7 @@ import re
 import pandas as pd
 
 from .dbbase import DatabaseBase
-from .utils import get_md5, name2typeid, typeid2name, timestamp2str, xml2dict, match_BytesExtra
+from .utils import get_md5, name2typeid, typeid2name, type_converter, timestamp2str, xml2dict, match_BytesExtra
 import lz4.block
 import blackboxprotobuf
 
