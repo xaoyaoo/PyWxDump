@@ -181,6 +181,7 @@ class ParsingMSG(DatabaseBase):
                               f"位置：{location.pop('label')} {location.pop('poiname')}\n"
                               f"其他信息：{json.dumps(location, ensure_ascii=False, indent=4)}"
                               )
+            content["src"] = ""
         elif type_id == (49, 0):
             DictExtra = self.get_BytesExtra(BytesExtra)
             url = match_BytesExtra(DictExtra)
@@ -215,8 +216,15 @@ class ParsingMSG(DatabaseBase):
         elif type_id == (49, 2000):  # 转账消息
             CompressContent = self.decompress_CompressContent(CompressContent)
             content_tmp = xml2dict(CompressContent)
-            feedesc = content_tmp.get("appmsg", {}).get("wcpayinfo", {}).get("feedesc", "")
-            content["msg"] = f"转账：{feedesc}"
+            wcpayinfo = content_tmp.get("appmsg", {}).get("wcpayinfo", {})
+            paysubtype = wcpayinfo.get("paysubtype", "")  # 转账类型
+            feedesc = wcpayinfo.get("feedesc", "")  # 转账金额
+            pay_memo = wcpayinfo.get("pay_memo", "")  # 转账备注
+            begintransfertime = wcpayinfo.get("begintransfertime", "")  # 转账开始时间
+            content["msg"] = (f"{'已收款' if paysubtype == '3' else '转账'}：{feedesc}\n"
+                              f"转账说明：{pay_memo if pay_memo else ''}\n"
+                              f"转账时间：{timestamp2str(begintransfertime)}\n"
+                              )
             content["src"] = ""
 
         elif type_id[0] == 49 and type_id[1] != 0:

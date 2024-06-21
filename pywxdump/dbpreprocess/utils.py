@@ -121,6 +121,20 @@ def timestamp2str(timestamp):
     :param timestamp: 时间戳
     :return: 时间字符串
     """
+    if isinstance(timestamp, str) and timestamp.isdigit():
+        timestamp = int(timestamp)
+    elif isinstance(timestamp, int):
+        pass
+    else:
+        return timestamp
+
+    if len(str(timestamp)) == 13:
+        timestamp = timestamp / 1000
+    elif len(str(timestamp)) == 10:
+        pass
+    else:
+        return timestamp
+
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
 
 
