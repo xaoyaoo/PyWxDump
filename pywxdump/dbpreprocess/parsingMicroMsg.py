@@ -201,7 +201,7 @@ class ParsingMicroMsg(DatabaseBase):
         for row in result:
             # 获取用户名、昵称、备注和聊天记录数量
             username, LastReadedCreateTime, LastReadedSvrId = row
-            LastReadedCreateTime = timestamp2str(LastReadedCreateTime / 1000) if LastReadedCreateTime else None
+            LastReadedCreateTime = timestamp2str(LastReadedCreateTime) if LastReadedCreateTime else None
             users.append(
                 {"wxid": username, "LastReadedCreateTime": LastReadedCreateTime, "LastReadedSvrId": LastReadedSvrId})
         return users
