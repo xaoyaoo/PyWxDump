@@ -474,7 +474,7 @@ class ParsingMSG(DatabaseBase):
                 bytes_extra = self.get_BytesExtra(BytesExtra)
                 if bytes_extra:
                     try:
-                        talker = bytes_extra['3'][0]['2'].decode('utf-8', errors='ignore')
+                        talker = bytes_extra['3'][0]['2']
                         if "publisher-id" in talker:
                             talker = "系统"
                     except:
