@@ -19,6 +19,229 @@ import blackboxprotobuf
 
 class ParsingMSG(DatabaseBase):
     _class_name = "MSG"
+    BytesExtra_message_type = {
+        "1": {
+            "type": "message",
+            "message_typedef": {
+                "1": {
+                    "type": "int",
+                    "name": ""
+                },
+                "2": {
+                    "type": "int",
+                    "name": ""
+                }
+            },
+            "name": "1"
+        },
+        "3": {
+            "type": "message",
+            "message_typedef": {
+                "1": {
+                    "type": "int",
+                    "name": ""
+                },
+                "2": {
+                    "type": "str",
+                    "name": ""
+                }
+            },
+            "name": "3",
+            "alt_typedefs": {
+                "1": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {},
+                        "name": ""
+                    }
+                },
+                "2": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "13": {
+                                "type": "fixed32",
+                                "name": ""
+                            },
+                            "12": {
+                                "type": "fixed32",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "3": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "15": {
+                                "type": "fixed64",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "4": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "15": {
+                                "type": "int",
+                                "name": ""
+                            },
+                            "14": {
+                                "type": "fixed32",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "5": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "12": {
+                                "type": "fixed32",
+                                "name": ""
+                            },
+                            "7": {
+                                "type": "fixed64",
+                                "name": ""
+                            },
+                            "6": {
+                                "type": "fixed64",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "6": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "7": {
+                                "type": "fixed64",
+                                "name": ""
+                            },
+                            "6": {
+                                "type": "fixed32",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "7": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "12": {
+                                "type": "fixed64",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "8": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "6": {
+                                "type": "fixed64",
+                                "name": ""
+                            },
+                            "12": {
+                                "type": "fixed32",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "9": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "15": {
+                                "type": "int",
+                                "name": ""
+                            },
+                            "12": {
+                                "type": "fixed64",
+                                "name": ""
+                            },
+                            "6": {
+                                "type": "int",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+                "10": {
+                    "1": {
+                        "type": "int",
+                        "name": ""
+                    },
+                    "2": {
+                        "type": "message",
+                        "message_typedef": {
+                            "6": {
+                                "type": "fixed32",
+                                "name": ""
+                            },
+                            "12": {
+                                "type": "fixed64",
+                                "name": ""
+                            }
+                        },
+                        "name": ""
+                    }
+                },
+            }
+        }
+    }
 
     def __init__(self, db_path):
         super().__init__(db_path)
@@ -43,7 +266,7 @@ class ParsingMSG(DatabaseBase):
         if BytesExtra is None or not isinstance(BytesExtra, bytes):
             return None
         try:
-            deserialize_data, message_type = blackboxprotobuf.decode_message(BytesExtra)
+            deserialize_data, message_type = blackboxprotobuf.decode_message(BytesExtra, self.BytesExtra_message_type)
             return deserialize_data
         except Exception as e:
             return None
@@ -182,7 +405,7 @@ class ParsingMSG(DatabaseBase):
                               f"其他信息：{json.dumps(location, ensure_ascii=False, indent=4)}"
                               )
             content["src"] = ""
-        elif type_id == (49, 0):
+        elif type_id == (49, 0):  # 文件
             DictExtra = self.get_BytesExtra(BytesExtra)
             url = match_BytesExtra(DictExtra)
             content["src"] = url
