@@ -45,6 +45,7 @@ def init_last_local_wxid():
         return ReJson(0, {"local_wxids": local_wxid})
     return ReJson(0, {"local_wxids": []})
 
+
 @api.route('/api/init_last', methods=["GET", 'POST'])
 @error9999
 def init_last():
@@ -322,8 +323,11 @@ def get_imgsrc(imgsrc):
     if not imgsrc:
         return ReJson(1002)
 
+    if imgsrc.startswith("FileStorage"):  # 如果是本地图片文件则调用get_img
+        return get_img(imgsrc)
+
     # 将?后面的参数连接到imgsrc
-    imgsrc = imgsrc + "?" + request.query_string.decode("utf-8")
+    imgsrc = imgsrc + "?" + request.query_string.decode("utf-8") if request.query_string else imgsrc
 
     my_wxid = read_session(g.sf, "test", "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
@@ -346,6 +350,37 @@ def get_imgsrc(imgsrc):
             return send_file(img_path_all)
         else:
             return ReJson(4004, body=imgsrc)
+
+
+@api.route('/api/img/<path:img_path>', methods=["GET", 'POST'])
+@error9999
+def get_img(img_path):
+    """
+    获取图片
+    :return:
+    """
+
+    if not img_path:
+        return ReJson(1002)
+
+    my_wxid = read_session(g.sf, "test", "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    wx_path = read_session(g.sf, my_wxid, "wx_path")
+
+    img_path = img_path.replace("\\\\", "\\")
+
+    img_tmp_path = os.path.join(g.tmp_path, my_wxid, "img")
+    original_img_path = os.path.join(wx_path, img_path)
+    if os.path.exists(original_img_path):
+        fomt, md5, out_bytes = dat2img(original_img_path)
+        imgsavepath = os.path.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
+        if not os.path.exists(os.path.dirname(imgsavepath)):
+            os.makedirs(os.path.dirname(imgsavepath))
+        with open(imgsavepath, "wb") as f:
+            f.write(out_bytes)
+        return send_file(imgsavepath)
+    else:
+        return ReJson(1001, body=original_img_path)
 
 
 @api.route('/api/msgs', methods=["GET", 'POST'])
@@ -375,38 +410,6 @@ def get_msgs():
     wxid_list.append(my_wxid)
     user_list = wxid2userinfo(merge_path, merge_path, wxid_list)
     return ReJson(0, {"msg_list": msgs, "user_list": user_list})
-
-
-@api.route('/api/img/<path:img_path>', methods=["GET", 'POST'])
-@error9999
-def get_img(img_path):
-    """
-    获取图片
-    :return:
-    """
-
-    if not img_path:
-        return ReJson(1002)
-
-    my_wxid = read_session(g.sf, "test", "last")
-    if not my_wxid: return ReJson(1001, body="my_wxid is required")
-    wx_path = read_session(g.sf, my_wxid, "wx_path")
-
-    img_path = img_path.replace("\\\\", "\\")
-
-    img_tmp_path = os.path.join(g.tmp_path, my_wxid, "img")
-    original_img_path = os.path.join(wx_path, img_path)
-
-    if os.path.exists(original_img_path):
-        fomt, md5, out_bytes = dat2img(original_img_path)
-        imgsavepath = os.path.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
-        if not os.path.exists(os.path.dirname(imgsavepath)):
-            os.makedirs(os.path.dirname(imgsavepath))
-        with open(imgsavepath, "wb") as f:
-            f.write(out_bytes)
-        return send_file(imgsavepath)
-    else:
-        return ReJson(1001, body=original_img_path)
 
 
 @api.route('/api/video/<path:videoPath>', methods=["GET", 'POST'])

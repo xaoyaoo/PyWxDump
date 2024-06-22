@@ -395,8 +395,12 @@ class ParsingMSG(DatabaseBase):
         elif type_id == (47, 0):  # 动画表情
             content_tmp = xml2dict(StrContent)
             cdnurl = content_tmp.get("emoji", {}).get("cdnurl", "")
+            if not cdnurl:
+                DictExtra = self.get_BytesExtra(BytesExtra)
+                cdnurl = match_BytesExtra(DictExtra)
             if cdnurl:
                 content = {"src": cdnurl, "msg": "表情"}
+
         elif type_id == (48, 0):  # 地图信息
             content_tmp = xml2dict(StrContent)
             location = content_tmp.get("location", {})
