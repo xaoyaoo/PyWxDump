@@ -52,7 +52,8 @@ def init_last():
     是否初始化
     :return:
     """
-    my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
+    my_wxid = request.json.get("my_wxid", "")
+    my_wxid = my_wxid.strip().strip("'").strip('"') if isinstance(my_wxid, str) else ""
     if not my_wxid:
         my_wxid = read_session(g.sf, "test", "last")
     if my_wxid:
