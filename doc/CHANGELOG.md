@@ -2,6 +2,7 @@
 
 - fix
 - (49, 2000): "转账",
+- UPDATE CHANGELOG.md
 
 ## v3.0.33
 
