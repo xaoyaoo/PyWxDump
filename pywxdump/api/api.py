@@ -57,6 +57,7 @@ def init_last():
     if not my_wxid:
         my_wxid = read_session(g.sf, "test", "last")
     if my_wxid:
+        save_session(g.sf, "test", "last", my_wxid)
         merge_path = read_session(g.sf, my_wxid, "merge_path")
         wx_path = read_session(g.sf, my_wxid, "wx_path")
         key = read_session(g.sf, my_wxid, "key")
