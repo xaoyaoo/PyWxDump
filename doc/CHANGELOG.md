@@ -1,5 +1,6 @@
 ## v3.0.37.(待发布)
 
+- UPDATE CHANGELOG.md
 - release_new_version
 
 ## v3.0.36
