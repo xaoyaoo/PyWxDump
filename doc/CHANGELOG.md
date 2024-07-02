@@ -1,5 +1,10 @@
-## v3.0.36.(待发布)
+## v3.0.37.(待发布)
 
+- release_new_version
+
+## v3.0.36
+
+- fix
 - Update README.md
 - add wx 3.9.11.19
 - UPDATE CHANGELOG.md
