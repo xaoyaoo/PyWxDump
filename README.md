@@ -14,8 +14,6 @@
 [![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypistats.org/packages/pywxdump)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 
-V3.0.* 有很多bug，如果你有问题，请使用V2.4.71版本，或者等待后续版本（发现bug请提交issue）
-
 * Welcome to provide more ideas or code to improve this project together.
 
 ### If you are a novice, please pay attention to the Official Accounts: `逍遥之芯` (the QR code is below), and reply: `PyWxDump` to get a picture text tutorial.
