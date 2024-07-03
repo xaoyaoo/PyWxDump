@@ -13,7 +13,7 @@ from .wx_info import merge_copy_db, merge_msg_db, merge_media_msg_db, merge_db, 
     all_merge_real_time_db
 from .analyzer import DBPool
 from .dbpreprocess import get_user_list, get_recent_user_list, wxid2userinfo, ParsingMSG, ParsingMicroMsg, \
-    ParsingMediaMSG, ParsingOpenIMContact, ParsingFavorite
+    ParsingMediaMSG, ParsingOpenIMContact, ParsingFavorite,ParsingPublicMsg
 from .server import start_falsk
 import os, json
 

@@ -398,7 +398,7 @@ def get_core_db(wx_path: str, db_type: list = None) -> [str]:
     """
     if not os.path.exists(wx_path):
         return False, f"[-] 目录不存在: {wx_path}"
-    db_type_all = ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"]
+    db_type_all = ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite", "PublicMsg"]
 
     if not db_type:
         db_type = db_type_all

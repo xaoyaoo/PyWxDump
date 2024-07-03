@@ -12,6 +12,7 @@ from .parsingMSG import ParsingMSG
 from .parsingMicroMsg import ParsingMicroMsg
 from .parsingMediaMSG import ParsingMediaMSG
 from .parsingOpenIMContact import ParsingOpenIMContact
+from .parsingPublicMsg import ParsingPublicMsg
 from .utils import download_file
 
 from .export.exportCSV import export_csv

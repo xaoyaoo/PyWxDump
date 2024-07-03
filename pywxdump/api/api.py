@@ -23,7 +23,7 @@ from pywxdump.api.utils import read_session, get_session_wxids, save_session, er
 from pywxdump import read_info, VERSION_LIST, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
 from pywxdump.dbpreprocess import wxid2userinfo, ParsingMSG, get_user_list, get_recent_user_list, ParsingMediaMSG, \
-    download_file, export_csv, export_json, ParsingMicroMsg
+    download_file, export_csv, export_json, ParsingMicroMsg, ParsingPublicMsg
 from pywxdump.dbpreprocess.utils import dat2img
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
@@ -311,6 +311,8 @@ def msg_count():
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     merge_path = read_session(g.sf, my_wxid, "merge_path")
     chat_count = ParsingMSG(merge_path).msg_count(wxid)
+    if None in chat_count:
+        chat_count = ParsingPublicMsg(merge_path).msg_count(wxid)
     return ReJson(0, chat_count)
 
 
@@ -407,6 +409,9 @@ def get_msgs():
 
     parsing_msg = ParsingMSG(merge_path)
     msgs, wxid_list = parsing_msg.msg_list(wxid, start, limit)
+    if not msgs:
+        parsing_public_msg = ParsingPublicMsg(merge_path)
+        msgs, wxid_list = parsing_public_msg.msg_list(wxid, start, limit)
     wxid_list.append(my_wxid)
     user_list = wxid2userinfo(merge_path, merge_path, wxid_list)
     return ReJson(0, {"msg_list": msgs, "user_list": user_list})

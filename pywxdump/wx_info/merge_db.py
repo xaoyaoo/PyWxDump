@@ -14,6 +14,7 @@ import subprocess
 import time
 from typing import List
 
+
 def merge_copy_db(db_path, save_path):
     if isinstance(db_path, list) and len(db_path) == 1:
         db_path = db_path[0]
@@ -299,7 +300,8 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
     return save_path
 
 
-def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0, db_type: List[str] = []) -> (bool, str):
+def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0, db_type: List[str] = []) -> (
+bool, str):
     """
     解密合并数据库 msg.db, microMsg.db, media.db,注意：会删除原数据库
     :param wx_path: 微信路径 eg: C:\*******\WeChat Files\wxid_*********
@@ -319,7 +321,8 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     # 分割wx_path的文件名和父目录
     msg_dir = os.path.dirname(wx_path)
     my_wxid = os.path.basename(wx_path)
-    db_type_set: set[str] = {"MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite"}
+    db_type_set: set[str] = {"MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite",
+                             "PublicMsg"}
     if len(db_type) == 0:
         db_type = list(db_type_set)
     else:
