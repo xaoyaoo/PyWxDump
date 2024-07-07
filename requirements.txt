@@ -2,7 +2,7 @@ setuptools
 wheel
 psutil
 pycryptodomex
-pywin32
+pywin32; sys_platform == 'win32'
 pymem
 silk-python
 pyaudio
