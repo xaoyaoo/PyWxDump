@@ -14,6 +14,8 @@ import traceback
 from .rjson import ReJson
 from functools import wraps
 
+from ..file import AttachmentContext
+
 
 def read_session_local_wxid(session_file):
     try:
@@ -31,7 +33,7 @@ def read_session_local_wxid(session_file):
 
 def read_session(session_file, wxid, arg):
     try:
-        with open(session_file, 'r') as f:
+        with AttachmentContext.open_file(session_file, 'r') as f:
             session = json.load(f)
     except FileNotFoundError:
         logging.error(f"Session file not found: {session_file}")
@@ -44,7 +46,7 @@ def read_session(session_file, wxid, arg):
 
 def get_session_wxids(session_file):
     try:
-        with open(session_file, 'r') as f:
+        with AttachmentContext.open_file(session_file, 'r') as f:
             session = json.load(f)
     except FileNotFoundError:
         logging.error(f"Session file not found: {session_file}")
@@ -57,7 +59,7 @@ def get_session_wxids(session_file):
 
 def save_session(session_file, wxid, arg, value):
     try:
-        with open(session_file, 'r') as f:
+        with AttachmentContext.open_file(session_file, 'r') as f:
             session = json.load(f)
     except FileNotFoundError:
         session = {}
@@ -71,7 +73,7 @@ def save_session(session_file, wxid, arg, value):
         session[wxid] = {}
     session[wxid][arg] = value
     try:
-        with open(session_file, 'w') as f:
+        with AttachmentContext.open_file(session_file, 'w') as f:
             json.dump(session, f, indent=4, ensure_ascii=False)
     except Exception as e:
         logging.error(f"Error writing to file: {e}")
@@ -116,7 +118,7 @@ def gen_base64(path):
     else:
         start_str = 'data:text/plain;base64,'
 
-    with open(path, 'rb') as file:
+    with AttachmentContext.open_file(path, 'rb') as file:
         js_code = file.read()
 
     base64_encoded_js = base64.b64encode(js_code).decode('utf-8')

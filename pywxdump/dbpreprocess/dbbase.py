@@ -5,9 +5,14 @@
 # Author:       xaoyaoo
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
+import glob
 import os
 import sqlite3
 import logging
+import tempfile
+import uuid
+
+from pywxdump.file import AttachmentContext
 
 
 class DatabaseBase:
@@ -26,12 +31,19 @@ class DatabaseBase:
 
     @classmethod
     def _connect_to_database(cls, db_path):
-        if not os.path.exists(db_path):
+        if not AttachmentContext.exists(db_path):
             raise FileNotFoundError(f"文件不存在: {db_path}")
         if db_path in cls._connection_pool and cls._connection_pool[db_path] is not None:
             return cls._connection_pool[db_path]
-        connection = sqlite3.connect(db_path, check_same_thread=False)
+        if not AttachmentContext.isLocalPath(db_path):
+            temp_dir = tempfile.gettempdir()
+            local_path = os.path.join(temp_dir, f"{uuid.uuid1()}.db")
+            AttachmentContext.download_file(db_path, local_path)
+        else:
+            local_path = db_path
+        connection = sqlite3.connect(local_path, check_same_thread=False)
         logging.info(f"{connection} 连接句柄创建 {db_path}")
+        cls._connection_pool[db_path] = connection
         return connection
 
     def execute_sql(self, sql, params=None):
@@ -74,6 +86,9 @@ class DatabaseBase:
             self._db_connection.close()
             logging.info(f"关闭数据库 - {self._db_path}")
             self._db_connection = None
+            if not AttachmentContext.isLocalPath(self._db_path):
+                # 删除tmp目录下的db文件
+                self.clearTmpDb()
 
     def close_all_connection(self):
         for db_path in self._connection_pool:
@@ -81,6 +96,19 @@ class DatabaseBase:
                 self._connection_pool[db_path].close()
                 logging.info(f"关闭数据库 - {db_path}")
                 self._connection_pool[db_path] = None
+        # 删除tmp目录下的db文件
+        self.clearTmpDb()
+    def clearTmpDb(self):
+        # 清理 tmp目录下.db文件
+        temp_dir = tempfile.gettempdir()
+        db_files = glob.glob(os.path.join(temp_dir, '*.db'))
+        for db_file in db_files:
+            try:
+                os.remove(db_file)
+                print(f"Deleted: {db_file}")
+            except Exception as e:
+                print(f"Error deleting {db_file}: {e}")
+
 
     def show__singleton_instances(self):
         print(self._singleton_instances)

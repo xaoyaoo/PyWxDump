@@ -18,6 +18,7 @@ if sys.platform == "win32":
 else:
     pythoncom = None
 import pywxdump
+from pywxdump.file import AttachmentContext
 
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
 from pywxdump import get_core_db, all_merge_real_time_db
@@ -90,7 +91,7 @@ def init_key():
     my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
-    if not os.path.exists(wx_path):
+    if not AttachmentContext.exists(wx_path):
         return ReJson(1001, body=f"wx_path not exists: {wx_path}")
     if not key:
         return ReJson(1002, body=f"key is required: {key}")
@@ -98,13 +99,13 @@ def init_key():
         return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     old_merge_save_path = read_session(g.sf, my_wxid, "merge_path")
-    if isinstance(old_merge_save_path, str) and old_merge_save_path and os.path.exists(old_merge_save_path):
+    if isinstance(old_merge_save_path, str) and old_merge_save_path and AttachmentContext.exists(old_merge_save_path):
         pmsg = ParsingMSG(old_merge_save_path)
         pmsg.close_all_connection()
 
-    out_path = os.path.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.tmp_path, "decrypted")
+    out_path = AttachmentContext.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else AttachmentContext.join(g.tmp_path, "decrypted")
     # 检查文件夹中文件是否被占用
-    if os.path.exists(out_path):
+    if AttachmentContext.exists(out_path):
         try:
             shutil.rmtree(out_path)
         except PermissionError as e:
@@ -116,13 +117,13 @@ def init_key():
     time.sleep(1)
     if code:
         # 移动merge_save_path到g.tmp_path/my_wxid
-        if not os.path.exists(os.path.join(g.tmp_path, my_wxid)):
-            os.makedirs(os.path.join(g.tmp_path, my_wxid))
-        merge_save_path_new = os.path.join(g.tmp_path, my_wxid, "merge_all.db")
+        if not AttachmentContext.exists(AttachmentContext.join(g.tmp_path, my_wxid)):
+            os.makedirs(AttachmentContext.join(g.tmp_path, my_wxid))
+        merge_save_path_new = AttachmentContext.join(g.tmp_path, my_wxid, "merge_all.db")
         shutil.move(merge_save_path, str(merge_save_path_new))
 
         # 删除out_path
-        if os.path.exists(out_path):
+        if AttachmentContext.exists(out_path):
             try:
                 shutil.rmtree(out_path)
             except PermissionError as e:
@@ -159,7 +160,7 @@ def init_nokey():
 
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
-    if not os.path.exists(wx_path):
+    if not AttachmentContext.exists(wx_path):
         return ReJson(1001, body=f"wx_path not exists: {wx_path}")
     if not merge_path:
         return ReJson(1002, body=f"merge_path is required: {merge_path}")
@@ -336,8 +337,8 @@ def get_imgsrc(imgsrc):
     my_wxid = read_session(g.sf, "test", "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
 
-    img_tmp_path = os.path.join(g.tmp_path, my_wxid, "imgsrc")
-    if not os.path.exists(img_tmp_path):
+    img_tmp_path = AttachmentContext.join(g.tmp_path, my_wxid, "imgsrc")
+    if not AttachmentContext.exists(img_tmp_path):
         os.makedirs(img_tmp_path)
     file_name = imgsrc.replace("http://", "").replace("https://", "").replace("/", "_").replace("?", "_")
     file_name = file_name + ".jpg"
@@ -345,13 +346,13 @@ def get_imgsrc(imgsrc):
     if len(file_name) > 255:
         file_name = file_name[:255] + "/" + file_name[255:]
 
-    img_path_all = os.path.join(img_tmp_path, file_name)
-    if os.path.exists(img_path_all):
-        return send_file(img_path_all)
+    img_path_all = AttachmentContext.join(img_tmp_path, file_name)
+    if AttachmentContext.exists(img_path_all):
+        return AttachmentContext.send_attachment(img_path_all)
     else:
         download_file(imgsrc, img_path_all)
-        if os.path.exists(img_path_all):
-            return send_file(img_path_all)
+        if AttachmentContext.exists(img_path_all):
+            return AttachmentContext.send_attachment(img_path_all)
         else:
             return ReJson(4004, body=imgsrc)
 
@@ -373,16 +374,16 @@ def get_img(img_path):
 
     img_path = img_path.replace("\\\\", "\\")
 
-    img_tmp_path = os.path.join(g.tmp_path, my_wxid, "img")
-    original_img_path = os.path.join(wx_path, img_path)
-    if os.path.exists(original_img_path):
+    img_tmp_path = AttachmentContext.join(g.tmp_path, my_wxid, "img")
+    original_img_path = AttachmentContext.join(wx_path, img_path)
+    if AttachmentContext.exists(original_img_path):
         fomt, md5, out_bytes = dat2img(original_img_path)
-        imgsavepath = os.path.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
-        if not os.path.exists(os.path.dirname(imgsavepath)):
-            os.makedirs(os.path.dirname(imgsavepath))
-        with open(imgsavepath, "wb") as f:
+        imgsavepath = AttachmentContext.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
+        if not AttachmentContext.exists(AttachmentContext.dirname(imgsavepath)):
+            AttachmentContext.makedirs(AttachmentContext.dirname(imgsavepath))
+        with AttachmentContext.open_file(imgsavepath, "wb") as f:
             f.write(out_bytes)
-        return send_file(imgsavepath)
+        return AttachmentContext.send_attachment(imgsavepath)
     else:
         return ReJson(1001, body=original_img_path)
 
@@ -424,18 +425,18 @@ def get_video(videoPath):
 
     videoPath = videoPath.replace("\\\\", "\\")
 
-    video_tmp_path = os.path.join(g.tmp_path, my_wxid, "video")
-    original_img_path = os.path.join(wx_path, videoPath)
-    if not os.path.exists(original_img_path):
+    video_tmp_path = AttachmentContext.join(g.tmp_path, my_wxid, "video")
+    original_img_path = AttachmentContext.join(wx_path, videoPath)
+    if not AttachmentContext.exists(original_img_path):
         return ReJson(5002)
     # 复制文件到临时文件夹
-    video_save_path = os.path.join(video_tmp_path, videoPath)
-    if not os.path.exists(os.path.dirname(video_save_path)):
-        os.makedirs(os.path.dirname(video_save_path))
-    if os.path.exists(video_save_path):
-        return send_file(video_save_path)
-    shutil.copy(original_img_path, video_save_path)
-    return send_file(original_img_path)
+    video_save_path = AttachmentContext.join(video_tmp_path, videoPath)
+    if not AttachmentContext.exists(AttachmentContext.dirname(video_save_path)):
+        os.makedirs(AttachmentContext.dirname(video_save_path))
+    if AttachmentContext.exists(video_save_path):
+        return AttachmentContext.send_attachment(video_save_path)
+    AttachmentContext.download_file(original_img_path,video_save_path)
+    return AttachmentContext.send_attachment(original_img_path)
 
 
 @api.route('/api/audio/<path:savePath>', methods=["GET", 'POST'])
@@ -444,25 +445,25 @@ def get_audio(savePath):
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     merge_path = read_session(g.sf, my_wxid, "merge_path")
 
-    savePath = os.path.join(g.tmp_path, my_wxid, "audio", savePath)  # 这个是从url中获取的
-    if os.path.exists(savePath):
-        return send_file(savePath)
+    savePath = AttachmentContext.join(g.tmp_path, my_wxid, "audio", savePath)  # 这个是从url中获取的
+    if AttachmentContext.exists(savePath):
+        return AttachmentContext.send_attachment(savePath)
 
     MsgSvrID = savePath.split("_")[-1].replace(".wav", "")
     if not savePath:
         return ReJson(1002)
 
     # 判断savePath路径的文件夹是否存在
-    if not os.path.exists(os.path.dirname(savePath)):
-        os.makedirs(os.path.dirname(savePath))
+    if not AttachmentContext.exists(AttachmentContext.dirname(savePath)):
+        os.makedirs(AttachmentContext.dirname(savePath))
 
     parsing_media_msg = ParsingMediaMSG(merge_path)
     wave_data = parsing_media_msg.get_audio(MsgSvrID, is_play=False, is_wave=True, save_path=savePath, rate=24000)
     if not wave_data:
         return ReJson(1001, body="wave_data is required")
 
-    if os.path.exists(savePath):
-        return send_file(savePath)
+    if AttachmentContext.exists(savePath):
+        return AttachmentContext.send_attachment(savePath)
     else:
         return ReJson(4004, body=savePath)
 
@@ -478,8 +479,8 @@ def get_file_info():
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     wx_path = read_session(g.sf, my_wxid, "wx_path")
 
-    all_file_path = os.path.join(wx_path, file_path)
-    if not os.path.exists(all_file_path):
+    all_file_path = AttachmentContext.join(wx_path, file_path)
+    if not AttachmentContext.exists(all_file_path):
         return ReJson(5002)
     file_name = os.path.basename(all_file_path)
     file_size = os.path.getsize(all_file_path)
@@ -492,10 +493,10 @@ def get_file(filePath):
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     wx_path = read_session(g.sf, my_wxid, "wx_path")
 
-    all_file_path = os.path.join(wx_path, filePath)
-    if not os.path.exists(all_file_path):
+    all_file_path = AttachmentContext.join(wx_path, filePath)
+    if not AttachmentContext.exists(all_file_path):
         return ReJson(5002)
-    return send_file(all_file_path)
+    return AttachmentContext.send_attachment(all_file_path)
 
 
 # end 以上为聊天记录相关api *********************************************************************************************
@@ -515,7 +516,7 @@ def get_export_endb():
 
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
-    if not os.path.exists(wx_path):
+    if not AttachmentContext.exists(wx_path):
         return ReJson(1001, body=f"wx_path not exists: {wx_path}")
 
     # 分割wx_path的文件名和父目录
@@ -523,14 +524,14 @@ def get_export_endb():
     if not code:
         return ReJson(2001, body=wxdbpaths)
 
-    outpath = os.path.join(g.tmp_path, "export", my_wxid, "endb")
-    if not os.path.exists(outpath):
+    outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "endb")
+    if not AttachmentContext.exists(outpath):
         os.makedirs(outpath)
 
     for wxdb in wxdbpaths:
         # 复制wxdb->outpath, os.path.basename(wxdb)
         assert isinstance(outpath, str)  # 为了解决pycharm的警告, 无实际意义
-        shutil.copy(wxdb, os.path.join(outpath, os.path.basename(wxdb)))
+        shutil.copy(wxdb, AttachmentContext.join(outpath, os.path.basename(wxdb)))
     return ReJson(0, body=outpath)
 
 
@@ -550,11 +551,11 @@ def get_export_dedb():
         return ReJson(1002, body=f"key is required: {key}")
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
-    if not os.path.exists(wx_path):
+    if not AttachmentContext.exists(wx_path):
         return ReJson(1001, body=f"wx_path not exists: {wx_path}")
 
-    outpath = os.path.join(g.tmp_path, "export", my_wxid, "dedb")
-    if not os.path.exists(outpath):
+    outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "dedb")
+    if not AttachmentContext.exists(outpath):
         os.makedirs(outpath)
 
     code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=outpath)
@@ -584,8 +585,8 @@ def get_export_csv():
     # if not isinstance(start, int) or not isinstance(end, int) or start >= end:
     #     return ReJson(1002, body=f"datetime is required: {st_ed_time}")
 
-    outpath = os.path.join(g.tmp_path, "export", my_wxid, "csv", wxid)
-    if not os.path.exists(outpath):
+    outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "csv", wxid)
+    if not AttachmentContext.exists(outpath):
         os.makedirs(outpath)
 
     code, ret = export_csv(wxid, outpath, read_session(g.sf, my_wxid, "merge_path"))
@@ -608,8 +609,8 @@ def get_export_json():
     if not wxid:
         return ReJson(1002, body=f"username is required: {wxid}")
 
-    outpath = os.path.join(g.tmp_path, "export", my_wxid, "json", wxid)
-    if not os.path.exists(outpath):
+    outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "json", wxid)
+    if not AttachmentContext.exists(outpath):
         os.makedirs(outpath)
 
     code, ret = export_json(wxid, outpath, read_session(g.sf, my_wxid, "merge_path"))
@@ -639,15 +640,15 @@ def get_export_json():
 #         return ReJson(1002)
 #
 #     # 导出路径
-#     outpath = os.path.join(g.tmp_path, "export", export_type)
-#     if not os.path.exists(outpath):
+#     outpath = AttachmentContext.join(g.tmp_path, "export", export_type)
+#     if not AttachmentContext.exists(outpath):
 #         os.makedirs(outpath)
 #
 #     if export_type == "endb":  # 导出加密数据库
 #         # 获取微信文件夹路径
 #         if not wx_path:
 #             return ReJson(1002)
-#         if not os.path.exists(wx_path):
+#         if not AttachmentContext.exists(wx_path):
 #             return ReJson(1001, body=wx_path)
 #
 #         # 分割wx_path的文件名和父目录
@@ -657,7 +658,7 @@ def get_export_json():
 #
 #         for wxdb in wxdbpaths:
 #             # 复制wxdb->outpath, os.path.basename(wxdb)
-#             shutil.copy(wxdb, os.path.join(outpath, os.path.basename(wxdb)))
+#             shutil.copy(wxdb, AttachmentContext.join(outpath, os.path.basename(wxdb)))
 #         return ReJson(0, body=outpath)
 #
 #     elif export_type == "dedb":
@@ -667,22 +668,22 @@ def get_export_json():
 #             media_path = read_session(g.sf, "media_path")
 #             dbpaths = [msg_path, media_path, micro_path]
 #             dbpaths = list(set(dbpaths))
-#             mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time, end_time)
+#             mergepath = merge_db(dbpaths, AttachmentContext.join(outpath, "merge.db"), start_time, end_time)
 #             return ReJson(0, body=mergepath)
 #             # if msg_path == media_path and msg_path == media_path:
-#             #     shutil.copy(msg_path, os.path.join(outpath, "merge.db"))
+#             #     shutil.copy(msg_path, AttachmentContext.join(outpath, "merge.db"))
 #             #     return ReJson(0, body=msg_path)
 #             # else:
 #             #     dbpaths = [msg_path, msg_path, micro_path]
 #             #     dbpaths = list(set(dbpaths))
-#             #     mergepath = merge_db(dbpaths, os.path.join(outpath, "merge.db"), start_time,  end_time)
+#             #     mergepath = merge_db(dbpaths, AttachmentContext.join(outpath, "merge.db"), start_time,  end_time)
 #             #     return ReJson(0, body=mergepath)
 #         else:
 #             return ReJson(1002, body={"start_time": start_time, "end_time": end_time})
 #
 #     elif export_type == "csv":
-#         outpath = os.path.join(outpath, username)
-#         if not os.path.exists(outpath):
+#         outpath = AttachmentContext.join(outpath, username)
+#         if not AttachmentContext.exists(outpath):
 #             os.makedirs(outpath)
 #         code, ret = analyzer.export_csv(username, outpath, read_session(g.sf, "msg_path"))
 #         if code:
@@ -690,8 +691,8 @@ def get_export_json():
 #         else:
 #             return ReJson(2001, body=ret)
 #     elif export_type == "json":
-#         outpath = os.path.join(outpath, username)
-#         if not os.path.exists(outpath):
+#         outpath = AttachmentContext.join(outpath, username)
+#         if not AttachmentContext.exists(outpath):
 #             os.makedirs(outpath)
 #         code, ret = analyzer.export_json(username, outpath, read_session(g.sf, "msg_path"))
 #         if code:
@@ -699,10 +700,10 @@ def get_export_json():
 #         else:
 #             return ReJson(2001, body=ret)
 #     elif export_type == "html":
-#         outpath = os.path.join(outpath, username)
-#         if os.path.exists(outpath):
+#         outpath = AttachmentContext.join(outpath, username)
+#         if AttachmentContext.exists(outpath):
 #             shutil.rmtree(outpath)
-#         if not os.path.exists(outpath):
+#         if not AttachmentContext.exists(outpath):
 #             os.makedirs(outpath)
 #         # chat_type_tups = []
 #         # for ct in chat_type:
@@ -713,26 +714,26 @@ def get_export_json():
 #         #     return ReJson(1002)
 #
 #         # 复制文件 html
-#         export_html = os.path.join(os.path.dirname(pywxdump.VERSION_LIST_PATH), "ui", "export")
-#         indexhtml_path = os.path.join(export_html, "index.html")
-#         assets_path = os.path.join(export_html, "assets")
-#         if not os.path.exists(indexhtml_path) or not os.path.exists(assets_path):
+#         export_html = AttachmentContext.join(AttachmentContext.dirname(pywxdump.VERSION_LIST_PATH), "ui", "export")
+#         indexhtml_path = AttachmentContext.join(export_html, "index.html")
+#         assets_path = AttachmentContext.join(export_html, "assets")
+#         if not AttachmentContext.exists(indexhtml_path) or not AttachmentContext.exists(assets_path):
 #             return ReJson(1001)
 #         js_path = ""
 #         css_path = ""
 #         for file in os.listdir(assets_path):
 #             if file.endswith('.js'):
-#                 js_path = os.path.join(assets_path, file)
+#                 js_path = AttachmentContext.join(assets_path, file)
 #             elif file.endswith('.css'):
-#                 css_path = os.path.join(assets_path, file)
+#                 css_path = AttachmentContext.join(assets_path, file)
 #             else:
 #                 continue
 #         # 读取html,js,css
-#         with open(indexhtml_path, 'r', encoding='utf-8') as f:
+#         with AttachmentContext.open_file(indexhtml_path, 'r', encoding='utf-8') as f:
 #             html = f.read()
-#         with open(js_path, 'r', encoding='utf-8') as f:
+#         with AttachmentContext.open_file(js_path, 'r', encoding='utf-8') as f:
 #             js = f.read()
-#         with open(css_path, 'r', encoding='utf-8') as f:
+#         with AttachmentContext.open_file(css_path, 'r', encoding='utf-8') as f:
 #             css = f.read()
 #
 #         html = re.sub(r'<script .*?></script>', '', html)  # 删除所有的script标签
@@ -756,39 +757,39 @@ def get_export_json():
 #                 if not wave_data:
 #                     continue
 #                 # 判断savePath路径的文件夹是否存在
-#                 savePath = os.path.join(outpath, savePath)
-#                 if not os.path.exists(os.path.dirname(savePath)):
-#                     os.makedirs(os.path.dirname(savePath))
-#                 with open(savePath, "wb") as f:
+#                 savePath = AttachmentContext.join(outpath, savePath)
+#                 if not AttachmentContext.exists(AttachmentContext.dirname(savePath)):
+#                     os.makedirs(AttachmentContext.dirname(savePath))
+#                 with AttachmentContext.open_file(savePath, "wb") as f:
 #                     f.write(wave_data)
 #             elif msg_list[i]["type_name"] == "图片":
 #                 img_path = msg_list[i]["content"]["src"]
 #                 wx_path = read_session(g.sf, "wx_path")
-#                 img_path_all = os.path.join(wx_path, img_path)
+#                 img_path_all = AttachmentContext.join(wx_path, img_path)
 #
-#                 if os.path.exists(img_path_all):
+#                 if AttachmentContext.exists(img_path_all):
 #                     fomt, md5, out_bytes = read_img_dat(img_path_all)
-#                     imgsavepath = os.path.join(outpath, "img", img_path + "_" + ".".join([md5, fomt]))
-#                     if not os.path.exists(os.path.dirname(imgsavepath)):
-#                         os.makedirs(os.path.dirname(imgsavepath))
-#                     with open(imgsavepath, "wb") as f:
+#                     imgsavepath = AttachmentContext.join(outpath, "img", img_path + "_" + ".".join([md5, fomt]))
+#                     if not AttachmentContext.exists(AttachmentContext.dirname(imgsavepath)):
+#                         os.makedirs(AttachmentContext.dirname(imgsavepath))
+#                     with AttachmentContext.open_file(imgsavepath, "wb") as f:
 #                         f.write(out_bytes)
-#                     msg_list[i]["content"]["src"] = os.path.join("img", img_path + "_" + ".".join([md5, fomt]))
+#                     msg_list[i]["content"]["src"] = AttachmentContext.join("img", img_path + "_" + ".".join([md5, fomt]))
 #
 #         rdata["msg_list"] = msg_list
 #         rdata["myuserdata"] = rdata["user_list"][rdata["my_wxid"]]
 #         rdata["myuserdata"]["chat_count"] = len(rdata["msg_list"])
 #         save_data = rdata
-#         save_json_path = os.path.join(outpath, "data")
-#         if not os.path.exists(save_json_path):
+#         save_json_path = AttachmentContext.join(outpath, "data")
+#         if not AttachmentContext.exists(save_json_path):
 #             os.makedirs(save_json_path)
-#         with open(os.path.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
+#         with AttachmentContext.open_file(AttachmentContext.join(save_json_path, "msg_user.json"), "w", encoding="utf-8") as f:
 #             json.dump(save_data, f, ensure_ascii=False)
 #
-#         json_base64 = gen_base64(os.path.join(save_json_path, "msg_user.json"))
+#         json_base64 = gen_base64(AttachmentContext.join(save_json_path, "msg_user.json"))
 #         html = html.replace('"./data/msg_user.json"', f'"{json_base64}"')
 #
-#         with open(os.path.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
+#         with AttachmentContext.open_file(AttachmentContext.join(outpath, "index.html"), 'w', encoding='utf-8') as f:
 #             f.write(html)
 #         return ReJson(0, outpath)
 #

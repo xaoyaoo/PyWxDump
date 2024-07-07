@@ -6,7 +6,6 @@
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
 import hashlib
-import os
 import re
 import time
 import wave
@@ -16,6 +15,8 @@ from io import BytesIO
 import pysilk
 import lxml.etree as ET  # 这个模块更健壮些，微信XML格式有时有非标格式，会导致xml.etree.ElementTree处理失败
 from collections import defaultdict
+
+from pywxdump.file import AttachmentContext
 
 
 def type_converter(type_id_or_name: [str, tuple]):
@@ -154,7 +155,7 @@ def dat2img(input_data):
     }
 
     if isinstance(input_data, str):
-        with open(input_data, "rb") as f:
+        with AttachmentContext.open_file(input_data, "rb") as f:
             input_bytes = f.read()
     else:
         input_bytes = input_data
@@ -250,9 +251,9 @@ def download_file(url, save_path=None):
     data = r.content
     if save_path and isinstance(save_path, str):
         # 创建文件夹
-        if not os.path.exists(os.path.dirname(save_path)):
-            os.makedirs(os.path.dirname(save_path))
-        with open(save_path, "wb") as f:
+        if not AttachmentContext.exists(AttachmentContext.dirname(save_path)):
+            AttachmentContext.makedirs(AttachmentContext.dirname(save_path))
+        with AttachmentContext.open_file(save_path, "wb") as f:
             f.write(data)
     return data
 

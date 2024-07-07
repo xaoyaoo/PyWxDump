@@ -15,3 +15,5 @@ lz4
 lxml
 flask_cors
 pandas
+smart_open[s3]
+boto3
