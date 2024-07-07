@@ -9,13 +9,21 @@ import ctypes
 import json
 import os
 import re
-import winreg
+import sys
+if sys.platform == "win32":
+    import winreg
+else:
+    winreg = None
 import psutil
 import pymem
 from typing import List, Union
 from .utils import pattern_scan_all, verify_key, get_exe_version, get_exe_bit, info_error
 
-ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
+if sys.platform == "win32":
+    ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
+else:
+    ReadProcessMemory = None
+
 void_p = ctypes.c_void_p
 
 
@@ -205,8 +213,10 @@ def get_details(process, version_list: dict = None, is_logging: bool = False):
           "account": "None", "mobile": "None", "name": "None", "mail": "None",
           "wxid": "None", "key": "None", "filePath": "None"}
     try:
-        Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
-
+        if sys.platform == "win32":
+            Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
+        else:
+            Handle = None
         bias_list = version_list.get(rd['version'], None)
 
         addrLen = get_exe_bit(process.exe()) // 8

@@ -13,8 +13,10 @@ import traceback
 
 import pymem
 import hashlib
-from win32com.client import Dispatch
-
+if sys.platform == "win32":
+    from win32com.client import Dispatch
+else:
+    Dispatch = None
 
 def info_error(func):
     """

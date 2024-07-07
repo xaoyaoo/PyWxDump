@@ -12,7 +12,11 @@ import os
 import re
 import time
 import shutil
-import pythoncom
+import sys
+if sys.platform == "win32":
+    import pythoncom
+else:
+    pythoncom = None
 import pywxdump
 
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
