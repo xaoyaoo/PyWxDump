@@ -341,7 +341,8 @@ class ParsingMSG(DatabaseBase):
         """
         获取单条消息详情,格式化输出
         """
-        localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID, DisplayContent, CompressContent, BytesExtra, id = row
+        (localId, IsSender, StrContent, StrTalker, Sequence, Type, SubType, CreateTime, MsgSvrID,
+         DisplayContent, CompressContent, BytesExtra, id) = row
         CreateTime = timestamp2str(CreateTime)
 
         type_id = (Type, SubType)
@@ -415,6 +416,16 @@ class ParsingMSG(DatabaseBase):
             content["src"] = url
             file_name = os.path.basename(url)
             content["msg"] = file_name
+
+        elif type_id == (49, 5):  # (分享)卡片式链接
+            CompressContent = self.decompress_CompressContent(CompressContent)
+            CompressContent_tmp = xml2dict(CompressContent)
+            appmsg = CompressContent_tmp.get("appmsg", {})
+            title = appmsg.get("title", "")
+            des = appmsg.get("des", "")
+            url = appmsg.get("url", "")
+            content["msg"] = f"{title}\n{des}\n\n{url}"
+            content["src"] = url
 
         elif type_id == (49, 19):  # 合并转发的聊天记录
             CompressContent = self.decompress_CompressContent(CompressContent)

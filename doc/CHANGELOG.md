@@ -1,5 +1,20 @@
-## v3.0.36.(待发布)
+## v3.0.38.(待发布)
 
+- 
+
+## v3.0.37
+
+- 增加公众号消息显示
+- fix and add
+- add (分享)卡片式链接 解析
+- UPDATE CHANGELOG.md
+- release_new_version
+
+## v3.0.36
+
+- fix
+- Update README.md
+- add wx 3.9.11.19
 - UPDATE CHANGELOG.md
 
 ## v3.0.35
