@@ -13,10 +13,7 @@ import re
 import time
 import shutil
 import sys
-if sys.platform == "win32":
-    import pythoncom
-else:
-    pythoncom = None
+pythoncom = __import__('pythoncom') if sys.platform == "win32" else None
 import pywxdump
 from pywxdump.file import AttachmentContext
 
