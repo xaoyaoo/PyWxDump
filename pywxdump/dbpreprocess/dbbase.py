@@ -38,6 +38,7 @@ class DatabaseBase:
         if not AttachmentContext.isLocalPath(db_path):
             temp_dir = tempfile.gettempdir()
             local_path = os.path.join(temp_dir, f"{uuid.uuid1()}.db")
+            logging.info(f"下载文件到本地: {db_path} -> {local_path}")
             AttachmentContext.download_file(db_path, local_path)
         else:
             local_path = db_path
@@ -88,7 +89,23 @@ class DatabaseBase:
             self._db_connection = None
             if not AttachmentContext.isLocalPath(self._db_path):
                 # 删除tmp目录下的db文件
-                self.clearTmpDb()
+                self._clearTmpDb()
+
+    @classmethod
+    def terminate_connection(cls, db_path: str):
+        """
+        关闭数据库连接
+
+        :param db_path: 数据库路径
+
+        """
+        if db_path in cls._connection_pool and cls._connection_pool[db_path]:
+            cls._connection_pool[db_path].close()
+            logging.info(f"关闭数据库 - {db_path}")
+            cls._connection_pool[db_path] = None
+            if not AttachmentContext.isLocalPath(db_path):
+                # 删除tmp目录下的db文件
+                cls._clearTmpDb()
 
     def close_all_connection(self):
         for db_path in self._connection_pool:
@@ -97,18 +114,18 @@ class DatabaseBase:
                 logging.info(f"关闭数据库 - {db_path}")
                 self._connection_pool[db_path] = None
         # 删除tmp目录下的db文件
-        self.clearTmpDb()
-    def clearTmpDb(self):
-        # 清理 tmp目录下.db文件
+        self._clearTmpDb()
+
+    @staticmethod
+    def _clearTmpDb():
+        # 清理 tmp目录下.db文件，如果db文件存储在对象存储中，使用时需要下载到tmp目录中，且文件名是由uuid生成，为了避免文件过多，需要清理
         temp_dir = tempfile.gettempdir()
         db_files = glob.glob(os.path.join(temp_dir, '*.db'))
         for db_file in db_files:
             try:
                 os.remove(db_file)
-                print(f"Deleted: {db_file}")
             except Exception as e:
-                print(f"Error deleting {db_file}: {e}")
-
+                logging.error(f"Error deleting {db_file}: {e}")
 
     def show__singleton_instances(self):
         print(self._singleton_instances)

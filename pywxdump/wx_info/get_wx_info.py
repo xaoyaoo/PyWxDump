@@ -395,7 +395,7 @@ def get_wechat_db(require_list: Union[List[str], str] = "all", msg_dir: str = No
 def get_core_db(wx_path: str, db_type: list = None) -> [str]:
     """
     获取聊天消息核心数据库路径
-    :param wx_path: 微信文件夹路径 eg：C:\*****\WeChat Files\wxid*******
+    :param wx_path: 微信文件夹路径 eg：C:\\*****\\WeChat Files\\wxid*******
     :param db_type: 数据库类型 eg: ["MSG", "MediaMSG", "MicroMsg"]，三个中选择一个或多个
     :return: 返回数据库路径 eg:["",""]
     """

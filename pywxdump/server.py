@@ -10,9 +10,11 @@ import subprocess
 import sys
 import time
 
+from pywxdump.common.config.oss_config.s3_config import S3Config
+from pywxdump.common.config.server_config import ServerConfig
 
-def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online=False, debug=False,
-                isopenBrowser=True):
+
+def start_falsk(server_config: ServerConfig):
     """
     启动flask
     :param merge_path:  合并后的数据库路径
@@ -38,13 +40,14 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
     import logging
 
     # 检查端口是否被占用
-    if online:
+    if server_config.online:
         host = '0.0.0.0'
     else:
         host = "127.0.0.1"
 
     app = Flask(__name__, template_folder='./ui/web', static_folder='./ui/web/assets/', static_url_path='/assets/')
-
+    app.config['ENV'] = 'development'
+    app.config['DEBUG'] = True
     # 设置超时时间为 1000 秒
     app.config['TIMEOUT'] = 1000
     app.secret_key = 'secret_key'
@@ -67,18 +70,20 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
         g.tmp_path = tmp_path  # 临时文件夹,用于存放图片等
         g.sf = session_file  # 用于存放各种基础信息
 
-    if merge_path: save_session(session_file, "test", "merge_path", merge_path)
-    if wx_path: save_session(session_file, "test", "wx_path", wx_path)
-    if key: save_session(session_file, "test", "key", key)
-    if my_wxid: save_session(session_file, "test", "my_wxid", my_wxid)
+    wxid = server_config.my_wxid if server_config.my_wxid else "test"
+    if server_config.merge_path: save_session(session_file, wxid, "merge_path", server_config.merge_path)
+    if server_config.wx_path: save_session(session_file, wxid, "wx_path", server_config.wx_path)
+    if server_config.key: save_session(session_file, wxid, "key", server_config.key)
+    if server_config.my_wxid: save_session(session_file, wxid, "my_wxid", server_config.my_wxid)
+    if server_config.oss_config: save_session(session_file, wxid, "oss_config", server_config.oss_config_to_json())
     if not os.path.exists(session_file):
-        save_session(session_file, "test", "last", my_wxid)
+        save_session(session_file, wxid, "last", server_config.my_wxid)
 
     app.register_blueprint(api)
-    if isopenBrowser:
+    if server_config.is_open_browser:
         try:
             # 自动打开浏览器
-            url = f"http://127.0.0.1:{port}/"
+            url = f"http://127.0.0.1:{server_config.port}/"
             # 根据操作系统使用不同的命令打开默认浏览器
             if sys.platform.startswith('darwin'):  # macOS
                 subprocess.call(['open', url])
@@ -100,13 +105,13 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
                 return True
         return False
 
-    if is_port_in_use(host, port):
-        print(f"Port {port} is already in use. Choose a different port.")
+    if is_port_in_use(host, server_config.port):
+        print(f"Port {server_config.port} is already in use. Choose a different port.")
         input("Press Enter to exit...")
     else:
         time.sleep(1)
         print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
-        app.run(host=host, port=port, debug=debug)
+        app.run(host=host, port=server_config.port, debug=server_config.debug)
 
 
 if __name__ == '__main__':
@@ -114,6 +119,16 @@ if __name__ == '__main__':
 
     wx_path = r"****"
     my_wxid = "****"
+    server_config = ServerConfig.builder()
+    server_config.merge_path("s3://*********-1256220500/*********/merge_all.db")
+    server_config.wx_path("s3://*********-1256220500/*********")
+    server_config.my_wxid("test")
+    server_config.port(9000)
+    server_config.online(True)
+    server_config.is_open_browser(False)
 
-    start_falsk(merge_path=merge_path, wx_path=wx_path, my_wxid=my_wxid,
-                port=5000, online=False, debug=False, isopenBrowser=False)
+    s3Config = S3Config("AKIDaAjA*********I1kR4gFdv67v", "wlT2ldSBk*********Qh4fEev47",
+                        "https://cos.ap-nanjing.myqcloud.com")
+    server_config.oss_config(s3Config)
+    start_falsk(server_config.build())
+

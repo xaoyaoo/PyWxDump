@@ -6,11 +6,18 @@
 # Date:         2023/10/14
 # -------------------------------------------------------------------------------
 import argparse
+import json
+import os
 import sys
-import time
 
 from pywxdump import *
 import pywxdump
+from pywxdump.common.config.oss_config.storage_config import DescriptionBuilder
+from pywxdump.common.config.oss_config.storage_config_factory import StorageConfigFactory
+from pywxdump.common.config.oss_config_manager import OSSConfigManager
+from pywxdump.common.config.server_config import ServerConfig
+from pywxdump.common.constants import VERSION_LIST_PATH
+from pywxdump.file import AttachmentContext
 
 wxdump_ascii = r"""
 ██████╗ ██╗   ██╗██╗    ██╗██╗  ██╗██████╗ ██╗   ██╗███╗   ███╗██████╗ 
@@ -264,31 +271,63 @@ class MainShowChatRecords(BaseSubMainClass):
                             default="", metavar="")
         parser.add_argument("--online", action='store_true', help="(可选)是否在线查看(局域网查看)", required=False,
                             default=False)
+        for key, storageConfig in StorageConfigFactory.registry.items():
+            storageConfigDescribe = storageConfig.describe()
+            for description in storageConfigDescribe:
+                parser.add_argument(
+                    f"--{key}_{description[DescriptionBuilder.KEY]}",
+                    help=description[DescriptionBuilder.PLACEHOLDER],
+                    default=False, required=False, type=str, metavar=""
+                )
         # parser.add_argument("-k", "--key", type=str, help="(可选)密钥", required=False, metavar="")
         return parser
 
     def run(self, args):
         print(f"[*] PyWxDump v{pywxdump.__version__}")
+
+        server_config = ServerConfig.builder()
+        server_config.merge_path(args.merge_path)
+        server_config.wx_path(args.wx_path)
+        server_config.my_wxid(args.my_wxid)
+        server_config.online(args.online)
+        server_config.port(9000)
+
+        for key, storageConfig in StorageConfigFactory.registry.items():
+            storageConfigDescribe = storageConfig.describe()
+            config = {}
+            for description in storageConfigDescribe:
+                value = getattr(args, f"{key}_{description[DescriptionBuilder.KEY]}")
+                if value:
+                    config[description[DescriptionBuilder.KEY]] = value
+            if config:
+                oss_config = storageConfig.value_of(config)
+                server_config.oss_config(oss_config)
+                # 加载对象存储配置
+                OSSConfigManager().load_config(oss_config)
+        start_config = server_config.build()
+
+        # 参数检查
+        if not self._dbshow_parameter_check(start_config):
+            return
+
+        start_falsk(start_config)
+
+    def _dbshow_parameter_check(self, server_config) -> bool:
         # (merge)和(msg_path,micro_path,media_path) 二选一
         # if not args.merge_path and not (args.msg_path and args.micro_path and args.media_path):
         #     print("[-] 请输入数据库路径（[merge_path] or [msg_path, micro_path, media_path]）")
         #     return
 
         # 目前仅能支持merge database
-        if not args.merge_path:
+        if not server_config.merge_path:
             print("[-] 请输入数据库路径（[merge_path]）")
-            return
+            return False
 
         # 从命令行参数获取值
-        merge_path = args.merge_path
-
-        online = args.online
-
-        if not os.path.exists(merge_path):
+        if not AttachmentContext.exists(server_config.merge_path):
             print("[-] 输入数据库路径不存在")
-            return
-
-        start_falsk(merge_path=merge_path, wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
+            return False
+        return True
 
 
 class MainExportChatRecords(BaseSubMainClass):
@@ -338,7 +377,13 @@ class MainUi(BaseSubMainClass):
         debug = args.debug
         isopenBrowser = args.isOpenBrowser
 
-        start_falsk(port=port, online=online, debug=debug, isopenBrowser=isopenBrowser)
+        server_config = ServerConfig.builder()
+        server_config.is_open_browser(isopenBrowser)
+        server_config.debug(debug)
+        server_config.port(port)
+        server_config.online(online)
+
+        start_falsk(server_config.build())
 
 
 class MainApi(BaseSubMainClass):
@@ -359,7 +404,13 @@ class MainApi(BaseSubMainClass):
         port = args.port
         debug = args.debug
 
-        start_falsk(port=port, online=online, debug=debug, isopenBrowser=False)
+        server_config = ServerConfig.builder()
+        server_config.debug(debug)
+        server_config.port(port)
+        server_config.is_open_browser(False)
+        server_config.online(online)
+
+        start_falsk(server_config.build())
 
 
 def console_run():

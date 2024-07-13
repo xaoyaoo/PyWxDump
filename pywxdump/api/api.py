@@ -5,14 +5,14 @@
 # Author:       xaoyaoo
 # Date:         2024/01/02
 # -------------------------------------------------------------------------------
-import base64
-import json
 import logging
-import os
-import re
 import time
 import shutil
 import sys
+
+from pywxdump.common.config.oss_config.storage_config_factory import StorageConfigFactory
+from pywxdump.common.config.oss_config_manager import OSSConfigManager
+
 pythoncom = __import__('pythoncom') if sys.platform == "win32" else None
 import pywxdump
 from pywxdump.file import AttachmentContext
@@ -55,8 +55,8 @@ def init_last():
     是否初始化
     :return:
     """
-    my_wxid = request.json.get("my_wxid", "")
-    my_wxid = my_wxid.strip().strip("'").strip('"') if isinstance(my_wxid, str) else ""
+    my_wxid_dict = request.json.get("my_wxid", {})
+    my_wxid = my_wxid_dict.get("wxid", "")
     if not my_wxid:
         my_wxid = read_session(g.sf, "test", "last")
     if my_wxid:
@@ -64,6 +64,9 @@ def init_last():
         merge_path = read_session(g.sf, my_wxid, "merge_path")
         wx_path = read_session(g.sf, my_wxid, "wx_path")
         key = read_session(g.sf, my_wxid, "key")
+        # 如果有oss_config则设置对象存储配置
+        oss_config = read_session(g.sf, my_wxid, "oss_config")
+        ossConfig(oss_config)
         rdata = {
             "merge_path": merge_path,
             "wx_path": wx_path,
@@ -96,11 +99,15 @@ def init_key():
         return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     old_merge_save_path = read_session(g.sf, my_wxid, "merge_path")
-    if isinstance(old_merge_save_path, str) and old_merge_save_path and AttachmentContext.exists(old_merge_save_path):
-        pmsg = ParsingMSG(old_merge_save_path)
-        pmsg.close_all_connection()
+    # 如果有oss_config则设置对象存储配置
+    oss_config = read_session(g.sf, my_wxid, "oss_config")
+    ossConfig(oss_config)
+    # 如果存在旧地连接则关闭连接
+    if isinstance(old_merge_save_path, str) and old_merge_save_path:
+        ParsingMSG.terminate_connection(old_merge_save_path)
 
-    out_path = AttachmentContext.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else AttachmentContext.join(g.tmp_path, "decrypted")
+    out_path = AttachmentContext.join(g.tmp_path, "decrypted", my_wxid) if my_wxid else AttachmentContext.join(
+        g.tmp_path, "decrypted")
     # 检查文件夹中文件是否被占用
     if AttachmentContext.exists(out_path):
         try:
@@ -115,7 +122,7 @@ def init_key():
     if code:
         # 移动merge_save_path到g.tmp_path/my_wxid
         if not AttachmentContext.exists(AttachmentContext.join(g.tmp_path, my_wxid)):
-            os.makedirs(AttachmentContext.join(g.tmp_path, my_wxid))
+            AttachmentContext.makedirs(AttachmentContext.join(g.tmp_path, my_wxid))
         merge_save_path_new = AttachmentContext.join(g.tmp_path, my_wxid, "merge_all.db")
         shutil.move(merge_save_path, str(merge_save_path_new))
 
@@ -144,6 +151,19 @@ def init_key():
         return ReJson(2001, body=merge_save_path)
 
 
+def ossConfig(oss_config: str):
+    """
+    设置对象存储配置
+
+    :param oss_config: 对象存储配置
+
+    :return: None
+    """
+    if oss_config:
+        storageConfig = StorageConfigFactory.create(oss_config)
+        OSSConfigManager().load_config(storageConfig)
+
+
 @api.route('/api/init_nokey', methods=["GET", 'POST'])
 @error9999
 def init_nokey():
@@ -154,6 +174,9 @@ def init_nokey():
     merge_path = request.json.get("merge_path", "").strip().strip("'").strip('"')
     wx_path = request.json.get("wx_path", "").strip().strip("'").strip('"')
     my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
+    # 如果有oss_config则设置对象存储配置
+    oss_config = request.json.get("oss_config", "").strip().strip("'").strip('"')
+    ossConfig(oss_config)
 
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
@@ -170,6 +193,7 @@ def init_nokey():
     save_session(g.sf, my_wxid, "wx_path", wx_path)
     save_session(g.sf, my_wxid, "key", key)
     save_session(g.sf, my_wxid, "my_wxid", my_wxid)
+    save_session(g.sf, my_wxid, "oss_config", oss_config)
     save_session(g.sf, "test", "last", my_wxid)
     rdata = {
         "merge_path": merge_path,
@@ -179,6 +203,25 @@ def init_nokey():
         "is_init": True,
     }
     return ReJson(0, rdata)
+
+
+# 查询支持的对象存储，及配置
+@api.route('/api/check_storage_type', methods=["GET", 'POST'])
+@error9999
+def check_storage_type():
+    path = request.json.get("path", "").strip().strip("'").strip('"')
+    if not path:
+        return ReJson(1002, body=f"path is required: {path}")
+
+    selectStorageConfig = None
+    for key, storageConfig in StorageConfigFactory.registry.items():
+        if storageConfig.isSupported(path):
+            selectStorageConfig = storageConfig
+    if selectStorageConfig:
+        return ReJson(0, {"is_supported": True, "storage_type": selectStorageConfig.type(),
+                          "config_items": selectStorageConfig.describe()})
+    else:
+        return ReJson(0, {"is_supported": False})
 
 
 # END 以上为初始化相关 ***************************************************************************************************
@@ -338,7 +381,7 @@ def get_imgsrc(imgsrc):
 
     img_tmp_path = AttachmentContext.join(g.tmp_path, my_wxid, "imgsrc")
     if not AttachmentContext.exists(img_tmp_path):
-        os.makedirs(img_tmp_path)
+        AttachmentContext.makedirs(img_tmp_path)
     file_name = imgsrc.replace("http://", "").replace("https://", "").replace("/", "_").replace("?", "_")
     file_name = file_name + ".jpg"
     # 如果文件名过长，则将文件明分为目录和文件名
@@ -434,10 +477,10 @@ def get_video(videoPath):
     # 复制文件到临时文件夹
     video_save_path = AttachmentContext.join(video_tmp_path, videoPath)
     if not AttachmentContext.exists(AttachmentContext.dirname(video_save_path)):
-        os.makedirs(AttachmentContext.dirname(video_save_path))
+        AttachmentContext.makedirs(AttachmentContext.dirname(video_save_path))
     if AttachmentContext.exists(video_save_path):
         return AttachmentContext.send_attachment(video_save_path)
-    AttachmentContext.download_file(original_img_path,video_save_path)
+    AttachmentContext.download_file(original_img_path, video_save_path)
     return AttachmentContext.send_attachment(original_img_path)
 
 
@@ -457,7 +500,7 @@ def get_audio(savePath):
 
     # 判断savePath路径的文件夹是否存在
     if not AttachmentContext.exists(AttachmentContext.dirname(savePath)):
-        os.makedirs(AttachmentContext.dirname(savePath))
+        AttachmentContext.makedirs(AttachmentContext.dirname(savePath))
 
     parsing_media_msg = ParsingMediaMSG(merge_path)
     wave_data = parsing_media_msg.get_audio(MsgSvrID, is_play=False, is_wave=True, save_path=savePath, rate=24000)
@@ -484,8 +527,8 @@ def get_file_info():
     all_file_path = AttachmentContext.join(wx_path, file_path)
     if not AttachmentContext.exists(all_file_path):
         return ReJson(5002)
-    file_name = os.path.basename(all_file_path)
-    file_size = os.path.getsize(all_file_path)
+    file_name = AttachmentContext.basename(all_file_path)
+    file_size = AttachmentContext.getsize(all_file_path)
     return ReJson(0, {"file_name": file_name, "file_size": str(file_size)})
 
 
@@ -528,12 +571,12 @@ def get_export_endb():
 
     outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "endb")
     if not AttachmentContext.exists(outpath):
-        os.makedirs(outpath)
+        AttachmentContext.makedirs(outpath)
 
     for wxdb in wxdbpaths:
         # 复制wxdb->outpath, os.path.basename(wxdb)
         assert isinstance(outpath, str)  # 为了解决pycharm的警告, 无实际意义
-        shutil.copy(wxdb, AttachmentContext.join(outpath, os.path.basename(wxdb)))
+        shutil.copy(wxdb, AttachmentContext.join(outpath, AttachmentContext.basename(wxdb)))
     return ReJson(0, body=outpath)
 
 
@@ -558,7 +601,7 @@ def get_export_dedb():
 
     outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "dedb")
     if not AttachmentContext.exists(outpath):
-        os.makedirs(outpath)
+        AttachmentContext.makedirs(outpath)
 
     code, merge_save_path = decrypt_merge(wx_path=wx_path, key=key, outpath=outpath)
     time.sleep(1)
@@ -589,7 +632,7 @@ def get_export_csv():
 
     outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "csv", wxid)
     if not AttachmentContext.exists(outpath):
-        os.makedirs(outpath)
+        AttachmentContext.makedirs(outpath)
 
     code, ret = export_csv(wxid, outpath, read_session(g.sf, my_wxid, "merge_path"))
     if code:
@@ -613,7 +656,7 @@ def get_export_json():
 
     outpath = AttachmentContext.join(g.tmp_path, "export", my_wxid, "json", wxid)
     if not AttachmentContext.exists(outpath):
-        os.makedirs(outpath)
+        AttachmentContext.makedirs(outpath)
 
     code, ret = export_json(wxid, outpath, read_session(g.sf, my_wxid, "merge_path"))
     if code:
