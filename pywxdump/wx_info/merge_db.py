@@ -402,6 +402,10 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     # 获取当前文件夹路径
     current_path = os.path.dirname(__file__)
 
+    # # 检查out_path路径是否有中文字符,设置为系统默认tmp路径
+    # if not all(ord(c) < 128 for c in out_path):
+    #     out_path = os.path.join(current_path, "tmp.db")
+
     real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
 
     # 调用cmd命令
