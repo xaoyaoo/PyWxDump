@@ -301,7 +301,7 @@ def merge_db(db_paths, save_path="merge.db", CreateTime: int = 0, endCreateTime:
 
 
 def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: int = 0, db_type: List[str] = []) -> (
-bool, str):
+        bool, str):
     """
     解密合并数据库 msg.db, microMsg.db, media.db,注意：会删除原数据库
     :param wx_path: 微信路径 eg: C:\*******\WeChat Files\wxid_*********
@@ -395,7 +395,9 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     out_path = "tmp_" + ''.join(
         random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=6)) + ".db"
     merge_path_base = os.path.dirname(merge_path)  # 合并后的数据库路径
-    out_path = os.path.join(merge_path_base, out_path)
+    # 设置工作目录
+    os.chdir(merge_path_base)
+    # out_path = os.path.join(merge_path_base, out_path)
     if os.path.exists(out_path):
         os.remove(out_path)
 
@@ -411,7 +413,7 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     # 调用cmd命令
     cmd = f"{real_time_exe_path} \"{key}\" \"{db_path}\" \"{out_path}\" {CreateTime} {endCreateTime}"
     # os.system(cmd)
-    p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=merge_path_base,
                          creationflags=subprocess.CREATE_NO_WINDOW)
     p.communicate()
 
