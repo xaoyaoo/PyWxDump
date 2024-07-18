@@ -193,7 +193,7 @@ class ParsingMicroMsg(DatabaseBase):
         users = []
         sql = (
             "SELECT C.Username, C.LastReadedCreateTime,C.LastReadedSvrId "
-            "FROM ChatInfo C "
+            "FROM ChatInfo C WHERE C.LastReadedCreateTime IS NOT NULL AND C.LastReadedCreateTime > 1007911408000 "
             "ORDER BY C.LastReadedCreateTime DESC;")
         result = self.execute_sql(sql)
         if not result:
