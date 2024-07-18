@@ -170,8 +170,8 @@ def dat2img(input_data):
 
                 out_bytes = np.bitwise_xor(input_bytes, t)  # 使用NumPy进行向量化的异或解密操作
                 md5 = get_md5(out_bytes)
-                return fomt, md5, out_bytes
-        return False
+                return False, fomt, md5, out_bytes
+        return False, False, False, False
     except ImportError:
         pass
 
@@ -185,8 +185,8 @@ def dat2img(input_data):
                     newByte = nowByte ^ t  # 异或解密
                     out_bytes.append(newByte)
                 md5 = get_md5(out_bytes)
-                return fomt, md5, out_bytes
-    return False
+                return True, fomt, md5, out_bytes
+    return False, False, False, False
 
 
 def xml2dict(xml_string):
