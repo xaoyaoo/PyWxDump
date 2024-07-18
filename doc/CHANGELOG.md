@@ -1,6 +1,15 @@
-## v3.0.38.(待发布)
+## v3.0.41.(待发布)
 
 - 
+
+## v3.0.40
+
+- fix
+- fix 图片读取错误
+- 加速实时消息处理速度
+- UPDATE CHANGELOG.md
+- fix real time msg 中文路径报错
+- fix LastReadedCreateTime 容错
 
 ## v3.0.37
 
