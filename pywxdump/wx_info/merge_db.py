@@ -368,14 +368,12 @@ def decrypt_merge(wx_path, key, outpath="", CreateTime: int = 0, endCreateTime: 
     return True, merge_save_path
 
 
-def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, endCreateTime: int = 9999999999):
+def merge_real_time_db(key, merge_path: str, db_paths: [str] or str):
     """
     合并实时数据库消息,暂时只支持64位系统
     :param key:  解密密钥
-    :param db_path:  数据库路径
+    :param db_paths:  数据库路径
     :param merge_path:  合并后的数据库路径
-    :param CreateTime:  从这个时间开始的消息 10位时间戳
-    :param endCreateTime:  结束时间
     :return:
     """
     try:
@@ -386,47 +384,33 @@ def merge_real_time_db(key, db_path: str, merge_path: str, CreateTime: int = 0, 
     if platform.architecture()[0] != '64bit':
         raise Exception("System is not 64-bit.")
 
-    if not os.path.exists(db_path):
-        raise FileNotFoundError("数据库不存在")
+    if isinstance(db_paths, str):
+        db_paths = [db_paths]
 
-    if "MSG" not in db_path and "MicroMsg" not in db_path and "MediaMSG" not in db_path:
-        raise FileNotFoundError("数据库不是消息数据库")  # MicroMsg实时数据库
+    endbs = []
 
-    out_path = "tmp_" + ''.join(
-        random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=6)) + ".db"
+    for db_path in db_paths:
+        if not os.path.exists(db_path):
+            # raise FileNotFoundError("数据库不存在")
+            continue
+        if "MSG" not in db_path and "MicroMsg" not in db_path and "MediaMSG" not in db_path:
+            # raise FileNotFoundError("数据库不是消息数据库")  # MicroMsg实时数据库
+            continue
+        endbs.append(db_path)
+    endbs = '" "'.join(list(set(endbs)))
+
     merge_path_base = os.path.dirname(merge_path)  # 合并后的数据库路径
-    # 设置工作目录
-    os.chdir(merge_path_base)
-    # out_path = os.path.join(merge_path_base, out_path)
-    if os.path.exists(out_path):
-        os.remove(out_path)
 
     # 获取当前文件夹路径
     current_path = os.path.dirname(__file__)
-
-    # # 检查out_path路径是否有中文字符,设置为系统默认tmp路径
-    # if not all(ord(c) < 128 for c in out_path):
-    #     out_path = os.path.join(current_path, "tmp.db")
-
     real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
 
     # 调用cmd命令
-    cmd = f"{real_time_exe_path} \"{key}\" \"{db_path}\" \"{out_path}\" {CreateTime} {endCreateTime}"
+    cmd = f'{real_time_exe_path} "{key}" "{merge_path}" "{endbs}"'
     # os.system(cmd)
     p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=merge_path_base,
                          creationflags=subprocess.CREATE_NO_WINDOW)
     p.communicate()
-
-    if not os.path.exists(out_path):
-        raise FileNotFoundError("合并失败")
-
-    a = merge_db([out_path], merge_path, CreateTime=CreateTime, endCreateTime=endCreateTime)
-    try:
-        os.remove(out_path)
-    except:
-        time.sleep(3)
-        os.remove(out_path)
-
     return True, merge_path
 
 
@@ -450,6 +434,5 @@ def all_merge_real_time_db(key, wx_path, merge_path):
     if not db_paths[0]:
         return False, db_paths[1]
     db_paths = db_paths[1]
-    for i in db_paths:
-        merge_real_time_db(key=key, db_path=i, merge_path=merge_path)
+    merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths)
     return True, merge_path
