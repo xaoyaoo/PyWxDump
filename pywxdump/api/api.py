@@ -375,7 +375,8 @@ def get_img(img_path):
     original_img_path = os.path.join(wx_path, img_path)
     if os.path.exists(original_img_path):
         rc, fomt, md5, out_bytes = dat2img(original_img_path)
-
+        if not rc:
+            return ReJson(1001, body=original_img_path)
         imgsavepath = os.path.join(img_tmp_path, img_path + "_" + ".".join([md5, fomt]))
         if not os.path.exists(os.path.dirname(imgsavepath)):
             os.makedirs(os.path.dirname(imgsavepath))
