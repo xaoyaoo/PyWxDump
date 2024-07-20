@@ -16,6 +16,7 @@ from typing import List
 
 
 def merge_copy_db(db_path, save_path):
+    logging.warning("merge_copy_db is deprecated, use merge_db instead, will be removed in the future.")
     if isinstance(db_path, list) and len(db_path) == 1:
         db_path = db_path[0]
     if not os.path.exists(db_path):
@@ -25,6 +26,7 @@ def merge_copy_db(db_path, save_path):
 
 # 合并相同名称的数据库 MSG0-MSG9.db
 def merge_msg_db(db_path: list, save_path: str, CreateTime: int = 0):  # CreateTime: 从这个时间开始的消息 10位时间戳
+    logging.warning("merge_msg_db is deprecated, use merge_db instead, will be removed in the future.")
     # 判断save_path是否为文件夹
     if os.path.isdir(save_path):
         save_path = os.path.join(save_path, "merge_MSG.db")
@@ -120,6 +122,7 @@ def merge_msg_db(db_path: list, save_path: str, CreateTime: int = 0):  # CreateT
 
 
 def merge_media_msg_db(db_path: list, save_path: str):
+    logging.warning("merge_media_msg_db is deprecated, use merge_db instead, will be removed in the future.")
     # 判断save_path是否为文件夹
     if os.path.isdir(save_path):
         save_path = os.path.join(save_path, "merge_Media.db")
@@ -199,7 +202,7 @@ def execute_sql(connection, sql, params=None):
             connection.text_factory = str
             return rdata
         except Exception as e:
-            print(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********")
+            logging.error(f"**********\nSQL: {sql}\nparams: {params}\n{e}\n**********", exc_info=True)
             return None
 
 
