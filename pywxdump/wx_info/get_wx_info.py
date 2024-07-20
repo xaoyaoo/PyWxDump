@@ -200,38 +200,43 @@ def get_key(pid, db_path, addr_len):
     return "None"
 
 
-def get_details(process, version_list: dict = None, is_logging: bool = False):
-    rd = {'pid': process.pid, 'version': get_exe_version(process.exe()),
+from .ctypes_utils import get_process_list, get_info_with_key, get_memory_maps, get_process_exe_path, \
+    get_file_version_info
+
+
+def get_details(pid, version_list: dict = None, is_logging: bool = False):
+    path = get_process_exe_path(pid)
+    rd = {'pid': pid, 'version': get_file_version_info(path),
           "account": "None", "mobile": "None", "name": "None", "mail": "None",
           "wxid": "None", "key": "None", "filePath": "None"}
     try:
-        Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, process.pid)
-
+        Handle = ctypes.windll.kernel32.OpenProcess(0x1F0FFF, False, pid)
         bias_list = version_list.get(rd['version'], None)
 
-        addrLen = get_exe_bit(process.exe()) // 8
+        addrLen = get_exe_bit(path) // 8
         if not isinstance(bias_list, list) or len(bias_list) <= 4:
             error = f"[-] WeChat Current Version Is Not Supported(maybe not get account,mobile,name,mail)"
             if is_logging: print(error)
         else:
             wechat_base_address = 0
-            for module in process.memory_maps(grouped=False):
-                if module.path and 'WeChatWin.dll' in module.path:
-                    wechat_base_address = int(module.addr, 16)
-                    rd['version'] = get_exe_version(module.path) if os.path.exists(module.path) else rd['version']
+            memory_maps = get_memory_maps(pid)
+            for module in memory_maps:
+                if module.FileName and 'WeChatWin.dll' in module.FileName:
+                    wechat_base_address = module.BaseAddress
+                    rd['version'] = get_file_version_info(module.FileName) if os.path.exists(module.FileName) else rd[
+                        'version']
+                    bias_list = version_list.get(rd['version'], None)
                     break
             if wechat_base_address == 0:
                 error = f"[-] WeChat WeChatWin.dll Not Found"
                 if is_logging: print(error)
-                # return error
-
             name_baseaddr = wechat_base_address + bias_list[0]
-            account__baseaddr = wechat_base_address + bias_list[1]
+            account_baseaddr = wechat_base_address + bias_list[1]
             mobile_baseaddr = wechat_base_address + bias_list[2]
             mail_baseaddr = wechat_base_address + bias_list[3]
             key_baseaddr = wechat_base_address + bias_list[4]
 
-            rd['account'] = get_info_string(Handle, account__baseaddr, 32) if bias_list[1] != 0 else "None"
+            rd['account'] = get_info_string(Handle, account_baseaddr, 32) if bias_list[1] != 0 else "None"
             rd['mobile'] = get_info_string(Handle, mobile_baseaddr, 64) if bias_list[2] != 0 else "None"
             rd['name'] = get_info_name(Handle, name_baseaddr, addrLen, 64) if bias_list[0] != 0 else "None"
             rd['mail'] = get_info_string(Handle, mail_baseaddr, 64) if bias_list[3] != 0 else "None"
@@ -268,20 +273,22 @@ def read_info(version_list: dict = None, is_logging: bool = False, save_path: st
     if version_list is None:
         version_list = {}
 
-    wechat_process = []
+    wechat_pids = []
     result = []
     error = ""
-    for process in psutil.process_iter(['name', 'exe', 'pid', 'cmdline']):
-        if process.name() == 'WeChat.exe':
-            wechat_process.append(process)
 
-    if len(wechat_process) <= 0:
+    processes = get_process_list()
+    for pid, name in processes:
+        if name == "WeChat.exe":
+            wechat_pids.append(pid)
+
+    if len(wechat_pids) <= 0:
         error = "[-] WeChat No Run"
         if is_logging: print(error)
         return error
 
-    for process in wechat_process:
-        rd = get_details(process, version_list, is_logging)
+    for pid in wechat_pids:
+        rd = get_details(pid, version_list, is_logging)
         result.append(rd)
 
     if is_logging:
