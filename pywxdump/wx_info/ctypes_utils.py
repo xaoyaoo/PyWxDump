@@ -9,6 +9,27 @@ PROCESS_QUERY_INFORMATION = 0x0400
 PROCESS_VM_READ = 0x0010
 
 
+# MEMORY_BASIC_INFORMATION 结构体定义
+class MEMORY_BASIC_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ('BaseAddress', ctypes.wintypes.LPVOID),
+        ('AllocationBase', ctypes.wintypes.LPVOID),
+        ('AllocationProtect', ctypes.wintypes.DWORD),
+        ('RegionSize', ctypes.c_size_t),
+        ('State', ctypes.wintypes.DWORD),
+        ('Protect', ctypes.wintypes.DWORD),
+        ('Type', ctypes.wintypes.DWORD)
+    ]
+
+
+class MODULEINFO(ctypes.Structure):
+    _fields_ = [
+        ("lpBaseOfDll", ctypes.c_void_p),  # remote pointer
+        ("SizeOfImage", ctypes.c_ulong),
+        ("EntryPoint", ctypes.c_void_p),  # remote pointer
+    ]
+
+
 # 定义PROCESSENTRY32结构
 class PROCESSENTRY32(ctypes.Structure):
     _fields_ = [("dwSize", ctypes.wintypes.DWORD),
@@ -74,22 +95,14 @@ VerQueryValueW.argtypes = [ctypes.c_void_p, ctypes.wintypes.LPCWSTR, ctypes.POIN
                            ctypes.POINTER(ctypes.wintypes.UINT)]
 VerQueryValueW.restype = ctypes.wintypes.BOOL
 
+# 获取模块信息
+GetModuleInformation = psapi.GetModuleInformation
+GetModuleInformation.argtypes = [ctypes.wintypes.HANDLE, ctypes.wintypes.HMODULE, ctypes.POINTER(MODULEINFO),
+                                 ctypes.wintypes.DWORD]
+GetModuleInformation.restype = ctypes.c_bool
+
 # 读取进程内存
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
-
-
-# MEMORY_BASIC_INFORMATION 结构体定义
-class MEMORY_BASIC_INFORMATION(ctypes.Structure):
-    _fields_ = [
-        ('BaseAddress', ctypes.wintypes.LPVOID),
-        ('AllocationBase', ctypes.wintypes.LPVOID),
-        ('AllocationProtect', ctypes.wintypes.DWORD),
-        ('RegionSize', ctypes.c_size_t),
-        ('State', ctypes.wintypes.DWORD),
-        ('Protect', ctypes.wintypes.DWORD),
-        ('Type', ctypes.wintypes.DWORD)
-    ]
-
 
 # 定义VirtualQueryEx函数
 VirtualQueryEx = kernel32.VirtualQueryEx
@@ -138,6 +151,10 @@ def get_memory_maps(pid):
             file_name = mapped_file_name.value
         else:
             file_name = None
+
+        # module_info = MODULEINFO()
+        # if GetModuleInformation(hProcess, mbi.BaseAddress, ctypes.byref(module_info), ctypes.sizeof(module_info)):
+        #     file_name = get_file_version_info(module_info.lpBaseOfDll)
 
         memory_maps.append({
             'BaseAddress': mbi.BaseAddress,
