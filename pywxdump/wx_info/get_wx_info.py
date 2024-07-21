@@ -11,7 +11,7 @@ import os
 import re
 import winreg
 from typing import List, Union
-from .utils import pattern_scan_all, verify_key, get_exe_version, get_exe_bit, info_error
+from .utils import  verify_key, get_exe_version, get_exe_bit, info_error
 from .ctypes_utils import get_process_list, get_info_with_key, get_memory_maps, get_process_exe_path, \
     get_file_version_info
 from .memory_search import search_memory

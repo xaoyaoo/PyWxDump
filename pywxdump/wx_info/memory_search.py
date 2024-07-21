@@ -1,7 +1,6 @@
 import ctypes
 import ctypes.wintypes as wintypes
 import logging
-from ctypes.wintypes import HANDLE
 import re
 import sys
 

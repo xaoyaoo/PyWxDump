@@ -44,6 +44,24 @@ class PROCESSENTRY32(ctypes.Structure):
                 ("szExeFile", ctypes.c_char * MAX_PATH)]
 
 
+class VS_FIXEDFILEINFO(ctypes.Structure):
+    _fields_ = [
+        ('dwSignature', ctypes.wintypes.DWORD),
+        ('dwStrucVersion', ctypes.wintypes.DWORD),
+        ('dwFileVersionMS', ctypes.wintypes.DWORD),
+        ('dwFileVersionLS', ctypes.wintypes.DWORD),
+        ('dwProductVersionMS', ctypes.wintypes.DWORD),
+        ('dwProductVersionLS', ctypes.wintypes.DWORD),
+        ('dwFileFlagsMask', ctypes.wintypes.DWORD),
+        ('dwFileFlags', ctypes.wintypes.DWORD),
+        ('dwFileOS', ctypes.wintypes.DWORD),
+        ('dwFileType', ctypes.wintypes.DWORD),
+        ('dwFileSubtype', ctypes.wintypes.DWORD),
+        ('dwFileDateMS', ctypes.wintypes.DWORD),
+        ('dwFileDateLS', ctypes.wintypes.DWORD),
+    ]
+
+
 # 加载dll
 kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
 psapi = ctypes.WinDLL('psapi', use_last_error=True)
@@ -214,24 +232,6 @@ def get_file_version_info(file_path):
     return f"{version[0]}.{version[1]}.{version[2]}.{version[3]}"
 
 
-class VS_FIXEDFILEINFO(ctypes.Structure):
-    _fields_ = [
-        ('dwSignature', ctypes.wintypes.DWORD),
-        ('dwStrucVersion', ctypes.wintypes.DWORD),
-        ('dwFileVersionMS', ctypes.wintypes.DWORD),
-        ('dwFileVersionLS', ctypes.wintypes.DWORD),
-        ('dwProductVersionMS', ctypes.wintypes.DWORD),
-        ('dwProductVersionLS', ctypes.wintypes.DWORD),
-        ('dwFileFlagsMask', ctypes.wintypes.DWORD),
-        ('dwFileFlags', ctypes.wintypes.DWORD),
-        ('dwFileOS', ctypes.wintypes.DWORD),
-        ('dwFileType', ctypes.wintypes.DWORD),
-        ('dwFileSubtype', ctypes.wintypes.DWORD),
-        ('dwFileDateMS', ctypes.wintypes.DWORD),
-        ('dwFileDateLS', ctypes.wintypes.DWORD),
-    ]
-
-
 def get_process_list():
     h_process_snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
     if h_process_snap == ctypes.wintypes.HANDLE(-1).value:
@@ -256,8 +256,6 @@ def get_process_list():
     CloseHandle(h_process_snap)
     return process_list
 
-
-bias_list = []
 
 if __name__ == "__main__":
     processes = get_process_list()
