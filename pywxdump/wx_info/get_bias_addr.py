@@ -15,7 +15,7 @@ import pymem
 
 from .utils import get_exe_version, get_exe_bit, verify_key
 
-ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
+ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory if sys.platform == "win32" else None
 void_p = ctypes.c_void_p
 
 
