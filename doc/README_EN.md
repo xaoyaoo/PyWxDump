@@ -14,8 +14,6 @@
 [![PyPI-Downloads](https://img.shields.io/pypi/dm/pywxdump)](https://pypistats.org/packages/pywxdump)
 [![GitHub license](https://img.shields.io/pypi/l/pywxdump)](https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE)
 
-V3.0.* 有很多bug，如果你有问题，请使用V2.4.71版本，或者等待后续版本（发现bug请提交issue）
-
 * Welcome to provide more ideas or code to improve this project together.
 
 ### If you are a novice, please pay attention to the Official Accounts: `逍遥之芯` (the QR code is below), and reply: `PyWxDump` to get a picture text tutorial.
@@ -193,4 +191,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 # Ⅴ. Acknowledgments
 
 [![PyWxDump CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)[![UI CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
+otherContributors:
+[643104191](https://github.com/643104191) (add [ctypes_utils](https://github.com/xaoyaoo/PyWxDump/blob/master/pywxdump/wx_info/ctypes_utils.py), Accelerated the acquisition of wxinfo,[9e3e4cb5aec2b9b445c8283d61c58863f4129c6e](https://github.com/xaoyaoo/PyWxDump/commit/9e3e4cb5aec2b9b445c8283d61c58863f4129c6e))
+
 

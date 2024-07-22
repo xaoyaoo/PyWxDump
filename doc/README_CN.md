@@ -154,3 +154,6 @@ QQ交流群：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.x
 
 [![PyWxDump 贡献者](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)[![UI 贡献者](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
 
+其他贡献者：
+[643104191](https://github.com/643104191) (提供了[ctypes_utils](https://github.com/xaoyaoo/PyWxDump/blob/master/pywxdump/wx_info/ctypes_utils.py),加快了wxinfo获取; [9e3e4cb5aec2b9b445c8283d61c58863f4129c6e](https://github.com/xaoyaoo/PyWxDump/commit/9e3e4cb5aec2b9b445c8283d61c58863f4129c6e))
+
