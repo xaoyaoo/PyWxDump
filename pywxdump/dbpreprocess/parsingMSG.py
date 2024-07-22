@@ -448,6 +448,11 @@ class ParsingMSG(DatabaseBase):
             display_createtime = refermsg.get("createtime", "")
             display_createtime = timestamp2str(
                 int(display_createtime)) if display_createtime.isdigit() else display_createtime
+            if display_content.startswith("<?xml"):
+                display_content = xml2dict(display_content)
+                appmsg1 = display_content.get("appmsg", {})
+                title1 = appmsg1.get("title", "")
+                if title1: display_content = title1
             content["msg"] = f"{title}\n\n[引用]({display_createtime}){displayname}:{display_content}"
             content["src"] = ""
 
