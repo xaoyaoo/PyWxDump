@@ -1,4 +1,17 @@
-## v3.0.41.(待发布)
+## v3.0.43.(待发布)
+
+- 
+
+## v3.0.42
+
+- 增加容错
+- fix 部分图片无法读取
+- update README
+- fix 多重引用消息显示错误
+- Update version_list.json (#110)
+- Merge branch 'master' of github.com:xaoyaoo/PyWxDump
+
+## v3.0.41
 
 - 格式化代码
 - 加速merge_db合并速度
