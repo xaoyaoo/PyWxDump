@@ -11,7 +11,7 @@
 from .wx_core import BiasAddr, get_wx_info, get_wx_db, batch_decrypt, decrypt, get_core_db
 from .wx_core import merge_db, decrypt_merge, merge_real_time_db, all_merge_real_time_db
 from .analyzer import DBPool
-from .db import   MsgHandler, MicroHandler, \
+from .db import MsgHandler, MicroHandler, \
     MediaHandler, OpenIMContactHandler, FavoriteHandler, PublicMsgHandler, DBHandler
 from .server import start_falsk
 import os, json
@@ -27,4 +27,4 @@ except:
 # PYWXDUMP_ROOT_PATH = os.path.dirname(__file__)
 # db_init = DBPool("DBPOOL_INIT")
 
-__version__ = "3.0.42"
+__version__ = "3.1.0"
