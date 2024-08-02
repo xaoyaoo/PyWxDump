@@ -467,5 +467,8 @@ def all_merge_real_time_db(key, wx_path, merge_path: str):
     if not db_paths[0]:
         return False, db_paths[1]
     db_paths = db_paths[1]
-    merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths)
-    return True, merge_path
+    code, ret = merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths)
+    if code:
+        return True, merge_path
+    else:
+        return False, ret
