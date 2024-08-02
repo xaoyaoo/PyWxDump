@@ -28,6 +28,7 @@ install_requires = [
     "lxml",
     "flask_cors",
     "pandas",
+    "dbutils"
 ]
 
 setup(
