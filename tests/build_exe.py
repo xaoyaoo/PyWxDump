@@ -165,8 +165,8 @@ if package_path:
             datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )''')
     datas_741258 = ",\n".join(datas_741258)
 
-    # 获取 wx_info/tools 文件夹下的所有文件 用于打包
-    for root, dirs, files in os.walk(os.path.join(root_path, "wx_info", "tools")):
+    # 获取 wx_core/tools 文件夹下的所有文件 用于打包
+    for root, dirs, files in os.walk(os.path.join(root_path, "wx_core", "tools")):
         for file in files:
             file_path = os.path.join(root, file)
             datas_741258 += f''',\n(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )'''
