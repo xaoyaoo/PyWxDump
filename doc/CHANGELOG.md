@@ -8,7 +8,7 @@
 - fix 部分图片无法读取
 - update README
 - fix 多重引用消息显示错误
-- Update version_list.json (#110)
+- Update WX_OFFS.json (#110)
 - Merge branch 'master' of github.com:xaoyaoo/PyWxDump
 
 ## v3.0.41
@@ -845,7 +845,7 @@
 
 ## v2.1.11
 
-- 修改version_list
+- 修改WX_OFFS
 - 修复3.9.2.*版本无法正常运行
 - 添加自动发布到pypi的github action
 
@@ -860,7 +860,7 @@
 
 ## v2.1.7
 
-- update version_list
+- update WX_OFFS
 - 添加自动发布到pypi的github action
 - add auto get bias addr ,not need input key or wx folder path.
 

@@ -93,14 +93,14 @@ wxdump -h  # 查看具体帮助
 
 ```bash
 wxdump bias -h # 查看具体帮助
-wxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--version_list_path <微信版本偏移文件路径>]
+wxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--WX_OFFS_path <微信版本偏移文件路径>]
 ```
 
 ##### 获取微信信息
 
 ```bash
 wxdump info -h # 查看具体帮助
-wxdump info [--version_list_path <微信版本偏移文件路径>]
+wxdump info [--WX_OFFS_path <微信版本偏移文件路径>]
 ```
 
 ##### 获取微信文件夹路径
@@ -160,13 +160,13 @@ args = {
     "account": "微信账号",  # 微信账号
     "key": "密钥",  # 密钥（可选）
     "db_path": "已登录账号的微信文件夹路径",  # 微信文件夹路径（可选）
-    "version_list_path": "微信版本偏移文件路径"  # 微信版本偏移文件路径（可选）
+    "WX_OFFS_path": "微信版本偏移文件路径"  # 微信版本偏移文件路径（可选）
 }
 bias_addr = BiasAddr(args["account"], args["mobile"], args["name"], args["key"], args["db_path"])
-result = bias_addr.run(True, args["version_list_path"])
+result = bias_addr.run(True, args["WX_OFFS_path"])
 # ************************************************************************************************ #
 # 获取微信信息
-wx_info = read_info(VERSION_LIST, True)
+wx_info = read_info(WX_OFFS, True)
 
 # 获取微信文件夹路径
 args = {

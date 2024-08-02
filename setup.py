@@ -41,19 +41,19 @@ setup(
     url="https://github.com/xaoyaoo/PyWxDump",
     license='MIT',
 
-    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_info', 'pywxdump.analyzer', 'pywxdump.api',
-              'pywxdump.dbpreprocess', 'pywxdump.dbpreprocess.export'],
+    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_core', 'pywxdump.analyzer', 'pywxdump.api',
+              'pywxdump.db', 'pywxdump.db.export'],
     package_dir={'pywxdump': 'pywxdump',
-                 'pywxdump.wx_info': 'pywxdump/wx_info',
+                 'pywxdump.wx_core': 'pywxdump/wx_core',
                  'pywxdump.analyzer': 'pywxdump/analyzer',
                  'pywxdump.ui': 'pywxdump/ui',
                  'pywxdump.api': 'pywxdump/api',
-                 'pywxdump.dbpreprocess': 'pywxdump/dbpreprocess',
-                 'pywxdump.dbpreprocess.export': 'pywxdump/dbpreprocess/export'
+                 'pywxdump.db': 'pywxdump/db',
+                 'pywxdump.db.export': 'pywxdump/db/export'
                  },
 
     package_data={
-        'pywxdump': ['version_list.json', 'ui/templates/*', 'ui/web/*', 'ui/web/assets/*', 'wx_info/tools/*',
+        'pywxdump': ['WX_OFFS.json', 'ui/templates/*', 'ui/web/*', 'ui/web/assets/*', 'wx_core/tools/*',
                      "ui/export/*", "ui/export/assets/*", "ui/export/assets/css/*", "ui/export/assets/js/*",
                      ]
     },

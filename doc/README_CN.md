@@ -84,7 +84,7 @@ QQ交流群：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.x
 
 * 项目地址：https://github.com/xaoyaoo/PyWxDump
 * 目前只在windows下测试过，mac、linux下可能会存在问题。
-* 如发现[version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json)缺失或错误、bug，有改进意见、想要新增功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
+* 如发现[WX_OFFS.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/WX_OFFS.json)缺失或错误、bug，有改进意见、想要新增功能, 请提交[issues](https://github.com/xaoyaoo/PyWxDump/issues).
 * 常见问题请参考[FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md)，更新日志请参考[CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * Web UI的仓库位置 [wxdump_web](https://github.com/xaoyaoo/wxdump_web)
 * 如果对wxdump实现原理感兴趣，请关注公众号：`逍遥之芯`，回复：`原理` 获取原理解析。

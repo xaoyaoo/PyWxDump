@@ -85,7 +85,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 * Project address: https://github.com/xaoyaoo/PyWxDump
 * Currently tested only under Windows, there may be issues under mac and Linux.
-* If you find any missing or incorrect information, bugs, or suggestions for improvement in the [version_list.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/version_list.json), please submit an issue on GitHub.
+* If you find any missing or incorrect information, bugs, or suggestions for improvement in the [WX_OFFS.json](https://github.com/xaoyaoo/PyWxDump/tree/master/pywxdump/WX_OFFS.json), please submit an issue on GitHub.
 * For common issues, please refer to [FAQ](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/FAQ.md), and for the update log, please refer to [CHANGELOG](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CHANGELOG.md)
 * Web UI repository location [wxdump_web](https://github.com/xaoyaoo/wxdump_web )
 * If you are interested in the implementation principle of wxdump, please pay attention to the Official Accounts: `逍遥之芯`, reply: `原理` to get the principle analysis.

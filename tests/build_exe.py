@@ -41,7 +41,7 @@ block_cipher = None
 a = Analysis(['tmp.py'],
              pathex=[],
              binaries=[],
-             datas=[(r'{root_path}\\version_list.json', 'pywxdump'),
+             datas=[(r'{root_path}\\WX_OFFS.json', 'pywxdump'),
               (r'{root_path}/ui/templates/chat.html', 'pywxdump/ui/templates'), 
              (r'{root_path}/ui/templates/index.html', 'pywxdump/ui/templates'),
             {datas_741258}
