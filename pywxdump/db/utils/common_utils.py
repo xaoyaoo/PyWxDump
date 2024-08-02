@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-#
 # -------------------------------------------------------------------------------
-# Name:         utils.py
+# Name:         common_utils.py
 # Description:  
 # Author:       xaoyaoo
 # Date:         2024/04/15
@@ -16,6 +16,25 @@ from io import BytesIO
 import pysilk
 import lxml.etree as ET  # 这个模块更健壮些，微信XML格式有时有非标格式，会导致xml.etree.ElementTree处理失败
 from collections import defaultdict
+
+from ._loger import db_loger
+
+
+def db_error(func):
+    """
+    错误处理装饰器
+    :param func:
+    :return:
+    """
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            db_loger.error(f"db_error: {e}", exc_info=True)
+            return None
+
+    return wrapper
 
 
 def type_converter(type_id_or_name: [str, tuple]):
@@ -170,7 +189,7 @@ def dat2img(input_data):
 
                 out_bytes = np.bitwise_xor(input_bytes, t)  # 使用NumPy进行向量化的异或解密操作
                 md5 = get_md5(out_bytes)
-                return False, fomt, md5, out_bytes
+                return True, fomt, md5, out_bytes
         return False, False, False, False
     except ImportError:
         pass

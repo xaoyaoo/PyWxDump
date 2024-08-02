@@ -9,6 +9,27 @@ PROCESS_QUERY_INFORMATION = 0x0400
 PROCESS_VM_READ = 0x0010
 
 
+# MEMORY_BASIC_INFORMATION 结构体定义
+class MEMORY_BASIC_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ('BaseAddress', ctypes.wintypes.LPVOID),
+        ('AllocationBase', ctypes.wintypes.LPVOID),
+        ('AllocationProtect', ctypes.wintypes.DWORD),
+        ('RegionSize', ctypes.c_size_t),
+        ('State', ctypes.wintypes.DWORD),
+        ('Protect', ctypes.wintypes.DWORD),
+        ('Type', ctypes.wintypes.DWORD)
+    ]
+
+
+class MODULEINFO(ctypes.Structure):
+    _fields_ = [
+        ("lpBaseOfDll", ctypes.c_void_p),  # remote pointer
+        ("SizeOfImage", ctypes.c_ulong),
+        ("EntryPoint", ctypes.c_void_p),  # remote pointer
+    ]
+
+
 # 定义PROCESSENTRY32结构
 class PROCESSENTRY32(ctypes.Structure):
     _fields_ = [("dwSize", ctypes.wintypes.DWORD),
@@ -21,6 +42,24 @@ class PROCESSENTRY32(ctypes.Structure):
                 ("pcPriClassBase", ctypes.wintypes.LONG),
                 ("dwFlags", ctypes.wintypes.DWORD),
                 ("szExeFile", ctypes.c_char * MAX_PATH)]
+
+
+class VS_FIXEDFILEINFO(ctypes.Structure):
+    _fields_ = [
+        ('dwSignature', ctypes.wintypes.DWORD),
+        ('dwStrucVersion', ctypes.wintypes.DWORD),
+        ('dwFileVersionMS', ctypes.wintypes.DWORD),
+        ('dwFileVersionLS', ctypes.wintypes.DWORD),
+        ('dwProductVersionMS', ctypes.wintypes.DWORD),
+        ('dwProductVersionLS', ctypes.wintypes.DWORD),
+        ('dwFileFlagsMask', ctypes.wintypes.DWORD),
+        ('dwFileFlags', ctypes.wintypes.DWORD),
+        ('dwFileOS', ctypes.wintypes.DWORD),
+        ('dwFileType', ctypes.wintypes.DWORD),
+        ('dwFileSubtype', ctypes.wintypes.DWORD),
+        ('dwFileDateMS', ctypes.wintypes.DWORD),
+        ('dwFileDateLS', ctypes.wintypes.DWORD),
+    ]
 
 
 # 加载dll
@@ -74,22 +113,14 @@ VerQueryValueW.argtypes = [ctypes.c_void_p, ctypes.wintypes.LPCWSTR, ctypes.POIN
                            ctypes.POINTER(ctypes.wintypes.UINT)]
 VerQueryValueW.restype = ctypes.wintypes.BOOL
 
+# 获取模块信息
+GetModuleInformation = psapi.GetModuleInformation
+GetModuleInformation.argtypes = [ctypes.wintypes.HANDLE, ctypes.wintypes.HMODULE, ctypes.POINTER(MODULEINFO),
+                                 ctypes.wintypes.DWORD]
+GetModuleInformation.restype = ctypes.c_bool
+
 # 读取进程内存
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
-
-
-# MEMORY_BASIC_INFORMATION 结构体定义
-class MEMORY_BASIC_INFORMATION(ctypes.Structure):
-    _fields_ = [
-        ('BaseAddress', ctypes.wintypes.LPVOID),
-        ('AllocationBase', ctypes.wintypes.LPVOID),
-        ('AllocationProtect', ctypes.wintypes.DWORD),
-        ('RegionSize', ctypes.c_size_t),
-        ('State', ctypes.wintypes.DWORD),
-        ('Protect', ctypes.wintypes.DWORD),
-        ('Type', ctypes.wintypes.DWORD)
-    ]
-
 
 # 定义VirtualQueryEx函数
 VirtualQueryEx = kernel32.VirtualQueryEx
@@ -105,16 +136,6 @@ GetMappedFileName.restype = ctypes.wintypes.DWORD
 GetMappedFileNameW = psapi.GetMappedFileNameW
 GetMappedFileNameW.restype = ctypes.wintypes.DWORD
 GetMappedFileNameW.argtypes = [ctypes.wintypes.HANDLE, ctypes.c_void_p, ctypes.wintypes.LPWSTR, ctypes.wintypes.DWORD]
-
-
-def get_info_with_key(h_process, address, address_len=8):
-    array = ctypes.create_string_buffer(address_len)
-    if ReadProcessMemory(h_process, ctypes.c_void_p(address), array, address_len, 0) == 0: return None
-    address = int.from_bytes(array, byteorder='little')  # 逆序转换为int地址（key地址）
-    key = ctypes.create_string_buffer(32)
-    if ReadProcessMemory(h_process, ctypes.c_void_p(address), key, 32, 0) == 0: return None
-    key_string = bytes(key).hex()
-    return key_string
 
 
 def get_memory_maps(pid):
@@ -138,6 +159,10 @@ def get_memory_maps(pid):
             file_name = mapped_file_name.value
         else:
             file_name = None
+
+        # module_info = MODULEINFO()
+        # if GetModuleInformation(hProcess, mbi.BaseAddress, ctypes.byref(module_info), ctypes.sizeof(module_info)):
+        #     file_name = get_file_version_info(module_info.lpBaseOfDll)
 
         memory_maps.append({
             'BaseAddress': mbi.BaseAddress,
@@ -197,24 +222,6 @@ def get_file_version_info(file_path):
     return f"{version[0]}.{version[1]}.{version[2]}.{version[3]}"
 
 
-class VS_FIXEDFILEINFO(ctypes.Structure):
-    _fields_ = [
-        ('dwSignature', ctypes.wintypes.DWORD),
-        ('dwStrucVersion', ctypes.wintypes.DWORD),
-        ('dwFileVersionMS', ctypes.wintypes.DWORD),
-        ('dwFileVersionLS', ctypes.wintypes.DWORD),
-        ('dwProductVersionMS', ctypes.wintypes.DWORD),
-        ('dwProductVersionLS', ctypes.wintypes.DWORD),
-        ('dwFileFlagsMask', ctypes.wintypes.DWORD),
-        ('dwFileFlags', ctypes.wintypes.DWORD),
-        ('dwFileOS', ctypes.wintypes.DWORD),
-        ('dwFileType', ctypes.wintypes.DWORD),
-        ('dwFileSubtype', ctypes.wintypes.DWORD),
-        ('dwFileDateMS', ctypes.wintypes.DWORD),
-        ('dwFileDateLS', ctypes.wintypes.DWORD),
-    ]
-
-
 def get_process_list():
     h_process_snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
     if h_process_snap == ctypes.wintypes.HANDLE(-1).value:
@@ -239,8 +246,6 @@ def get_process_list():
     CloseHandle(h_process_snap)
     return process_list
 
-
-bias_list = []
 
 if __name__ == "__main__":
     processes = get_process_list()

@@ -7,31 +7,28 @@
 # -------------------------------------------------------------------------------
 import os
 import re
-import sys
 import hmac
+import sys
 import traceback
-
-import pymem
 import hashlib
-from win32com.client import Dispatch
+from ._loger import wx_core_loger
+if sys.platform == "win32":
+    from win32com.client import Dispatch
+else:
+    Dispatch = None
 
-
-def info_error(func):
+def wx_core_error(func):
     """
     错误处理装饰器
     :param func:
     :return:
     """
-
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            traceback_data = traceback.format_exc()
-            rdata = f"{traceback_data}"
-            print(f"info_error: \n{rdata}")
-            return "None"
-
+            wx_core_loger.error(f"wx_core_error: {e}", exc_info=True)
+            return None
     return wrapper
 
 
@@ -55,7 +52,7 @@ def verify_key(key, wx_db_path):
         return False
     return True
 
-@info_error
+@wx_core_error
 def get_exe_version(file_path):
     """
     获取 PE 文件的版本号
@@ -112,33 +109,3 @@ def get_exe_bit(file_path):
         print('get exe bit error: File not found or cannot be opened')
         return 64
 
-
-def pattern_scan_all(handle, pattern, *, return_multiple=False, find_num=100):
-    """
-    扫描内存中所有匹配的模式
-    :param handle: 进程句柄
-    :param pattern: 模式
-    :param return_multiple: 是否返回所有匹配
-    :param find_num: 最多查找数量
-    """
-    next_region = 0
-    found = []
-    user_space_limit = 0x7FFFFFFF0000 if sys.maxsize > 2 ** 32 else 0x7fff0000
-    while next_region < user_space_limit:
-        try:
-            next_region, page_found = pymem.pattern.scan_pattern_page(
-                handle,
-                next_region,
-                pattern,
-                return_multiple=return_multiple
-            )
-        except Exception as e:
-            print(e)
-            break
-        if not return_multiple and page_found:
-            return page_found
-        if page_found:
-            found += page_found
-        if len(found) > find_num:
-            break
-    return found

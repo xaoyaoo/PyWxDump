@@ -15,7 +15,7 @@ import pymem
 
 from .utils import get_exe_version, get_exe_bit, verify_key
 
-ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
+ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory if sys.platform == "win32" else None
 void_p = ctypes.c_void_p
 
 
@@ -151,7 +151,7 @@ class BiasAddr:
                     return j - module.lpBaseOfDll
         return 0
 
-    def run(self, logging_path=False, version_list_path=None):
+    def run(self, logging_path=False, WX_OFFS_PATH=None):
         if not self.get_process_handle()[0]:
             return None
         mobile_bias = self.search_memory_value(self.mobile, self.module_name)
@@ -164,11 +164,11 @@ class BiasAddr:
 
         rdata = {self.version: [name_bias, account_bias, mobile_bias, 0, key_bias]}
 
-        if version_list_path and os.path.exists(version_list_path):
-            with open(version_list_path, "r", encoding="utf-8") as f:
+        if WX_OFFS_PATH and os.path.exists(WX_OFFS_PATH):
+            with open(WX_OFFS_PATH, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 data.update(rdata)
-            with open(version_list_path, "w", encoding="utf-8") as f:
+            with open(WX_OFFS_PATH, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         if os.path.exists(logging_path) and isinstance(logging_path, str):
             with open(logging_path, "a", encoding="utf-8") as f:

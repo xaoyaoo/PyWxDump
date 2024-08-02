@@ -1,5 +1,7 @@
 import logging
 
+loger_rjson = logging.getLogger("rjson")
+
 
 def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = None, extra: dict = None) -> dict:
     """
@@ -17,7 +19,7 @@ def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = N
         0: {'code': 0, 'body': body, 'msg': "success", "extra": extra},
         # 100 开头代表 请求数据有问题
         # 4*** 表示数据库查询结果存在异常
-        1001: {'code': 1001, 'body': body, 'msg': "请求数据格式存在错误！", "extra": extra}, # 请求数据格式存在错误，一般是数据类型错误
+        1001: {'code': 1001, 'body': body, 'msg': "请求数据格式存在错误！", "extra": extra},  # 请求数据格式存在错误，一般是数据类型错误
         1002: {'code': 1002, 'body': body, 'msg': "请求参数存在错误！", "extra": extra},  # 请求参数存在错误,一般是缺少参数
         2001: {'code': 2001, 'body': body, 'msg': "操作失败！", "extra": extra},  # 请求未能正确执行
         4001: {'code': 4001, 'body': body, 'msg': "账号或密码错误！", "extra": extra},  # 表示用户没有权限（令牌、用户名、密码错误）
@@ -31,13 +33,13 @@ def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = N
     }
     rjson = situation.get(code, {'code': 9999, 'body': None, 'msg': "code错误", "extra": {}})
     if code != 0:
-        logging.warning(f"\n{code} \n{rjson['body']}\n{msg if msg else None}")
+        loger_rjson.warning(f"\n{code=}\nbody=\n{rjson['body']}\nmsg={msg if msg else None}\n")
     if body:
         rjson['body'] = body
     if msg:
         rjson['msg'] = msg
     if error:
-        logging.error(error)
+        loger_rjson.error(error, exc_info=True)
     return rjson
 
 
