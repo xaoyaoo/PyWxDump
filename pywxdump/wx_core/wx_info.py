@@ -363,7 +363,7 @@ def get_wx_info(WX_OFFS: dict = None, is_print: bool = False, save_path: str = N
 @wx_core_error
 def get_wx_db(msg_dir: str = None,
               db_types: Union[List[str], str] = None,
-              wxids: Union[List[str], str] = None) -> list[dict]:
+              wxids: Union[List[str], str] = None) -> List[dict]:
     r"""
     获取微信数据库路径
     :param msg_dir:  微信数据库目录 eg: C:\Users\user\Documents\WeChat Files （非wxid目录）
