@@ -93,7 +93,7 @@ def check_create_file_md5(connection):
 
 
 @wx_core_error
-def merge_db(db_paths: list[dict], save_path: str = "merge.db", is_merge_data: bool = True,
+def merge_db(db_paths: List[dict], save_path: str = "merge.db", is_merge_data: bool = True,
              startCreateTime: int = 0, endCreateTime: int = 0):
     """
     合并数据库 会忽略主键以及重复的行。
