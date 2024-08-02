@@ -1,6 +1,9 @@
 ## v3.0.43.(待发布)
 
-- 
+- fix
+- add wx3.9.11.25
+- UPDATE CHANGELOG.md
+- 3.1.0,很多更改丢失，重新恢复的文件
 
 ## v3.0.42
 
@@ -8,12 +11,13 @@
 - fix 部分图片无法读取
 - update README
 - fix 多重引用消息显示错误
-- Update WX_OFFS.json (#110)
+- Update version_list.json (#110)
 - Merge branch 'master' of github.com:xaoyaoo/PyWxDump
 
 ## v3.0.41
 
 - 格式化代码
+- 加快wxinfo获取
 - 加速merge_db合并速度
 - 加快wxinfo获取，速度提升10%
 - UPDATE CHANGELOG.md
@@ -845,7 +849,7 @@
 
 ## v2.1.11
 
-- 修改WX_OFFS
+- 修改version_list
 - 修复3.9.2.*版本无法正常运行
 - 添加自动发布到pypi的github action
 
@@ -860,7 +864,7 @@
 
 ## v2.1.7
 
-- update WX_OFFS
+- update version_list
 - 添加自动发布到pypi的github action
 - add auto get bias addr ,not need input key or wx folder path.
 
