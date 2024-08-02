@@ -41,14 +41,16 @@ setup(
     url="https://github.com/xaoyaoo/PyWxDump",
     license='MIT',
 
-    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_core', 'pywxdump.analyzer', 'pywxdump.api',
-              'pywxdump.db', 'pywxdump.db.export'],
+    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_core', 'pywxdump.wx_core.utils', 'pywxdump.analyzer',
+              'pywxdump.api', 'pywxdump.db', 'pywxdump.db.utils', 'pywxdump.db.export'],
     package_dir={'pywxdump': 'pywxdump',
                  'pywxdump.wx_core': 'pywxdump/wx_core',
+                 'pywxdump.wx_core.utils': 'pywxdump/wx_core/utils',
                  'pywxdump.analyzer': 'pywxdump/analyzer',
                  'pywxdump.ui': 'pywxdump/ui',
                  'pywxdump.api': 'pywxdump/api',
                  'pywxdump.db': 'pywxdump/db',
+                 'pywxdump.db.utils': 'pywxdump/db/utils',
                  'pywxdump.db.export': 'pywxdump/db/export'
                  },
 
