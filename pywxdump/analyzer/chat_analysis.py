@@ -10,8 +10,8 @@ import time
 from collections import Counter
 import pandas as pd
 
-from pywxdump.dbpreprocess.utils import xml2dict
-from pywxdump.dbpreprocess import parsingMSG
+from pywxdump.db.utils import xml2dict
+from pywxdump.db import dbMSG
 
 def date_chat_count(chat_data, interval="W"):
     """

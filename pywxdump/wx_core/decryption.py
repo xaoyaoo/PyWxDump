@@ -16,8 +16,9 @@ import hashlib
 import os
 from typing import Union, List
 from Cryptodome.Cipher import AES
-
 # from Crypto.Cipher import AES # 如果上面的导入失败，可以尝试使用这个
+
+from .utils import wx_core_error, wx_core_loger
 
 SQLITE_FILE_HEADER = "SQLite format 3\x00"  # SQLite文件头
 
@@ -26,7 +27,8 @@ DEFAULT_PAGESIZE = 4096
 
 
 # 通过密钥解密数据库
-def decrypt(key: str, db_path, out_path):
+@wx_core_error
+def decrypt(key: str, db_path: str, out_path: str):
     """
     通过密钥解密数据库
     :param key: 密钥 64位16进制字符串
@@ -72,11 +74,19 @@ def decrypt(key: str, db_path, out_path):
 
     return True, [db_path, out_path, key]
 
-
-def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_logging: bool = False):
+@wx_core_error
+def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_print: bool = False):
+    """
+    批量解密数据库
+    :param key: 密钥 64位16进制字符串
+    :param db_path: 待解密的数据库路径(文件或文件夹)
+    :param out_path: 解密后的数据库输出路径(文件夹)
+    :param is_logging: 是否打印日志
+    :return: (bool, [[input_db_path, output_db_path, key],...])
+    """
     if not isinstance(key, str) or not isinstance(out_path, str) or not os.path.exists(out_path) or len(key) != 64:
         error = f"[-] (key:'{key}' or out_path:'{out_path}') Error!"
-        if is_logging: print(error)
+        wx_core_loger.error(error, exc_info=True)
         return False, error
 
     process_list = []
@@ -84,7 +94,7 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_lo
     if isinstance(db_path, str):
         if not os.path.exists(db_path):
             error = f"[-] db_path:'{db_path}' not found!"
-            if is_logging: print(error)
+            wx_core_loger.error(error, exc_info=True)
             return False, error
 
         if os.path.isfile(db_path):
@@ -104,7 +114,7 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_lo
                     process_list.append([key, inpath, outpath])
         else:
             error = f"[-] db_path:'{db_path}' Error "
-            if is_logging: print(error)
+            wx_core_loger.error(error, exc_info=True)
             return False, error
 
     elif isinstance(db_path, list):
@@ -114,9 +124,9 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_lo
 
         for inpath in db_path:
             if not os.path.exists(inpath):
-                erreor = f"[-] db_path:'{db_path}' not found!"
-                if is_logging: print(erreor)
-                return False, erreor
+                error = f"[-] db_path:'{db_path}' not found!"
+                wx_core_loger.error(error, exc_info=True)
+                return False, error
 
             inpath = os.path.normpath(inpath)
             rel = os.path.relpath(os.path.dirname(inpath), rt_path)
@@ -126,7 +136,7 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_lo
             process_list.append([key, inpath, outpath])
     else:
         error = f"[-] db_path:'{db_path}' Error "
-        if is_logging: print(error)
+        wx_core_loger.error(error, exc_info=True)
         return False, error
 
     result = []
@@ -139,7 +149,7 @@ def batch_decrypt(key: str, db_path: Union[str, List[str]], out_path: str, is_lo
             if not os.listdir(os.path.join(root, dir)):
                 os.rmdir(os.path.join(root, dir))
 
-    if is_logging:
+    if is_print:
         print("=" * 32)
         success_count = 0
         fail_count = 0

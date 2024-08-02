@@ -7,72 +7,74 @@
 # -------------------------------------------------------------------------------
 import base64
 import json
-import logging
 import os
 import re
 import traceback
 from .rjson import ReJson
 from functools import wraps
+import logging
+
+rs_loger = logging.getLogger("rs_api")
+ls_loger = logging.getLogger("ls_api")
 
 
-def read_session_local_wxid(session_file):
+def get_conf_local_wxid(conf_file):
     try:
-        with open(session_file, 'r') as f:
-            session = json.load(f)
+        with open(conf_file, 'r') as f:
+            conf = json.load(f)
     except FileNotFoundError:
-        logging.error(f"Session file not found: {session_file}")
+        logging.error(f"Session file not found: {conf_file}")
         return None
     except json.JSONDecodeError as e:
         logging.error(f"Error decoding JSON file: {e}")
         return None
-    rdata = [k for k in session.keys() if k != "test"]
-    return rdata
+    return list(conf.keys())
 
 
-def read_session(session_file, wxid, arg):
+def get_conf(conf_file, wxid, arg):
     try:
-        with open(session_file, 'r') as f:
-            session = json.load(f)
+        with open(conf_file, 'r') as f:
+            conf = json.load(f)
     except FileNotFoundError:
-        logging.error(f"Session file not found: {session_file}")
+        logging.error(f"Session file not found: {conf_file}")
         return None
     except json.JSONDecodeError as e:
         logging.error(f"Error decoding JSON file: {e}")
         return None
-    return session.get(wxid, {}).get(arg, None)
+    return conf.get(wxid, {}).get(arg, None)
 
 
-def get_session_wxids(session_file):
+def get_conf_wxids(conf_file):
     try:
-        with open(session_file, 'r') as f:
-            session = json.load(f)
+        with open(conf_file, 'r') as f:
+            conf = json.load(f)
     except FileNotFoundError:
-        logging.error(f"Session file not found: {session_file}")
+        logging.error(f"Session file not found: {conf_file}")
         return None
     except json.JSONDecodeError as e:
         logging.error(f"Error decoding JSON file: {e}")
         return None
-    return list(session.keys())
+    return list(conf.keys())
 
 
-def save_session(session_file, wxid, arg, value):
+def set_conf(conf_file, wxid, arg, value):
     try:
-        with open(session_file, 'r') as f:
-            session = json.load(f)
+        with open(conf_file, 'r') as f:
+            conf = json.load(f)
     except FileNotFoundError:
-        session = {}
+        conf = {}
     except json.JSONDecodeError as e:
         logging.error(f"Error decoding JSON file: {e}")
         return False
 
-    if wxid not in session:
-        session[wxid] = {}
-    if not isinstance(session[wxid], dict):
-        session[wxid] = {}
-    session[wxid][arg] = value
+    if wxid not in conf:
+        conf[wxid] = {}
+    if not isinstance(conf[wxid], dict):
+        conf[wxid] = {}
+    conf[wxid][arg] = value
     try:
-        with open(session_file, 'w') as f:
-            json.dump(session, f, indent=4, ensure_ascii=False)
+        with open(conf_file, 'w') as f:
+            json.dump(conf, f, indent=4, ensure_ascii=False)
     except Exception as e:
         logging.error(f"Error writing to file: {e}")
         return False

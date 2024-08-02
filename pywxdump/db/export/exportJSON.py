@@ -7,18 +7,18 @@
 # -------------------------------------------------------------------------------
 import json
 import os
-from ..parsingMSG import ParsingMSG
+from ..dbMSG import MsgHandler
 
 
-def export_json(wxid, outpath, msg_path):
+def export_json(wxid, outpath, db_config):
     if not os.path.exists(outpath):
         outpath = os.path.join(os.getcwd(), "export" + os.sep + wxid)
         if not os.path.exists(outpath):
             os.makedirs(outpath)
 
-    pmsg = ParsingMSG(msg_path)
+    pmsg = MsgHandler(db_config)
 
-    count = pmsg.msg_count(wxid)
+    count = pmsg.get_msg_count(wxid)
     chatCount = count.get(wxid, 0)
     if chatCount == 0:
         return False, "没有聊天记录"
@@ -26,7 +26,7 @@ def export_json(wxid, outpath, msg_path):
     page_size = chatCount + 1
     for i in range(0, chatCount, page_size):
         start_index = i
-        data, wxid_list = pmsg.msg_list(wxid, start_index, page_size)
+        data, wxid_list = pmsg.get_msg_list(wxid, start_index, page_size)
         if len(data) == 0:
             return False, "没有聊天记录"
         save_path = os.path.join(outpath, f"{wxid}_{i}_{i + page_size}.json")

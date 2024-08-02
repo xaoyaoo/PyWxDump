@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-#
 # -------------------------------------------------------------------------------
-# Name:         __init__.py
+# Name:         _loger.py
 # Description:  
 # Author:       xaoyaoo
-# Date:         2023/12/14
+# Date:         2024/07/23
 # -------------------------------------------------------------------------------
-from .remote_server import rs_api
-from .local_server import ls_api
-from .utils import get_conf, set_conf
+import logging
 
-if __name__ == '__main__':
-    pass
+wx_core_loger = logging.getLogger("wx_core")

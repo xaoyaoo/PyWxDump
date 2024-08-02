@@ -11,12 +11,20 @@ import hmac
 import sys
 import traceback
 import hashlib
+<<<<<<< HEAD:pywxdump/wx_info/utils.py
+=======
+from ._loger import wx_core_loger
+>>>>>>> ta:pywxdump/wx_core/utils/common_utils.py
 if sys.platform == "win32":
     from win32com.client import Dispatch
 else:
     Dispatch = None
 
+<<<<<<< HEAD:pywxdump/wx_info/utils.py
 def info_error(func):
+=======
+def wx_core_error(func):
+>>>>>>> ta:pywxdump/wx_core/utils/common_utils.py
     """
     错误处理装饰器
     :param func:
@@ -26,10 +34,15 @@ def info_error(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
+<<<<<<< HEAD:pywxdump/wx_info/utils.py
             traceback_data = traceback.format_exc()
             rdata = f"{traceback_data}"
             print(f"info_error: \n{rdata}")
             return "None"
+=======
+            wx_core_loger.error(f"wx_core_error: {e}", exc_info=True)
+            return None
+>>>>>>> ta:pywxdump/wx_core/utils/common_utils.py
     return wrapper
 
 
@@ -53,7 +66,7 @@ def verify_key(key, wx_db_path):
         return False
     return True
 
-@info_error
+@wx_core_error
 def get_exe_version(file_path):
     """
     获取 PE 文件的版本号

@@ -9,6 +9,19 @@ import os
 import subprocess
 import sys
 import time
+import logging
+
+server_loger = logging.getLogger("server")
+
+
+def is_port_in_use(_host, _port):
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind((_host, _port))
+        except socket.error:
+            return True
+    return False
 
 
 def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online=False, debug=False,
@@ -25,17 +38,17 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
     :param isopenBrowser:  是否自动打开浏览器
     :return:
     """
-    tmp_path = os.path.join(os.getcwd(), "wxdump_tmp")  # 临时文件夹,用于存放图片等
-    if not os.path.exists(tmp_path):
-        os.makedirs(tmp_path)
-        print(f"[+] 创建临时文件夹：{tmp_path}")
+    work_path = os.path.join(os.getcwd(), "wxdump_work")  # 临时文件夹,用于存放图片等
+    if not os.path.exists(work_path):
+        os.makedirs(work_path)
+        server_loger.info(f"[+] 创建临时文件夹：{work_path}")
+        print(f"[+] 创建临时文件夹：{work_path}")
 
-    session_file = os.path.join(tmp_path, "conf.json")  # 用于存放各种基础信息
+    conf_auto_file = os.path.join(work_path, "conf_auto.json")  # 用于存放各种基础信息
 
     from flask import Flask, g
     from flask_cors import CORS
-    from pywxdump.api import api, read_session, save_session
-    import logging
+    from pywxdump.api import rs_api, ls_api, get_conf, set_conf
 
     # 检查端口是否被占用
     if online:
@@ -49,7 +62,7 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
     app.config['TIMEOUT'] = 1000
     app.secret_key = 'secret_key'
 
-    app.logger.setLevel(logging.ERROR)
+    app.logger.setLevel(logging.WARNING)
 
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
 
@@ -63,18 +76,20 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
 
     @app.before_request
     def before_request():
+        g.work_path = work_path  # 临时文件夹,用于存放图片等-新版本
+        g.caf = conf_auto_file  # 用于存放各种基础信息-新版本
+        g.at = "auto_setting"  # 用于默认设置-新版本
 
-        g.tmp_path = tmp_path  # 临时文件夹,用于存放图片等
-        g.sf = session_file  # 用于存放各种基础信息
+    if merge_path: set_conf(conf_auto_file, g.at, "merge_path", merge_path)
+    if wx_path: set_conf(conf_auto_file, g.at, "wx_path", wx_path)
+    if key: set_conf(conf_auto_file, g.at, "key", key)
+    if my_wxid: set_conf(conf_auto_file, g.at, "my_wxid", my_wxid)
+    if not os.path.exists(conf_auto_file):
+        set_conf(conf_auto_file, g.at, "last", my_wxid)
 
-    if merge_path: save_session(session_file, "test", "merge_path", merge_path)
-    if wx_path: save_session(session_file, "test", "wx_path", wx_path)
-    if key: save_session(session_file, "test", "key", key)
-    if my_wxid: save_session(session_file, "test", "my_wxid", my_wxid)
-    if not os.path.exists(session_file):
-        save_session(session_file, "test", "last", my_wxid)
+    app.register_blueprint(rs_api)
+    app.register_blueprint(ls_api)
 
-    app.register_blueprint(api)
     if isopenBrowser:
         try:
             # 自动打开浏览器
@@ -87,24 +102,18 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
             elif sys.platform.startswith('linux'):  # Linux
                 subprocess.call(['xdg-open', url])
             else:
+                server_loger.error(f"Unsupported platform, can't open browser automatically.", exc_info=True)
                 print("Unsupported platform, can't open browser automatically.")
         except Exception as e:
-            pass
-
-    def is_port_in_use(host, port):
-        import socket
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.bind((host, port))
-            except socket.error:
-                return True
-        return False
+            server_loger.error(f"自动打开浏览器失败：{e}", exc_info=True)
 
     if is_port_in_use(host, port):
+        server_loger.error(f"Port {port} is already in use. Choose a different port.")
         print(f"Port {port} is already in use. Choose a different port.")
         input("Press Enter to exit...")
     else:
         time.sleep(1)
+        server_loger.info(f"启动flask服务，host:port：{host}:{port}")
         print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
         app.run(host=host, port=port, debug=debug)
 
