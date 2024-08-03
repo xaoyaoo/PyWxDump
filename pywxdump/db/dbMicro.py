@@ -84,6 +84,7 @@ class MicroHandler(DatabaseBase):
             "JOIN Session S ON S.strUsrName = SubQuery.strUsrName AND S.nTime = SubQuery.MaxnTime "
             "left join Contact C ON C.UserName = S.strUsrName "
             "LEFT JOIN ContactHeadImgUrl H ON C.UserName = H.usrName "
+            "WHERE S.strUsrName!='@publicUser' "
             "ORDER BY S.nOrder DESC;"
         )
         ret = self.execute(sql)
@@ -106,6 +107,7 @@ class MicroHandler(DatabaseBase):
                 "wxid": strUsrName, "nOrder": nOrder, "nUnReadCount": nUnReadCount, "strNickName": strNickName,
                 "nStatus": nStatus, "nIsSend": nIsSend, "strContent": strContent, "nMsgLocalID": nMsgLocalID,
                 "nMsgStatus": nMsgStatus, "nTime": nTime, "nMsgType": nMsgType, "nMsgSubType": nMsgSubType,
+                "LastReadedCreateTime": nTime,
                 "nickname": NickName, "remark": Remark, "account": Alias,
                 "describe": describe, "headImgUrl": bigHeadImgUrl if bigHeadImgUrl else "",
                 "ExtraBuf": ExtraBuf, "LabelIDList": tuple(LabelIDList)
