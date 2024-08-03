@@ -147,7 +147,9 @@ def get_imgsrc(imgsrc):
             rc, fomt, md5, out_bytes = dat2img(original_img_path)
             if not rc:
                 return ReJson(1001, body=original_img_path)
-            imgsavepath = os.path.join(str(img_tmp_path), img_path + "_" + ".".join([md5, fomt]))
+            imgsavepath = os.path.join(str(img_tmp_path), img_path + "_" + "".join([md5, fomt]))
+            if os.path.exists(imgsavepath):
+                return send_file(imgsavepath)
             if not os.path.exists(os.path.dirname(imgsavepath)):
                 os.makedirs(os.path.dirname(imgsavepath))
             with open(imgsavepath, "wb") as f:

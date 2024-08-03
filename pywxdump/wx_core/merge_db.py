@@ -110,13 +110,12 @@ def merge_db(db_paths: List[dict], save_path: str = "merge.db", is_merge_data: b
 
     if isinstance(db_paths, list):
         # alias, file_path
-        databases = {f"MSG{i}": (db['db_path'],
-                                 db.get('de_path', db['db_path'])
-                                 ) for i, db in enumerate(db_paths)
+        databases = {f"dbi_{i}": (db['db_path'],
+                                  db.get('de_path', db['db_path'])
+                                  ) for i, db in enumerate(db_paths)
                      }
     else:
         raise TypeError("db_paths 类型错误")
-
     outdb = sqlite3.connect(save_path)
 
     is_sync_log = check_create_sync_log(outdb)
@@ -134,15 +133,21 @@ def merge_db(db_paths: List[dict], save_path: str = "merge.db", is_merge_data: b
         sql_attach = f"ATTACH DATABASE '{de_path}' AS {alias}"
         out_cursor.execute(sql_attach)
         outdb.commit()
-        sql_query_tbl_name = f"SELECT name FROM {alias}.sqlite_master WHERE type='table' ORDER BY name;"
+        sql_query_tbl_name = f"SELECT tbl_name, sql FROM {alias}.sqlite_master WHERE type='table' ORDER BY tbl_name;"
         tables = execute_sql(outdb, sql_query_tbl_name)
         for table in tables:
-            table = table[0]
+            table, init_create_sql = table[0], table[1]
+            table = table if isinstance(table, str) else table.decode()
+            init_create_sql = init_create_sql if isinstance(init_create_sql, str) else init_create_sql.decode()
             if table == "sqlite_sequence":
+                continue
+            if "CREATE TABLE".lower() not in str(init_create_sql).lower():
                 continue
             # 获取表中的字段名
             sql_query_columns = f"PRAGMA table_info({table})"
             columns = execute_sql(outdb, sql_query_columns)
+            if table == "ChatInfo" and len(columns) > 12:  # bizChat中的ChatInfo表与MicroMsg中的ChatInfo表字段不同
+                continue
             col_type = {
                 (i[1] if isinstance(i[1], str) else i[1].decode(),
                  i[2] if isinstance(i[2], str) else i[2].decode())

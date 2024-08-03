@@ -16,7 +16,7 @@ import pythoncom
 import pywxdump
 
 from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
-from pywxdump import get_core_db, all_merge_real_time_db
+from pywxdump import get_core_db, all_merge_real_time_db, get_wx_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, gen_base64, validate_title, \
     get_conf_local_wxid, ls_loger
@@ -277,7 +277,9 @@ def merge():
     out_path = request.json.get("outPath")
     if not out_path:
         return ReJson(1002)
-    rdata = merge_db(wxdb_path, out_path)
+    db_path = get_wx_db(wxdb_path)
+    # for i in db_path:print(i)
+    rdata = merge_db(db_path, out_path)
     return ReJson(0, str(rdata))
 
 # END 这部分为专业工具的api ***********************************************************************************************
