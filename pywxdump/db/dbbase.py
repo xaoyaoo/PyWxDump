@@ -49,6 +49,10 @@ class DatabaseSingletonBase:
                 raise FileNotFoundError(f"文件不存在: {db_path}")
             pool = PooledDB(
                 creator=sqlite3,  # 使用 sqlite3 作为连接创建者
+                maxconnections=0,  # 连接池最大连接数
+                mincached=4,  # 初始化时，链接池中至少创建的空闲的链接，0表示不创建
+                maxusage=1,  # 一个链接最多被重复使用的次数，None表示无限制
+                blocking=True,  # 连接池中如果没有可用连接后，是否阻塞等待。True，等待；False，不等待然后报错
                 ping=0,  # ping 数据库判断是否服务正常
                 database=db_path
             )
@@ -117,6 +121,9 @@ class DatabaseBase(DatabaseSingletonBase):
             except Exception as e2:
                 db_loger.error(f"{sql=}\n{params=}\n{e1=}\n{e2=}\n", exc_info=True)
                 return None
+        finally:
+            connection.close()
+
 
     def check_tables_exist(self, required_tables):
         """
