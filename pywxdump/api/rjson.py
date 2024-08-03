@@ -1,4 +1,6 @@
 import logging
+import os
+import traceback
 
 loger_rjson = logging.getLogger("rjson")
 
@@ -32,12 +34,19 @@ def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = N
         9999: {'code': 9999, 'body': body, 'msg': "未知错误！", "extra": extra},
     }
     rjson = situation.get(code, {'code': 9999, 'body': None, 'msg': "code错误", "extra": {}})
-    if code != 0:
-        loger_rjson.warning(f"\n{code=}\nbody=\n{rjson['body']}\nmsg={msg if msg else None}\n")
     if body:
         rjson['body'] = body
     if msg:
         rjson['msg'] = msg
+    if code != 0:
+        stack = traceback.extract_stack()
+        project_stack = [frame for frame in stack if "pywxdump" in frame.filename.lower() and
+                         any(keyword in frame.filename for keyword in
+                             ["api", "db", "wx_core", "analyzer", "ui"])]
+        # 格式化调用栈信息
+        formatted_stack = ''.join(traceback.format_list(project_stack))
+        # stack_trace = ''.join(traceback.format_stack())
+        loger_rjson.warning(f"\n{code=}\nbody=\n{rjson['body']}\nmsg={rjson['msg']}\n{extra=}\n{formatted_stack}")
     if error:
         loger_rjson.error(error, exc_info=True)
     return rjson

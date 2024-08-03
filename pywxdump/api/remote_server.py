@@ -156,7 +156,7 @@ def get_imgsrc(imgsrc):
                 f.write(out_bytes)
             return send_file(imgsavepath)
         else:
-            return ReJson(1001, body=original_img_path)
+            return ReJson(1001, body=f"{original_img_path} not exists")
     elif imgsrc.startswith("http://") or imgsrc.startswith("https://"):
         # 将?后面的参数连接到imgsrc
         imgsrc = imgsrc + "?" + request.query_string.decode("utf-8") if request.query_string else imgsrc
