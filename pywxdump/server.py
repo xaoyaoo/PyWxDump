@@ -25,7 +25,7 @@ def is_port_in_use(_host, _port):
 
 
 def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online=False, debug=False,
-                isopenBrowser=True):
+                isopenBrowser=True, loger_handler=None):
     """
     启动flask
     :param merge_path:  合并后的数据库路径
@@ -63,6 +63,13 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
     app.secret_key = 'secret_key'
 
     app.logger.setLevel(logging.WARNING)
+    if loger_handler:
+        app.logger.addHandler(loger_handler)
+        # 获取 Werkzeug 的日志记录器
+        werkzeug_logger = logging.getLogger('werkzeug')
+        # 将自定义格式器应用到 Werkzeug 的日志记录器
+        werkzeug_logger.addHandler(loger_handler)
+        werkzeug_logger.setLevel(logging.DEBUG)
 
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 允许所有域名跨域
 
