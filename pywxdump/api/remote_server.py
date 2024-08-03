@@ -268,7 +268,7 @@ def get_video(videoPath):
 def get_audio(savePath):
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
-    merge_path = get_conf(g.caf, my_wxid, "merge_path")
+    db_config = get_conf(g.caf, my_wxid, "db_config")
 
     savePath = os.path.join(g.work_path, my_wxid, "audio", savePath)  # 这个是从url中获取的
     if os.path.exists(savePath):
@@ -282,8 +282,8 @@ def get_audio(savePath):
     if not os.path.exists(os.path.dirname(savePath)):
         os.makedirs(os.path.dirname(savePath))
 
-    parsing_media_msg = MediaHandler(merge_path)
-    wave_data = parsing_media_msg.get_audio(MsgSvrID, is_play=False, is_wave=True, save_path=savePath, rate=24000)
+    db = DBHandler(db_config)
+    wave_data = db.get_audio(MsgSvrID, is_play=False, is_wave=True, save_path=savePath, rate=24000)
     if not wave_data:
         return ReJson(1001, body="wave_data is required")
 

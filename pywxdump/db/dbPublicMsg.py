@@ -39,6 +39,18 @@ class PublicMsgHandler(MsgHandler):
         """
         return self.check_tables_exist(self.PublicMSG_required_tables)
 
+    def PublicMsg_add_index(self):
+        """
+        添加索引,加快查询速度
+        """
+        # 检查是否存在索引
+        sql = "CREATE INDEX IF NOT EXISTS idx_PublicMsg_StrTalker ON MSG(StrTalker);"
+        self.execute(sql)
+        sql = "CREATE INDEX IF NOT EXISTS idx_PublicMsg_CreateTime ON MSG(CreateTime);"
+        self.execute(sql)
+        sql = "CREATE INDEX IF NOT EXISTS idx_PublicMsg_StrTalker_CreateTime ON MSG(StrTalker, CreateTime);"
+        self.execute(sql)
+
     @db_error
     def get_plc_msg_count(self, wxids: list = ""):
         """

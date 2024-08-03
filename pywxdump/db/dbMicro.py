@@ -24,6 +24,33 @@ class MicroHandler(DatabaseBase):
         """
         return self.check_tables_exist(self.Micro_required_tables)
 
+    def Micro_add_index(self):
+        """
+        添加索引, 加快查询速度
+        """
+        # 为 Session 表添加索引
+        self.execute("CREATE INDEX IF NOT EXISTS idx_Session_strUsrName_nTime ON Session(strUsrName, nTime);")
+        self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nOrder ON Session(nOrder);")
+
+        # 为 Contact 表添加索引
+        self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_UserName ON Contact(UserName);")
+
+        # 为 ContactHeadImgUrl 表添加索引
+        self.execute("CREATE INDEX IF NOT EXISTS idx_ContactHeadImgUrl_usrName ON ContactHeadImgUrl(usrName);")
+
+        # 为 ChatInfo 表添加索引
+        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatInfo_Username_LastReadedCreateTime "
+                     "ON ChatInfo(Username, LastReadedCreateTime);")
+        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatInfo_LastReadedCreateTime ON ChatInfo(LastReadedCreateTime);")
+
+        # 为 Contact 表添加复合索引
+        self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_search "
+                     "ON Contact(UserName, NickName, Remark, Alias, QuanPin, PYInitial, RemarkQuanPin, RemarkPYInitial);")
+
+        # 为 ChatRoom 和 ChatRoomInfo 表添加索引
+        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatRoom_ChatRoomName ON ChatRoom(ChatRoomName);")
+        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatRoomInfo_ChatRoomName ON ChatRoomInfo(ChatRoomName);")
+
     @db_error
     def get_labels(self, id_is_key=True):
         """
