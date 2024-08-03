@@ -31,6 +31,7 @@ class MicroHandler(DatabaseBase):
         # 为 Session 表添加索引
         self.execute("CREATE INDEX IF NOT EXISTS idx_Session_strUsrName_nTime ON Session(strUsrName, nTime);")
         self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nOrder ON Session(nOrder);")
+        self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nTime ON Session(nTime);")
 
         # 为 Contact 表添加索引
         self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_UserName ON Contact(UserName);")
@@ -85,7 +86,7 @@ class MicroHandler(DatabaseBase):
             "left join Contact C ON C.UserName = S.strUsrName "
             "LEFT JOIN ContactHeadImgUrl H ON C.UserName = H.usrName "
             "WHERE S.strUsrName!='@publicUser' "
-            "ORDER BY S.nOrder DESC;"
+            "ORDER BY S.nTime DESC;"
         )
         ret = self.execute(sql)
         if not ret:
