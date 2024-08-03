@@ -99,7 +99,7 @@ def error9999(func):
             traceback_data = traceback.format_exc()
             rdata = f"{traceback_data}"
             # logging.error(rdata)
-            return ReJson(9999, body=rdata)
+            return ReJson(9999, body=f"{str(e)}\n{rdata}", error=str(e))
 
     return wrapper
 

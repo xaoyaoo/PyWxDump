@@ -42,11 +42,11 @@ def ReJson(code: int, body: [dict, list] = None, msg: str = None, error: str = N
         stack = traceback.extract_stack()
         project_stack = [frame for frame in stack if "pywxdump" in frame.filename.lower() and
                          any(keyword in frame.filename for keyword in
-                             ["api", "db", "wx_core", "analyzer", "ui"])]
+                             ["api", "db", "wx_core", "analyzer", "ui", "cli", "server"])]
         # 格式化调用栈信息
         formatted_stack = ''.join(traceback.format_list(project_stack))
         # stack_trace = ''.join(traceback.format_stack())
-        loger_rjson.warning(f"\n{code=}\nbody=\n{rjson['body']}\nmsg={rjson['msg']}\n{extra=}\n{formatted_stack}")
+        loger_rjson.warning(f"\n{code=}\n{rjson['body']=}\n{rjson['msg']=}\n{rjson['extra']=}\n{formatted_stack}")
     if error:
         loger_rjson.error(error, exc_info=True)
     return rjson

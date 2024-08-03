@@ -124,7 +124,6 @@ class DatabaseBase(DatabaseSingletonBase):
         finally:
             connection.close()
 
-
     def check_tables_exist(self, required_tables):
         """
         判断该类所需要的表是否存在
