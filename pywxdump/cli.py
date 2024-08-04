@@ -155,7 +155,7 @@ class MainWxDbPath(BaseSubMainClass):
         # 添加 'wx_db_path' 子命令解析器
         parser.add_argument("-r", "--db_types", type=str,
                             help="(可选)需要的数据库名称(eg: -r MediaMSG;MicroMsg;FTSMSG;MSG;Sns;Emotion )",
-                            default="all", metavar="")
+                            default=None, metavar="")
         parser.add_argument("-wf", "--wx_files", type=str, help="(可选)'WeChat Files'路径", default=None,
                             metavar="")
         parser.add_argument("-id", "--wxid", type=str, help="(可选)wxid_,用于确认用户文件夹",
@@ -163,11 +163,11 @@ class MainWxDbPath(BaseSubMainClass):
         return parser
 
     def run(self, args):
+        print(f"[*] PyWxDump v{pywxdump.__version__}")
         # 从命令行参数获取值
-        db_types = args.require_list
+        db_types = args.db_types
         msg_dir = args.wx_files
         wxid = args.wxid
-
         ret = get_wx_db(msg_dir=msg_dir, db_types=db_types, wxids=wxid)
         for i in ret: print(i)
         return ret
@@ -243,7 +243,7 @@ class MainMerge(BaseSubMainClass):
             print(f"[+] 创建输出文件夹：{out_path}")
 
         print(f"[*] 合并中...（用时较久，耐心等待）")
-
+        dbpaths = [{"db_path": i} for i in dbpaths if os.path.exists(i)]  # 去除不存在的路径
         result = merge_db(dbpaths, out_path)
 
         print(f"[+] 合并完成：{result}")

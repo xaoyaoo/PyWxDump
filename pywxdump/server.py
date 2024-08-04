@@ -45,6 +45,7 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
         print(f"[+] 创建临时文件夹：{work_path}")
 
     conf_auto_file = os.path.join(work_path, "conf_auto.json")  # 用于存放各种基础信息
+    at = "auto_setting"
 
     from flask import Flask, g
     from flask_cors import CORS
@@ -85,14 +86,21 @@ def start_falsk(merge_path="", wx_path="", key="", my_wxid="", port=5000, online
         def before_request():
             g.work_path = work_path  # 临时文件夹,用于存放图片等-新版本
             g.caf = conf_auto_file  # 用于存放各种基础信息-新版本
-            g.at = "auto_setting"  # 用于默认设置-新版本
+            g.at = at  # 用于默认设置-新版本
 
-        if merge_path: set_conf(conf_auto_file, g.at, "merge_path", merge_path)
-        if wx_path: set_conf(conf_auto_file, g.at, "wx_path", wx_path)
-        if key: set_conf(conf_auto_file, g.at, "key", key)
-        if my_wxid: set_conf(conf_auto_file, g.at, "my_wxid", my_wxid)
+        if merge_path:
+            set_conf(conf_auto_file, at, "merge_path", merge_path)
+            db_config = {
+                "key": "merge_all",
+                "type": "sqlite",
+                "path": "D:\\_code\\py_code\\pywxdumpProject\\z_test\\wxdump_work\\wxid_zh12s67kxsqs22\\merge_all.db"
+            }
+            set_conf(conf_auto_file, at, "db_config", db_config)
+        if wx_path: set_conf(conf_auto_file, at, "wx_path", wx_path)
+        if key: set_conf(conf_auto_file, at, "key", key)
+        if my_wxid: set_conf(conf_auto_file, at, "my_wxid", my_wxid)
         if not os.path.exists(conf_auto_file):
-            set_conf(conf_auto_file, g.at, "last", my_wxid)
+            set_conf(conf_auto_file, at, "last", my_wxid)
 
         app.register_blueprint(rs_api)
         app.register_blueprint(ls_api)

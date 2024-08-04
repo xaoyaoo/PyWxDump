@@ -384,12 +384,12 @@ def get_wx_db(msg_dir: str = None,
     wxids = wxids.split(";") if isinstance(wxids, str) else wxids
     if not isinstance(wxids, list) or len(wxids) <= 0:
         wxids = None
-    db_types = db_types.split(";") if isinstance(db_types, str) else db_types
+    db_types = db_types.split(";") if isinstance(db_types, str) and db_types else db_types
     if not isinstance(db_types, list) or len(db_types) <= 0:
         db_types = None
 
     wxid_dirs = {}  # wx用户目录
-    if "All Users"in os.listdir(msg_dir) or  "Applet"in os.listdir(msg_dir) or "WMPF"in os.listdir(msg_dir):
+    if "All Users" in os.listdir(msg_dir) or "Applet" in os.listdir(msg_dir) or "WMPF" in os.listdir(msg_dir):
         for sub_dir in os.listdir(msg_dir):
             if os.path.isdir(os.path.join(msg_dir, sub_dir)) and sub_dir not in ["All Users", "Applet", "WMPF"]:
                 wxid_dirs[os.path.basename(sub_dir)] = os.path.join(msg_dir, sub_dir)
