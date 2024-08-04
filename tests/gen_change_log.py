@@ -49,7 +49,7 @@ def get_max_version_add_1(tag):
 # git log --oneline --decorate > "D:\_code\py_code\test\a2023\b0821wxdb\test\log.txt"
 # 获取当前文件所在目录
 current_path = os.path.dirname(os.path.abspath(__file__))
-PyWxDump_path = os.path.dirname((current_path))
+PyWxDump_path = os.path.dirname(current_path)
 log_path = os.path.join(current_path, "log.txt")
 CHANGE_LOG_PATH = os.path.join(PyWxDump_path, "doc", "CHANGELOG.md")
 
