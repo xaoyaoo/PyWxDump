@@ -137,7 +137,7 @@ class MsgHandler(DatabaseBase):
                 DictExtra = get_BytesExtra(BytesExtra)
                 cdnurl = match_BytesExtra(DictExtra)
             if cdnurl:
-                content = {"src": cdnurl, "msg": "表情"}
+                msg, src = "表情", cdnurl
 
         elif type_id == (48, 0):  # 地图信息
             content_tmp = xml2dict(StrContent)

@@ -234,12 +234,12 @@ def get_msgs():
         return ReJson(1002, body=f"start or limit is not int {start} {limit}")
 
     db = DBHandler(db_config)
-    msgs, wxid_list = db.get_msg_list(wxid, start, limit)
+    msgs, wxid_list = db.get_msg_list(wxid=wxid, start_index=start, page_size=limit)
     if not msgs:
-        msgs, wxid_list = db.get_plc_msg_list(wxid, start, limit)
+        msgs, wxid_list = db.get_plc_msg_list(wxid=wxid, start_index=start, page_size=limit)
     wxid_list.append(my_wxid)
-    user_list = db.get_user_list(wxids=wxid_list)
-    return ReJson(0, {"msg_list": msgs, "user_list": user_list})
+    user = db.get_user_list(wxids=wxid_list)
+    return ReJson(0, {"msg_list": msgs, "user_list": user})
 
 
 @rs_api.route('/api/rs/video/<path:videoPath>', methods=["GET", 'POST'])
