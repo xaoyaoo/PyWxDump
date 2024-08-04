@@ -30,7 +30,7 @@ os.system(f"git tag -a v{version} -m 'v{version}'")
 time.sleep(1)
 os.system(f"git push origin v{version}")
 
-print("发布成功 master")
+print("发布成功 master\n")
 
 pywxdumpweb_path = os.path.join(os.path.dirname(PyWxDump_path), "wxdump_web")
 os.chdir(pywxdumpweb_path)
