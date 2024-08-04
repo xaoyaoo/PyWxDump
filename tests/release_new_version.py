@@ -11,7 +11,7 @@ import time
 
 # 获取当前文件所在目录
 current_path = os.path.dirname(os.path.abspath(__file__))
-PyWxDump_path = os.path.dirname((current_path))
+PyWxDump_path = os.path.dirname(current_path)
 os.chdir(PyWxDump_path)
 version_path = os.path.join(PyWxDump_path, "pywxdump", "__init__.py")
 
@@ -24,9 +24,19 @@ with open(version_path, "r", encoding="utf-8") as f:
     else:
         raise RuntimeError("version not found")
 
-# print("PyWxDump_path", PyWxDump_path)
-# print("version", version)
-print(f"git tag -a v{version} -m 'v{version} release'")
+print(f"{PyWxDump_path=}")
+print(f"{version=}")
 os.system(f"git tag -a v{version} -m 'v{version}'")
 time.sleep(1)
 os.system(f"git push origin v{version}")
+
+print("发布成功 master")
+
+pywxdumpweb_path = os.path.join(os.path.dirname(PyWxDump_path), "wxdump_web")
+os.chdir(pywxdumpweb_path)
+print(f"{pywxdumpweb_path=}")
+print(f"{version=}")
+os.system(f"git tag -a v{version} -m 'v{version}'")
+time.sleep(1)
+os.system(f"git push origin v{version}")
+print("发布成功 wxdump_web")
