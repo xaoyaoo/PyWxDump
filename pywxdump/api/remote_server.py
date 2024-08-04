@@ -22,8 +22,7 @@ from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, ge
     get_conf_local_wxid
 from pywxdump import get_wx_info, WX_OFFS, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
-from pywxdump.db import DBHandler, download_file, export_csv, export_json
-from pywxdump.db.utils import dat2img
+from pywxdump.db import DBHandler, download_file, export_csv, export_json, dat2img
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 

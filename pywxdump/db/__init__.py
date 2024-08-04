@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------------------
 import pandas as pd
 
-from .utils import download_file
+from .utils import download_file, dat2img
 
 from .dbFavorite import FavoriteHandler
 from .dbMSG import MsgHandler
