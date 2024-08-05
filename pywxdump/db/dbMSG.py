@@ -293,20 +293,36 @@ class MsgHandler(DatabaseBase):
     @db_error
     def get_date_count(self, wxid=''):
         """
-        获取日聊天记录数量
+        获取每日聊天记录数量，包括发送者数量、接收者数量和总数。
         """
-        sql_base = ("SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') as date, COUNT(*) "
-                    "FROM MSG WHERE StrTalker not like '%chatroom%' ")
+        sql_base = (
+            "SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') AS date, "
+            "       SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
+            "       SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count, "
+            "       COUNT(*) AS total_count "
+            "FROM MSG "
+            "WHERE StrTalker NOT LIKE '%chatroom%' "
+        )
         params = ()
 
-        sql_wxid = "AND StrTalker=? " if wxid else ""
+        sql_wxid = "AND StrTalker = ? " if wxid else ""
         params += (wxid,) if wxid else params
 
         sql = f"{sql_base} {sql_wxid} GROUP BY date ORDER BY date ASC;"
         result = self.execute(sql, params)
+
         if not result:
             return {}
-        return {row[0]: row[1] for row in result}
+        # 将查询结果转换为字典
+        result_dict = {}
+        for row in result:
+            date, sender_count, receiver_count, total_count = row
+            result_dict[date] = {
+                "sender_count": sender_count,
+                "receiver_count": receiver_count,
+                "total_count": total_count
+            }
+        return result_dict
 
 
 @db_error
