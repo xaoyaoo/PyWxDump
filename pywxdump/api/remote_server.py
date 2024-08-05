@@ -462,8 +462,6 @@ def get_date_count():
         word = request.json.get("wxid", "")
     else:
         return ReJson(1003, msg="Unsupported method")
-    print(word)
-
 
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
@@ -477,6 +475,8 @@ def get_date_count():
 def wordcloud():
     pass
 
+
+# end 聊天记录分析api ****************************************************************************************************
 
 # 关于、帮助、设置 *******************************************************************************************************
 @rs_api.route('/api/rs/check_update', methods=["GET", 'POST'])
