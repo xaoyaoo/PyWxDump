@@ -178,18 +178,27 @@ class MsgHandler(DatabaseBase):
             CompressContent = decompress_CompressContent(CompressContent)
             content_tmp = xml2dict(CompressContent)
             appmsg = content_tmp.get("appmsg", {})
+
             title = appmsg.get("title", "")
             refermsg = appmsg.get("refermsg", {})
+
+            type_id = appmsg.get("type", "1")
+
             displayname = refermsg.get("displayname", "")
             display_content = refermsg.get("content", "")
             display_createtime = refermsg.get("createtime", "")
+
             display_createtime = timestamp2str(
                 int(display_createtime)) if display_createtime.isdigit() else display_createtime
-            if display_content.startswith("<?xml"):
+
+            if display_content and display_content.startswith("<?xml"):
                 display_content = xml2dict(display_content)
-                appmsg1 = display_content.get("appmsg", {})
-                title1 = appmsg1.get("title", "")
-                if title1: display_content = title1
+                if "img" in display_content:
+                    display_content = "图片"
+                else:
+                    appmsg1 = display_content.get("appmsg", {})
+                    title1 = appmsg1.get("title", "")
+                    display_content = title1 | display_content
             msg = f"{title}\n\n[引用]({display_createtime}){displayname}:{display_content}"
             src = ""
 

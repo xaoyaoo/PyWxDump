@@ -367,7 +367,7 @@ def silk2audio(buf_data, is_play=False, is_wave=False, save_path=None, rate=2400
 
         play_audio(pcm_data, rate)
 
-    print(is_play, is_wave, save_path)
+    # print(is_play, is_wave, save_path)
 
     if is_wave:  # 转换为wav文件
         wave_file = BytesIO()  # 创建wav文件
