@@ -470,6 +470,26 @@ def get_date_count():
     return ReJson(0, date_count)
 
 
+@rs_api.route('/api/rs/top_talker_count', methods=["GET", 'POST'])
+def get_top_talker_count():
+    """
+    获取最多聊天的人
+    :return:
+    """
+    if request.method not in ["GET", "POST"]:
+        return ReJson(1003, msg="Unsupported method")
+    rq_data = request.json if request.method == "POST" else request.args
+    word = rq_data.get("wxid", "")
+    start_time = rq_data.get("start_time", 0)
+    end_time = rq_data.get("end_time", 0)
+
+    my_wxid = get_conf(g.caf, g.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    db_config = get_conf(g.caf, my_wxid, "db_config")
+    date_count = DBHandler(db_config).get_top_talker_count(top=10, start_time=start_time, end_time=end_time)
+    return ReJson(0, date_count)
+
+
 @rs_api.route('/api/rs/wordcloud', methods=["GET", 'POST'])
 @error9999
 def wordcloud():

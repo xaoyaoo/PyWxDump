@@ -295,10 +295,15 @@ class MsgHandler(DatabaseBase):
         """
         获取每日聊天记录数量，包括发送者数量、接收者数量和总数。
         """
-        if start_time and end_time and isinstance(start_time, str) \
-                and isinstance(end_time, str) and start_time.isdigit() and end_time.isdigit():
+        if isinstance(start_time, str) and start_time.isdigit():
             start_time = int(start_time)
+        if isinstance(end_time, str) and end_time.isdigit():
             end_time = int(end_time)
+
+        # If either start_time or end_time is not an integer, set both to 0
+        if not (isinstance(start_time, int) and isinstance(end_time, int)):
+            start_time = 0
+            end_time = 0
 
         params = ()
 
@@ -336,13 +341,16 @@ class MsgHandler(DatabaseBase):
         """
         获取聊天记录数量最多的联系人,他们聊天记录数量
         """
-        if start_time and end_time and isinstance(start_time, str) \
-                and isinstance(end_time, str) and start_time.isdigit() and end_time.isdigit():
+        if isinstance(start_time, str) and start_time.isdigit():
             start_time = int(start_time)
+        if isinstance(end_time, str) and end_time.isdigit():
             end_time = int(end_time)
-        if start_time <= 0 or end_time <= 0:
+
+        # If either start_time or end_time is not an integer, set both to 0
+        if not (isinstance(start_time, int) and isinstance(end_time, int)):
             start_time = 0
             end_time = 0
+
         sql_time = f"AND CreateTime BETWEEN {start_time} AND {end_time} " if start_time and end_time else ""
         sql = (
             "SELECT StrTalker, COUNT(*) AS count,"
