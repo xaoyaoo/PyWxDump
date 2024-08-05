@@ -451,15 +451,24 @@ def get_export_json():
 # start 聊天记录分析api **************************************************************************************************
 
 @rs_api.route('/api/rs/date_count', methods=["GET", 'POST'])
-@error9999
 def get_date_count():
     """
     获取日期统计
+    :return:
     """
+    if request.method == "GET":
+        word = request.args.get("wxid", "")
+    elif request.method == "POST":
+        word = request.json.get("wxid", "")
+    else:
+        return ReJson(1003, msg="Unsupported method")
+    print(word)
+
+
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
-    merge_path = get_conf(g.caf, my_wxid, "merge_path")
-    date_count = DBHandler(merge_path).date_count()
+    db_config = get_conf(g.caf, my_wxid, "db_config")
+    date_count = DBHandler(db_config).get_date_count(word)
     return ReJson(0, date_count)
 
 
@@ -518,7 +527,7 @@ def get_readme():
     res = requests.get(url)
     if res.status_code == 200:
         data = res.text
-        data = data.replace("# <center>PyWxDump</center>","")
+        data = data.replace("# <center>PyWxDump</center>", "")
         return ReJson(0, body=data)
     else:
         return ReJson(2001, body="status_code is not 200")

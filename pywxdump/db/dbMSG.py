@@ -290,6 +290,24 @@ class MsgHandler(DatabaseBase):
 
         return rdata, list(wxid_list)
 
+    @db_error
+    def get_date_count(self, wxid=''):
+        """
+        获取日聊天记录数量
+        """
+        sql_base = ("SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') as date, COUNT(*) "
+                    "FROM MSG WHERE StrTalker not like '%chatroom%' ")
+        params = ()
+
+        sql_wxid = "AND StrTalker=? " if wxid else ""
+        params += (wxid,) if wxid else params
+
+        sql = f"{sql_base} {sql_wxid} GROUP BY date ORDER BY date ASC;"
+        result = self.execute(sql, params)
+        if not result:
+            return {}
+        return {row[0]: row[1] for row in result}
+
 
 @db_error
 def decompress_CompressContent(data):
