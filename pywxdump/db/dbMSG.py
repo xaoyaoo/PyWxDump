@@ -291,10 +291,15 @@ class MsgHandler(DatabaseBase):
         return rdata, list(wxid_list)
 
     @db_error
-    def get_date_count(self, wxid=''):
+    def get_date_count(self, wxid='', start_time: int = 0, end_time: int = 0):
         """
         获取每日聊天记录数量，包括发送者数量、接收者数量和总数。
         """
+        if start_time and end_time and isinstance(start_time, str) \
+                and isinstance(end_time, str) and start_time.isdigit() and end_time.isdigit():
+            start_time = int(start_time)
+            end_time = int(end_time)
+
         sql_base = (
             "SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') AS date, "
             "       SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
@@ -306,9 +311,12 @@ class MsgHandler(DatabaseBase):
         params = ()
 
         sql_wxid = "AND StrTalker = ? " if wxid else ""
-        params += (wxid,) if wxid else params
+        params += params + (wxid,) if wxid else params
 
-        sql = f"{sql_base} {sql_wxid} GROUP BY date ORDER BY date ASC;"
+        sql_time = "AND CreateTime BETWEEN ? AND ? " if start_time and end_time else ""
+        params += params + (start_time, end_time) if start_time and end_time else params
+
+        sql = f"{sql_base} {sql_wxid} {sql_time} GROUP BY date ORDER BY date ASC;"
         result = self.execute(sql, params)
 
         if not result:
@@ -322,6 +330,30 @@ class MsgHandler(DatabaseBase):
                 "receiver_count": receiver_count,
                 "total_count": total_count
             }
+        return result_dict
+
+    @db_error
+    def get_top_talker_count(self, top: int = 10, start_time: int = 0, end_time: int = 0):
+        """
+        获取聊天记录数量最多的联系人,他们每天的聊天记录数量
+        """
+        if start_time and end_time and isinstance(start_time, str) \
+                and isinstance(end_time, str) and start_time.isdigit() and end_time.isdigit():
+            start_time = int(start_time)
+            end_time = int(end_time)
+        sql = (
+            "SELECT StrTalker, COUNT(*) AS count "
+            "FROM MSG "
+            f"WHERE StrTalker NOT LIKE '%chatroom%' AND CreateTime BETWEEN {start_time} AND {end_time} "
+            "GROUP BY StrTalker "
+            "ORDER BY count DESC "
+            f"LIMIT {top};"
+        )
+        result = self.execute(sql)
+        if not result:
+            return {}
+        # 将查询结果转换为字典
+        result_dict = {row[0]: row[1] for row in result}
         return result_dict
 
 
