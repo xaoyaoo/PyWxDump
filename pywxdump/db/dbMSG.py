@@ -308,10 +308,10 @@ class MsgHandler(DatabaseBase):
         params = ()
 
         sql_wxid = "AND StrTalker = ? " if wxid else ""
-        params += params + (wxid,) if wxid else params
+        params = params + (wxid,) if wxid else params
 
         sql_time = "AND CreateTime BETWEEN ? AND ? " if start_time and end_time else ""
-        params += params + (start_time, end_time) if start_time and end_time else params
+        params = params + (start_time, end_time) if start_time and end_time else params
 
         sql = ("SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') AS date, COUNT(*) AS total_count ,"
                "       SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
