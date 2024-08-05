@@ -334,7 +334,7 @@ class MsgHandler(DatabaseBase):
     @db_error
     def get_top_talker_count(self, top: int = 10, start_time: int = 0, end_time: int = 0):
         """
-        获取聊天记录数量最多的联系人,他们每天的聊天记录数量
+        获取聊天记录数量最多的联系人,他们聊天记录数量
         """
         if start_time and end_time and isinstance(start_time, str) \
                 and isinstance(end_time, str) and start_time.isdigit() and end_time.isdigit():
