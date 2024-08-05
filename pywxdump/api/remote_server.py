@@ -506,6 +506,24 @@ def version():
     return ReJson(0, pywxdump.__version__)
 
 
+@rs_api.route('/api/rs/get_readme', methods=["GET", 'POST'])
+@error9999
+def get_readme():
+    """
+    版本
+    :return:
+    """
+    url = "https://raw.githubusercontent.com/xaoyaoo/PyWxDump/master/doc/README_CN.md"
+    import requests
+    res = requests.get(url)
+    if res.status_code == 200:
+        data = res.text
+        data = data.replace("# <center>PyWxDump</center>","")
+        return ReJson(0, body=data)
+    else:
+        return ReJson(2001, body="status_code is not 200")
+
+
 # END 关于、帮助、设置 ***************************************************************************************************
 
 
