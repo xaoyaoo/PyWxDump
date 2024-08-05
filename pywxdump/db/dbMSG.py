@@ -300,14 +300,6 @@ class MsgHandler(DatabaseBase):
             start_time = int(start_time)
             end_time = int(end_time)
 
-        sql_base = (
-            "SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') AS date, "
-            "       SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
-            "       SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count, "
-            "       COUNT(*) AS total_count "
-            "FROM MSG "
-            "WHERE StrTalker NOT LIKE '%chatroom%' "
-        )
         params = ()
 
         sql_wxid = "AND StrTalker = ? " if wxid else ""
@@ -316,7 +308,14 @@ class MsgHandler(DatabaseBase):
         sql_time = "AND CreateTime BETWEEN ? AND ? " if start_time and end_time else ""
         params += params + (start_time, end_time) if start_time and end_time else params
 
-        sql = f"{sql_base} {sql_wxid} {sql_time} GROUP BY date ORDER BY date ASC;"
+        sql = ("SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') AS date, COUNT(*) AS total_count ,"
+               "       SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
+               "       SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count "
+               "FROM MSG "
+               "WHERE StrTalker NOT LIKE '%chatroom%' "
+               f"{sql_wxid} {sql_time} "
+               f"GROUP BY date ORDER BY date ASC;")
+
         result = self.execute(sql, params)
 
         if not result:
@@ -324,7 +323,7 @@ class MsgHandler(DatabaseBase):
         # 将查询结果转换为字典
         result_dict = {}
         for row in result:
-            date, sender_count, receiver_count, total_count = row
+            date, total_count, sender_count, receiver_count = row
             result_dict[date] = {
                 "sender_count": sender_count,
                 "receiver_count": receiver_count,
@@ -341,19 +340,26 @@ class MsgHandler(DatabaseBase):
                 and isinstance(end_time, str) and start_time.isdigit() and end_time.isdigit():
             start_time = int(start_time)
             end_time = int(end_time)
+        if start_time <= 0 or end_time <= 0:
+            start_time = 0
+            end_time = 0
+        sql_time = f"AND CreateTime BETWEEN {start_time} AND {end_time} " if start_time and end_time else ""
         sql = (
-            "SELECT StrTalker, COUNT(*) AS count "
+            "SELECT StrTalker, COUNT(*) AS count,"
+            "SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
+            "SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count, "
             "FROM MSG "
-            f"WHERE StrTalker NOT LIKE '%chatroom%' AND CreateTime BETWEEN {start_time} AND {end_time} "
-            "GROUP BY StrTalker "
-            "ORDER BY count DESC "
+            "WHERE StrTalker NOT LIKE '%chatroom%' "
+            f"{sql_time} "
+            "GROUP BY StrTalker ORDER BY count DESC "
             f"LIMIT {top};"
         )
         result = self.execute(sql)
         if not result:
             return {}
         # 将查询结果转换为字典
-        result_dict = {row[0]: row[1] for row in result}
+        result_dict = {row[0]: {"total_count": row[1], "sender_count": row[2], "receiver_count": row[3]} for row in
+                       result}
         return result_dict
 
 
