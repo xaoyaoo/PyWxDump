@@ -355,7 +355,7 @@ class MsgHandler(DatabaseBase):
         sql = (
             "SELECT StrTalker, COUNT(*) AS count,"
             "SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
-            "SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count, "
+            "SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count "
             "FROM MSG "
             "WHERE StrTalker NOT LIKE '%chatroom%' "
             f"{sql_time} "

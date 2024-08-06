@@ -479,14 +479,14 @@ def get_top_talker_count():
     if request.method not in ["GET", "POST"]:
         return ReJson(1003, msg="Unsupported method")
     rq_data = request.json if request.method == "POST" else request.args
-    word = rq_data.get("wxid", "")
+    top = rq_data.get("top", 10)
     start_time = rq_data.get("start_time", 0)
     end_time = rq_data.get("end_time", 0)
 
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    date_count = DBHandler(db_config).get_top_talker_count(top=10, start_time=start_time, end_time=end_time)
+    date_count = DBHandler(db_config).get_top_talker_count(top=top, start_time=start_time, end_time=end_time)
     return ReJson(0, date_count)
 
 
