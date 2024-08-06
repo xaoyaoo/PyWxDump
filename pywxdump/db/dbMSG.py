@@ -300,11 +300,10 @@ class MsgHandler(DatabaseBase):
         if isinstance(end_time, str) and end_time.isdigit():
             end_time = int(end_time)
 
-        # If either start_time or end_time is not an integer, set both to 0
-        if not (isinstance(start_time, int) and isinstance(end_time, int)):
+        # if start_time or end_time is not an integer and not a float, set both to 0
+        if not (isinstance(start_time, (int, float)) and isinstance(end_time, (int, float))):
             start_time = 0
             end_time = 0
-
         params = ()
 
         sql_wxid = "AND StrTalker = ? " if wxid else ""
@@ -320,7 +319,6 @@ class MsgHandler(DatabaseBase):
                "WHERE StrTalker NOT LIKE '%chatroom%' "
                f"{sql_wxid} {sql_time} "
                f"GROUP BY date ORDER BY date ASC;")
-
         result = self.execute(sql, params)
 
         if not result:
@@ -346,8 +344,8 @@ class MsgHandler(DatabaseBase):
         if isinstance(end_time, str) and end_time.isdigit():
             end_time = int(end_time)
 
-        # If either start_time or end_time is not an integer, set both to 0
-        if not (isinstance(start_time, int) and isinstance(end_time, int)):
+        # if start_time or end_time is not an integer and not a float, set both to 0
+        if not (isinstance(start_time, (int, float)) and isinstance(end_time, (int, float))):
             start_time = 0
             end_time = 0
 
