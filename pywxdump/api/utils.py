@@ -8,7 +8,9 @@
 import base64
 import json
 import os
+import random
 import re
+import string
 import traceback
 from .rjson import ReJson
 from functools import wraps
@@ -123,3 +125,7 @@ def gen_base64(path):
 
     base64_encoded_js = base64.b64encode(js_code).decode('utf-8')
     return start_str + base64_encoded_js
+
+
+def random_str(num=16):
+    return ''.join(random.sample(string.ascii_letters + string.digits, num))

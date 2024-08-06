@@ -19,7 +19,7 @@ from flask import Flask, request, render_template, g, Blueprint, send_file, make
 from pywxdump import get_core_db, all_merge_real_time_db, get_wx_db
 from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, gen_base64, validate_title, \
-    get_conf_local_wxid, ls_loger
+    get_conf_local_wxid, ls_loger, random_str
 from pywxdump import get_wx_info, WX_OFFS, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
 from pywxdump.db import DBHandler, download_file, export_csv, export_json
@@ -123,7 +123,7 @@ def init_key():
                 # 显示堆栈信息
                 ls_loger.error(f"{e}", exc_info=True)
         db_config = {
-            "key": "merge_all",
+            "key": random_str(16),
             "type": "sqlite",
             "path": merge_save_path_new
         }
@@ -166,7 +166,12 @@ def init_nokey():
         return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
     key = get_conf(g.caf, my_wxid, "key")
-
+    db_config = {
+        "key": random_str(16),
+        "type": "sqlite",
+        "path": merge_path
+    }
+    set_conf(g.caf, my_wxid, "db_config", db_config)
     set_conf(g.caf, my_wxid, "merge_path", merge_path)
     set_conf(g.caf, my_wxid, "wx_path", wx_path)
     set_conf(g.caf, my_wxid, "key", key)
