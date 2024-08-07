@@ -60,7 +60,7 @@ class MicroHandler(DatabaseBase):
         :return:
         """
         if not self.table_exist.get("ContactLabel", False):
-            return []
+            return {}
         sql = "SELECT LabelId, LabelName FROM ContactLabel ORDER BY LabelName ASC;"
         result = self.execute(sql)
         if not result:
