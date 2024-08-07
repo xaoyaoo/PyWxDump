@@ -176,7 +176,7 @@ def init_nokey():
     set_conf(g.caf, my_wxid, "wx_path", wx_path)
     set_conf(g.caf, my_wxid, "key", key)
     set_conf(g.caf, my_wxid, "my_wxid", my_wxid)
-    set_conf(g.caf, "test", "last", my_wxid)
+    set_conf(g.caf, g.at, "last", my_wxid)
     rdata = {
         "merge_path": merge_path,
         "wx_path": wx_path,

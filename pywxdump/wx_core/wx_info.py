@@ -389,7 +389,7 @@ def get_wx_db(msg_dir: str = None,
         db_types = None
 
     wxid_dirs = {}  # wx用户目录
-    if "All Users" in os.listdir(msg_dir) or "Applet" in os.listdir(msg_dir) or "WMPF" in os.listdir(msg_dir):
+    if wxids or "All Users" in os.listdir(msg_dir) or "Applet" in os.listdir(msg_dir) or "WMPF" in os.listdir(msg_dir):
         for sub_dir in os.listdir(msg_dir):
             if os.path.isdir(os.path.join(msg_dir, sub_dir)) and sub_dir not in ["All Users", "Applet", "WMPF"]:
                 wxid_dirs[os.path.basename(sub_dir)] = os.path.join(msg_dir, sub_dir)
