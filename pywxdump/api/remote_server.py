@@ -462,11 +462,13 @@ def get_date_count():
     word = rq_data.get("wxid", "")
     start_time = rq_data.get("start_time", 0)
     end_time = rq_data.get("end_time", 0)
+    time_format = rq_data.get("time_format", "%Y-%m-%d")
 
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    date_count = DBHandler(db_config).get_date_count(wxid=word, start_time=start_time, end_time=end_time)
+    db = DBHandler(db_config)
+    date_count = db.get_date_count(wxid=word, start_time=start_time, end_time=end_time, time_format=time_format)
     return ReJson(0, date_count)
 
 

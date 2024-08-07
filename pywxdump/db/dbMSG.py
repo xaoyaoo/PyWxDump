@@ -291,7 +291,7 @@ class MsgHandler(DatabaseBase):
         return rdata, list(wxid_list)
 
     @db_error
-    def get_date_count(self, wxid='', start_time: int = 0, end_time: int = 0):
+    def get_date_count(self, wxid='', start_time: int = 0, end_time: int = 0, time_format='%Y-%m-%d'):
         """
         获取每日聊天记录数量，包括发送者数量、接收者数量和总数。
         """
@@ -312,7 +312,8 @@ class MsgHandler(DatabaseBase):
         sql_time = "AND CreateTime BETWEEN ? AND ? " if start_time and end_time else ""
         params = params + (start_time, end_time) if start_time and end_time else params
 
-        sql = ("SELECT strftime('%Y-%m-%d', CreateTime, 'unixepoch', 'localtime') AS date, COUNT(*) AS total_count ,"
+        sql = (f"SELECT strftime('{time_format}', CreateTime, 'unixepoch', 'localtime') AS date, "
+               "       COUNT(*) AS total_count ,"
                "       SUM(CASE WHEN IsSender = 1 THEN 1 ELSE 0 END) AS sender_count, "
                "       SUM(CASE WHEN IsSender = 0 THEN 1 ELSE 0 END) AS receiver_count "
                "FROM MSG "
