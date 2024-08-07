@@ -79,6 +79,7 @@ class DatabaseSingletonBase:
 
 class DatabaseBase(DatabaseSingletonBase):
     _class_name = "DatabaseBase"
+    table_exist = {}
 
     def __init__(self, db_config):
         """
@@ -134,6 +135,7 @@ class DatabaseBase(DatabaseSingletonBase):
                f"WHERE type='table' AND tbl_name in ({required_tables_str});")
         existing_tables = self.execute(sql)
         existing_tables = [row[0] for row in existing_tables]  # 将查询结果转换为列表
+        self.table_exist = {table: table in existing_tables for table in required_tables}
         # 检查所有必需的表是否都在现有表中
         return all(table in existing_tables for table in required_tables)
 
