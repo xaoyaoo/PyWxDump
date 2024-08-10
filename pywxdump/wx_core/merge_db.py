@@ -456,7 +456,7 @@ def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict, real_time
 
 
 @wx_core_error
-def all_merge_real_time_db(key, wx_path, merge_path: str):
+def all_merge_real_time_db(key, wx_path, merge_path: str, real_time_exe_path=None):
     """
     合并所有实时数据库
     注：这是全量合并，会有可能产生重复数据，需要自行去重
@@ -476,7 +476,7 @@ def all_merge_real_time_db(key, wx_path, merge_path: str):
     if not db_paths[0]:
         return False, db_paths[1]
     db_paths = db_paths[1]
-    code, ret = merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths, real_time_exe_path=None)
+    code, ret = merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths, real_time_exe_path=real_time_exe_path)
     if code:
         return True, merge_path
     else:
