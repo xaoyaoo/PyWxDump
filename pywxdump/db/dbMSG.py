@@ -161,7 +161,7 @@ class MsgHandler(DatabaseBase):
             title = appmsg.get("title", "")
             des = appmsg.get("des", "")
             url = appmsg.get("url", "")
-            msg = f'{title}\n{des}\n\n<a href="{url}">点击查看详情</a>'
+            msg = f'{title}\n{des}\n\n<a href="{url}" target="_blank">点击查看详情</a>'
             src = url
 
         elif type_id == (49, 19):  # 合并转发的聊天记录
