@@ -393,13 +393,14 @@ def decrypt_merge(wx_path: str, key: str, outpath: str = "",
 
 
 @wx_core_error
-def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict):
+def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict, real_time_exe_path=None):
     """
     合并实时数据库消息,暂时只支持64位系统
     :param key:  解密密钥
+    :param merge_path:  合并后的数据库路径
     :param db_paths:  [dict] or dict eg: {'wxid': 'wxid_***', 'db_type': 'MicroMsg',
                         'db_path': 'C:\**\wxid_***\Msg\MicroMsg.db', 'wxid_dir': 'C:\***\wxid_***'}
-    :param merge_path:  合并后的数据库路径
+    :param real_time_exe_path:  实时数据库合并工具路径
     :return:
     """
     try:
@@ -431,9 +432,12 @@ def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict):
         endbs.append(os.path.abspath(db_path))
     endbs = '" "'.join(list(set(endbs)))
 
-    # 获取当前文件夹路径
-    current_path = os.path.dirname(__file__)
-    real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
+    if not real_time_exe_path:
+        # 获取当前文件夹路径
+        current_path = os.path.dirname(__file__)
+        real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
+    if not os.path.exists(real_time_exe_path):
+        raise FileNotFoundError("未找到实时数据库合并工具")
 
     # 调用cmd命令
     cmd = f'{real_time_exe_path} "{key}" "{merge_path}" "{endbs}"'
@@ -472,7 +476,7 @@ def all_merge_real_time_db(key, wx_path, merge_path: str):
     if not db_paths[0]:
         return False, db_paths[1]
     db_paths = db_paths[1]
-    code, ret = merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths)
+    code, ret = merge_real_time_db(key=key, merge_path=merge_path, db_paths=db_paths, real_time_exe_path=None)
     if code:
         return True, merge_path
     else:
