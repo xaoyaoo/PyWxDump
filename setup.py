@@ -56,7 +56,7 @@ setup(
                  },
 
     package_data={
-        'pywxdump': ['WX_OFFS.json', 'ui/templates/*', 'ui/web/*', 'ui/web/assets/*', 'wx_core/tools/*',
+        'pywxdump': ['WX_OFFS.json', 'ui/web/*', 'ui/web/assets/*', 'wx_core/tools/*',
                      "ui/export/*", "ui/export/assets/*", "ui/export/assets/css/*", "ui/export/assets/js/*",
                      ]
     },
