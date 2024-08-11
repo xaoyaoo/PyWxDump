@@ -426,18 +426,16 @@ def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict, real_time
         if not os.path.exists(db_path):
             # raise FileNotFoundError("数据库不存在")
             continue
-        if "MSG" not in db_path and "MicroMsg" not in db_path and "MediaMSG" not in db_path:
-            # raise FileNotFoundError("数据库不是消息数据库")  # MicroMsg实时数据库
-            continue
         endbs.append(os.path.abspath(db_path))
     endbs = '" "'.join(list(set(endbs)))
 
-    if not real_time_exe_path:
+    if not os.path.exists(real_time_exe_path):
         # 获取当前文件夹路径
         current_path = os.path.dirname(__file__)
         real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
     if not os.path.exists(real_time_exe_path):
         raise FileNotFoundError("未找到实时数据库合并工具")
+    real_time_exe_path = os.path.abspath(real_time_exe_path)
 
     # 调用cmd命令
     cmd = f'{real_time_exe_path} "{key}" "{merge_path}" "{endbs}"'
