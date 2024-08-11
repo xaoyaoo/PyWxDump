@@ -429,7 +429,7 @@ def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict, real_time
         endbs.append(os.path.abspath(db_path))
     endbs = '" "'.join(list(set(endbs)))
 
-    if not os.path.exists(real_time_exe_path):
+    if not os.path.exists(real_time_exe_path if real_time_exe_path else ""):
         # 获取当前文件夹路径
         current_path = os.path.dirname(__file__)
         real_time_exe_path = os.path.join(current_path, "tools", "realTime.exe")
