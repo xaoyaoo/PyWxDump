@@ -87,6 +87,7 @@ class MsgHandler(DatabaseBase):
 
         msg = StrContent
         src = ""
+        extra = {}
 
         if type_id == (1, 0):  # 文本
             msg = StrContent
@@ -163,6 +164,7 @@ class MsgHandler(DatabaseBase):
             url = appmsg.get("url", "")
             msg = f'{title}\n{des}\n\n<a href="{url}" target="_blank">点击查看详情</a>'
             src = url
+            extra = appmsg
 
         elif type_id == (49, 19):  # 合并转发的聊天记录
             CompressContent = decompress_CompressContent(CompressContent)
@@ -249,7 +251,7 @@ class MsgHandler(DatabaseBase):
                 talker = StrTalker
 
         row_data = {"id": _id, "MsgSvrID": str(MsgSvrID), "type_name": type_name, "is_sender": IsSender,
-                    "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": {},
+                    "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": extra,
                     "CreateTime": CreateTime, }
         return row_data
 
