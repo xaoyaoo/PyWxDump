@@ -507,9 +507,9 @@ def wordcloud():
         return ReJson(9999, body="jieba is required")
 
     target = rq_data.get("target", "")
-    print(target)
     if not target:
         return ReJson(1002, body="target is required")
+
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
