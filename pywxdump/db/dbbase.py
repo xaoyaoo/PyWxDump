@@ -38,13 +38,13 @@ class DatabaseSingletonBase:
         """
         if not db_config:
             raise ValueError("db_config 不能为空")
-        db_key = db_config["key"]
-        db_type = db_config["type"]
+        db_key = db_config.get("key", "xaoyaoo_741852963")
+        db_type = db_config.get("type", "sqlite")
         if db_key in cls._db_pool and cls._db_pool[db_key] is not None:
             return cls._db_pool[db_key]
 
         if db_type == "sqlite":
-            db_path = db_config["path"]
+            db_path = db_config.get("path", "")
             if not os.path.exists(db_path):
                 raise FileNotFoundError(f"文件不存在: {db_path}")
             pool = PooledDB(
