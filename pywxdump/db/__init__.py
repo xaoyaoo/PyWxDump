@@ -46,7 +46,6 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
         """
         获取联系人列表
         """
-        users = self.get_user_list(word=word, wxids=wxids, label_ids=labels)
-        if self.OpenIMContact_exist:
-            users.update(self.get_im_user_list(word=word, wxids=wxids))
+        users = self.get_user_list(word=word, wxids=wxids, label_ids=labels) if self.Micro_exist else {}
+        if self.OpenIMContact_exist: users.update(self.get_im_user_list(word=word, wxids=wxids))
         return users
