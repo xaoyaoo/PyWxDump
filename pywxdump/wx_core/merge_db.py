@@ -444,10 +444,9 @@ def merge_real_time_db(key, merge_path: str, db_paths: [dict] or dict, real_time
     if out and out.decode("utf-8").find("SUCCESS") >= 0:
         wx_core_loger.info(f"合并实时数据库成功{out}")
         return True, merge_path
-    if err:
+    else:
         wx_core_loger.error(f"合并实时数据库失败\n{out}\n{err}")
-        return False, err
-    return False, "未知错误"
+        return False, (out, err)
 
 
 @wx_core_error
