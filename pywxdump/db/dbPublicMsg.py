@@ -83,6 +83,19 @@ class PublicMsgHandler(MsgHandler):
     @db_error
     def get_plc_msg_list(self, wxid="", start_index=0, page_size=500, msg_type: str = "", msg_sub_type: str = "",
                          start_createtime=None, end_createtime=None):
+        """
+        获取聊天记录列表
+        :param wxid: wxid
+        :param start_index: 起始索引
+        :param page_size: 页大小
+        :param msg_type: 消息类型
+        :param msg_sub_type: 消息子类型
+        :param start_createtime: 开始时间
+        :param end_createtime: 结束时间
+        :return: 聊天记录列表 {"id": _id, "MsgSvrID": str(MsgSvrID), "type_name": type_name, "is_sender": IsSender,
+                    "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": {},
+                    "CreateTime": CreateTime, }
+        """
         sql_base = ("SELECT localId,TalkerId,MsgSvrID,Type,SubType,CreateTime,IsSender,Sequence,StatusEx,FlagEx,Status,"
                     "MsgSequence,StrContent,MsgServerSeq,StrTalker,DisplayContent,Reserved0,Reserved1,Reserved3,"
                     "Reserved4,Reserved5,Reserved6,CompressContent,BytesExtra,BytesTrans,Reserved2,"
