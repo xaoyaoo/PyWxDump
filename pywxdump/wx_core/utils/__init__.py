@@ -12,4 +12,5 @@ from .ctypes_utils import get_process_list, get_memory_maps, get_process_exe_pat
 from .memory_search import search_memory
 from ._loger import wx_core_loger
 
-DB_TYPE_CORE = ["MSG", "MediaMSG", "MicroMsg", "OpenIMContact", "OpenIMMedia", "OpenIMMsg", "Favorite", "PublicMsg"]
+DB_TYPE_CORE = ["MicroMsg", "MSG", "MediaMSG", "OpenIMContact", "OpenIMMsg", "PublicMsg", "OpenIMMedia",
+                "Favorite", "Sns"]

@@ -1,31 +1,12 @@
 # -*- coding: utf-8 -*-#
 # -------------------------------------------------------------------------------
-# Name:         parsingPublicMsg.py
-# Description:  
+# Name:         PublicMsg.py
+# Description:  负责处理公众号数据库信息
 # Author:       xaoyaoo
 # Date:         2024/07/03
 # -------------------------------------------------------------------------------
-
-# -*- coding: utf-8 -*-#
-# -------------------------------------------------------------------------------
-# Name:         parsingMSG.py
-# Description:
-# Author:       xaoyaoo
-# Date:         2024/04/15
-# -------------------------------------------------------------------------------
-import json
-import os
-import re
-from typing import Union, Tuple
-
-import pandas as pd
-
-from .dbbase import DatabaseBase
 from .dbMSG import MsgHandler
-from .utils import get_md5, name2typeid, typeid2name, type_converter, timestamp2str, xml2dict, match_BytesExtra, \
-    db_error
-import lz4.block
-import blackboxprotobuf
+from .utils import db_error
 
 
 class PublicMsgHandler(MsgHandler):

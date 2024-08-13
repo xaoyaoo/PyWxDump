@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-#
 # -------------------------------------------------------------------------------
-# Name:         parsingOpenIMContact.py
+# Name:         OpenIMContact.py
 # Description:  
 # Author:       xaoyaoo
 # Date:         2024/04/16
