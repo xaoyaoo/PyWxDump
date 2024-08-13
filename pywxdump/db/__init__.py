@@ -36,6 +36,10 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
     def get_user(self, word=None, wxids=None, labels=None):
         """
         获取联系人列表
+        :param word: 搜索关键字
+        :param wxids: wxid列表
+        :param labels: 标签列表
+        :return: 联系人dict {wxid: {}}
         """
         users = self.get_user_list(word=word, wxids=wxids, label_ids=labels)
         users.update(self.get_im_user_list(word=word, wxids=wxids))
