@@ -5,7 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2024/04/15
 # -------------------------------------------------------------------------------
-import pandas as pd
+# import pandas as pd
 
 from .utils import download_file, dat2img
 
