@@ -24,7 +24,8 @@ from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, ge
     get_conf_local_wxid
 from pywxdump import get_wx_info, WX_OFFS, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
-from pywxdump.db import DBHandler, download_file, export_csv, export_json, dat2img
+from pywxdump.db import DBHandler, download_file, dat2img
+from pywxdump.db.export import export_csv, export_json
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -70,7 +71,7 @@ def user_session_list():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    db = DBHandler(db_config)
+    db = DBHandler(db_config, my_wxid=my_wxid)
     ret = db.get_session_list()
     return ReJson(0, list(ret.values()))
 
@@ -85,7 +86,7 @@ def user_labels_dict():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    db = DBHandler(db_config)
+    db = DBHandler(db_config, my_wxid=my_wxid)
     user_labels_dict = db.get_labels()
     return ReJson(0, user_labels_dict)
 
@@ -114,7 +115,7 @@ def user_list():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    db = DBHandler(db_config)
+    db = DBHandler(db_config, my_wxid=my_wxid)
     users = db.get_user(word, wxids, labels)
     return ReJson(0, users)
 
@@ -203,12 +204,8 @@ def msg_count():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    db = DBHandler(db_config)
-    chat_count = db.get_msg_count(wxid)
-    chat_count1 = db.get_plc_msg_count(wxid)
-    # 合并两个字典，相同key，则将value相加
-    count = {k: chat_count.get(k, 0) + chat_count1.get(k, 0) for k in
-             list(set(list(chat_count.keys()) + list(chat_count1.keys())))}
+    db = DBHandler(db_config, my_wxid=my_wxid)
+    count = db.get_msgs_count(wxid)
     return ReJson(0, count)
 
 
@@ -234,11 +231,9 @@ def get_msgs():
     if not isinstance(start, int) and not isinstance(limit, int):
         return ReJson(1002, body=f"start or limit is not int {start} {limit}")
 
-    db = DBHandler(db_config)
-    msgs, wxid_list = db.get_msgs(wxid=wxid, start_index=start, page_size=limit)
-    wxid_list.append(my_wxid)
-    user = db.get_user(wxids=wxid_list)
-    return ReJson(0, {"msg_list": msgs, "user_list": user})
+    db = DBHandler(db_config, my_wxid=my_wxid)
+    msgs, users = db.get_msgs(wxid=wxid, start_index=start, page_size=limit)
+    return ReJson(0, {"msg_list": msgs, "user_list": users})
 
 
 @rs_api.route('/api/rs/video/<path:videoPath>', methods=["GET", 'POST'])
@@ -281,7 +276,7 @@ def get_audio(savePath):
     if not os.path.exists(os.path.dirname(savePath)):
         os.makedirs(os.path.dirname(savePath))
 
-    db = DBHandler(db_config)
+    db = DBHandler(db_config, my_wxid=my_wxid)
     wave_data = db.get_audio(MsgSvrID, is_play=False, is_wave=True, save_path=savePath, rate=24000)
     if not wave_data:
         return ReJson(1001, body="wave_data is required")
@@ -422,7 +417,7 @@ def get_export_csv():
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    code, ret = export_csv(wxid, outpath, db_config)
+    code, ret = export_csv(wxid, outpath, db_config, my_wxid=my_wxid)
     if code:
         return ReJson(0, ret)
     else:
@@ -447,7 +442,7 @@ def get_export_json():
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    code, ret = export_json(wxid, outpath, db_config)
+    code, ret = export_json(wxid, outpath, db_config, my_wxid=my_wxid)
     if code:
         return ReJson(0, ret)
     else:
@@ -475,7 +470,7 @@ def get_date_count():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    db = DBHandler(db_config)
+    db = DBHandler(db_config, my_wxid=my_wxid)
     date_count = db.get_date_count(wxid=word, start_time=start_time, end_time=end_time, time_format=time_format)
     return ReJson(0, date_count)
 
@@ -496,7 +491,8 @@ def get_top_talker_count():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    date_count = DBHandler(db_config).get_top_talker_count(top=top, start_time=start_time, end_time=end_time)
+    date_count = DBHandler(db_config, my_wxid=my_wxid).get_top_talker_count(top=top, start_time=start_time,
+                                                                            end_time=end_time)
     return ReJson(0, date_count)
 
 
@@ -519,7 +515,7 @@ def wordcloud():
     my_wxid = get_conf(g.caf, g.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = get_conf(g.caf, my_wxid, "db_config")
-    db = DBHandler(db_config)
+    db = DBHandler(db_config, my_wxid=my_wxid)
 
     if target == "signature":
         users = db.get_user()

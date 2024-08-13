@@ -36,7 +36,7 @@ class PublicMsgHandler(MsgHandler):
         """
         if not self.tables_exist("PublicMsg"):
             return {}
-        if isinstance(wxids, str):
+        if isinstance(wxids, str) and wxids:
             wxids = [wxids]
         if wxids:
             wxids = "('" + "','".join(wxids) + "')"
@@ -60,7 +60,7 @@ class PublicMsgHandler(MsgHandler):
 
     @db_error
     def get_plc_msg_list(self, wxid="", start_index=0, page_size=500, msg_type: str = "", msg_sub_type: str = "",
-                         start_createtime=None, end_createtime=None):
+                         start_createtime=None, end_createtime=None, my_talker="我"):
         """
         获取聊天记录列表
         :param wxid: wxid
@@ -103,7 +103,7 @@ class PublicMsgHandler(MsgHandler):
         if not result:
             return [], []
 
-        result_data = (self.get_msg_detail(row) for row in result)
+        result_data = (self.get_msg_detail(row, my_talker=my_talker) for row in result)
         rdata = list(result_data)  # 转为列表
         wxid_list = {d['talker'] for d in rdata}  # 创建一个无重复的 wxid 列表
 

@@ -18,16 +18,16 @@ from .dbPublicMsg import PublicMsgHandler
 from .dbOpenIMMedia import OpenIMMediaHandler
 from .dbSns import SnsHandler
 
-from .export.exportCSV import export_csv
-from .export.exportJSON import export_json
-
 
 class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandler, OpenIMMediaHandler,
                 FavoriteHandler, SnsHandler):
     _class_name = "DBHandler"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, db_config, my_wxid, *args, **kwargs):
+        self.config = db_config
+        self.my_wxid = my_wxid
+
+        super().__init__(self.config)
         # 加速查询索引
         self.Micro_add_index()
         self.Msg_add_index()
@@ -64,11 +64,21 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
         msgs0, wxid_list0 = self.get_msg_list(wxid=wxid, start_index=start_index, page_size=page_size,
                                               msg_type=msg_type,
                                               msg_sub_type=msg_sub_type, start_createtime=start_createtime,
-                                              end_createtime=end_createtime)
+                                              end_createtime=end_createtime, my_talker=self.my_wxid)
         msgs1, wxid_list1 = self.get_plc_msg_list(wxid=wxid, start_index=start_index, page_size=page_size,
                                                   msg_type=msg_type,
                                                   msg_sub_type=msg_sub_type, start_createtime=start_createtime,
-                                                  end_createtime=end_createtime)
+                                                  end_createtime=end_createtime, my_talker=self.my_wxid)
         msgs = msgs0 + msgs1
         wxid_list = wxid_list0 + wxid_list1
-        return msgs, wxid_list
+
+        users = self.get_user(wxids=wxid_list)
+        return msgs, users
+
+    def get_msgs_count(self, wxids: list = ""):
+        chat_count = self.get_m_msg_count(wxids)
+        chat_count1 = self.get_plc_msg_count(wxids)
+        # 合并两个字典，相同key，则将value相加
+        count = {k: chat_count.get(k, 0) + chat_count1.get(k, 0) for k in
+                 list(set(list(chat_count.keys()) + list(chat_count1.keys())))}
+        return count

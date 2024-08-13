@@ -35,13 +35,13 @@ class MsgHandler(DatabaseBase):
         self.execute("CREATE INDEX IF NOT EXISTS idx_MSG_StrTalker_CreateTime ON MSG(StrTalker, CreateTime);")
 
     @db_error
-    def get_msg_count(self, wxids: list = ""):
+    def get_m_msg_count(self, wxids: list = ""):
         """
         获取聊天记录数量,根据wxid获取单个联系人的聊天记录数量，不传wxid则获取所有联系人的聊天记录数量
         :param wxids: wxid list
         :return: 聊天记录数量列表 {wxid: chat_count, total: total_count}
         """
-        if isinstance(wxids, str):
+        if isinstance(wxids, str) and wxids:
             wxids = [wxids]
         if wxids:
             wxids = "('" + "','".join(wxids) + "')"
@@ -67,7 +67,7 @@ class MsgHandler(DatabaseBase):
 
     @db_error
     def get_msg_list(self, wxid="", start_index=0, page_size=500, msg_type: str = "", msg_sub_type: str = "",
-                     start_createtime=None, end_createtime=None):
+                     start_createtime=None, end_createtime=None, my_talker="我"):
         """
         获取聊天记录列表
         :param wxid: wxid
@@ -77,6 +77,7 @@ class MsgHandler(DatabaseBase):
         :param msg_sub_type: 消息子类型
         :param start_createtime: 开始时间
         :param end_createtime: 结束时间
+        :param my_talker: 我
         :return: 聊天记录列表 {"id": _id, "MsgSvrID": str(MsgSvrID), "type_name": type_name, "is_sender": IsSender,
                     "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": {},
                     "CreateTime": CreateTime, }
@@ -110,10 +111,9 @@ class MsgHandler(DatabaseBase):
         if not result:
             return [], []
 
-        result_data = (self.get_msg_detail(row) for row in result)
+        result_data = (self.get_msg_detail(row, my_talker=my_talker) for row in result)
         rdata = list(result_data)  # 转为列表
         wxid_list = {d['talker'] for d in rdata}  # 创建一个无重复的 wxid 列表
-
         return rdata, list(wxid_list)
 
     @db_error
@@ -201,7 +201,7 @@ class MsgHandler(DatabaseBase):
 
     # 单条消息处理
     @db_error
-    def get_msg_detail(self, row):
+    def get_msg_detail(self, row, my_talker="我"):
         """
         获取单条消息详情,格式化输出
         """
@@ -365,7 +365,7 @@ class MsgHandler(DatabaseBase):
 
         talker = "未知"
         if IsSender == 1:
-            talker = "我"
+            talker = my_talker
         else:
             if StrTalker.endswith("@chatroom"):
                 bytes_extra = get_BytesExtra(BytesExtra)

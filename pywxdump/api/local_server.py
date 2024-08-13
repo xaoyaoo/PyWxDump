@@ -21,9 +21,6 @@ from pywxdump.api.rjson import ReJson, RqJson
 from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, gen_base64, validate_title, \
     get_conf_local_wxid, ls_loger, random_str
 from pywxdump import get_wx_info, WX_OFFS, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
-
-from pywxdump.db import DBHandler, download_file, export_csv, export_json
-
 ls_api = Blueprint('ls_api', __name__, template_folder='../ui/web', static_folder='../ui/web/assets/', )
 ls_api.debug = False
 

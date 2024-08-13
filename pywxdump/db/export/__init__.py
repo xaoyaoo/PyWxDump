@@ -5,7 +5,5 @@
 # Author:       xaoyaoo
 # Date:         2024/04/20
 # -------------------------------------------------------------------------------
-
-
-if __name__ == '__main__':
-    pass
+from .exportCSV import export_csv
+from .exportJSON import export_json
