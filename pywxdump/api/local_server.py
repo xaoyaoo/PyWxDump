@@ -207,7 +207,10 @@ def get_real_time_msg():
     if not merge_path or not key or not wx_path or not wx_path:
         return ReJson(1002, body="msg_path or media_path or wx_path or key is required")
 
-    code, ret = all_merge_real_time_db(key=key, wx_path=wx_path, merge_path=merge_path)
+    real_time_exe_path = get_conf(g.caf, g.at, "real_time_exe_path")
+
+    code, ret = all_merge_real_time_db(key=key, wx_path=wx_path, merge_path=merge_path,
+                                       real_time_exe_path=real_time_exe_path)
     if code:
         return ReJson(0, ret)
     else:
