@@ -32,7 +32,7 @@ class SnsHandler(DatabaseBase):
             "FROM FeedsV20 "
             "ORDER BY CreateTime DESC")
         FeedsV20 = self.execute(sql)
-        for row in FeedsV20[0:]:
+        for row in FeedsV20[2:]:
             (FeedId, CreateTime, FaultId, Type, UserName, Status, ExtFlag, PrivFlag, StringId, Content) = row
 
             Content = xml2dict(Content) if Content and Content.startswith("<") else Content
@@ -49,8 +49,7 @@ class SnsHandler(DatabaseBase):
                 f"{StringId=}\n\n"
                 f"{json.dumps(Content, indent=4, ensure_ascii=False)}\n\n"
             )
-
-            break
+            return FeedId, CreateTime, FaultId, Type, UserName, Status, ExtFlag, PrivFlag, StringId, Content
 
     def get_sns_comment(self):
         pass
