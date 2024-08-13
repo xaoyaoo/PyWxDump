@@ -23,7 +23,7 @@ from .export.exportJSON import export_json
 
 
 class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandler, OpenIMMediaHandler,
-                FavoriteHandler):
+                FavoriteHandler, SnsHandler):
     _class_name = "DBHandler"
 
     def __init__(self, *args, **kwargs):
