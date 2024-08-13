@@ -8,8 +8,7 @@
 import csv
 import json
 import os
-
-from pywxdump import DBHandler
+from ..__init__ import DBHandler
 
 
 def export_csv(wxid, outpath, db_config, my_wxid="我", page_size=5000):

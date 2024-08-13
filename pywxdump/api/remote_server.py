@@ -25,7 +25,7 @@ from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, ge
 from pywxdump import get_wx_info, WX_OFFS, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
 
 from pywxdump.db import DBHandler, download_file, dat2img
-from pywxdump.db.export import export_csv, export_json
+from pywxdump.db.export import export_csv, export_json, export_html
 
 # app = Flask(__name__, static_folder='../ui/web/dist', static_url_path='/')
 
@@ -443,6 +443,40 @@ def get_export_json():
         os.makedirs(outpath)
 
     code, ret = export_json(wxid, outpath, db_config, my_wxid=my_wxid)
+    if code:
+        return ReJson(0, ret)
+    else:
+        return ReJson(2001, body=ret)
+
+
+@rs_api.route('/api/rs/export_html', methods=["GET", 'POST'])
+def get_export_html():
+    """
+    导出json
+    :return:
+    """
+    my_wxid = get_conf(g.caf, g.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    db_config = get_conf(g.caf, my_wxid, "db_config")
+
+    wxid = request.json.get("wxid")
+    if not wxid:
+        return ReJson(1002, body=f"username is required: {wxid}")
+
+    html_outpath = os.path.join(g.work_path, "export", my_wxid, "html")
+    if not os.path.exists(html_outpath):
+        os.makedirs(html_outpath)
+    assert isinstance(html_outpath, str)
+    outpath = os.path.join(html_outpath, wxid)
+    if os.path.exists(outpath):
+        shutil.rmtree(outpath, ignore_errors=True)
+    # 复制pywxdump/ui/web/*到outpath
+    web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")
+    shutil.copytree(web_path, outpath)
+
+
+    code, ret = export_html(wxid, outpath, db_config, my_wxid=my_wxid)
+
     if code:
         return ReJson(0, ret)
     else:

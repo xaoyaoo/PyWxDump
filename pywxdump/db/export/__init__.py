@@ -7,3 +7,4 @@
 # -------------------------------------------------------------------------------
 from .exportCSV import export_csv
 from .exportJSON import export_json
+from .exportHtml import export_html

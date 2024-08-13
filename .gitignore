@@ -27,3 +27,5 @@ node_modules
 dist
 dist-ssr
 *.local
+/pywxdump/ui/web/*
+/pywxdump/ui/web/assets/*
