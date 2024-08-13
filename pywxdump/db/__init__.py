@@ -27,9 +27,11 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # 加速查询索引
         self.Micro_add_index()
         self.Msg_add_index()
         self.PublicMsg_add_index()
+        self.Media_add_index()
 
     def get_user(self, word=None, wxids=None, labels=None):
         """

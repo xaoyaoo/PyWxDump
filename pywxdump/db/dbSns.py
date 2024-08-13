@@ -9,23 +9,14 @@ from .dbbase import DatabaseBase
 from .utils import silk2audio
 
 
-class MediaHandler(DatabaseBase):
-    _class_name = "MediaMSG"
-    Media_required_tables = ["Media"]
-
-    def get_audio(self, MsgSvrID, is_play=False, is_wave=False, save_path=None, rate=24000):
-        if not self.tables_exist("Media"):
-            return False
-
-        sql = "select Buf from Media where Reserved0=? "
-        DBdata = self.execute(sql, (MsgSvrID,))
-        if not DBdata:
-            return False
-        if len(DBdata) == 0:
-            return False
-        data = DBdata[0][0]  # [1:] + b'\xFF\xFF'
-        try:
-            pcm_data = silk2audio(buf_data=data, is_play=is_play, is_wave=is_wave, save_path=save_path, rate=rate)
-            return pcm_data
-        except Exception as e:
-            return False
+class SnsHandler(DatabaseBase):
+    _class_name = "Sns"
+    Media_required_tables = ["AdFeedsV8", "FeedsV20", "CommentV20", "NotificationV7", "SnsConfigV20", "SnsFailureV5",
+                             "SnsGroupInfoV5", "SnsNoNotifyV5"]
+    """
+    FeedsV20：朋友圈的XML数据
+    CommentV20：朋友圈点赞或评论记录
+    NotificationV7：朋友圈通知
+    SnsConfigV20：一些配置信息，能读懂的是其中有你的朋友圈背景图
+    SnsGroupInfoV5：猜测是旧版微信朋友圈可见范围的可见或不可见名单
+    """

@@ -13,6 +13,13 @@ class MediaHandler(DatabaseBase):
     _class_name = "MediaMSG"
     Media_required_tables = ["Media"]
 
+    def Media_add_index(self):
+        """
+        添加索引, 加快查询速度
+        """
+        if self.tables_exist("Media"):
+            self.execute("CREATE INDEX IF NOT EXISTS MsgSvrID ON Media(Reserved0)")
+
     def get_audio(self, MsgSvrID, is_play=False, is_wave=False, save_path=None, rate=24000):
         if not self.tables_exist("Media"):
             return False
