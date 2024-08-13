@@ -16,6 +16,7 @@ from .dbMedia import MediaHandler
 from .dbOpenIMContact import OpenIMContactHandler
 from .dbPublicMsg import PublicMsgHandler
 from .dbOpenIMMedia import OpenIMMediaHandler
+from .dbSns import SnsHandler
 
 from .export.exportCSV import export_csv
 from .export.exportJSON import export_json

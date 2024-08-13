@@ -15,7 +15,7 @@ from typing import List
 
 from .decryption import batch_decrypt
 from .wx_info import get_core_db
-from .utils import wx_core_loger, wx_core_error
+from .utils import wx_core_loger, wx_core_error, DB_TYPE_CORE
 
 
 @wx_core_error
@@ -467,8 +467,7 @@ def all_merge_real_time_db(key, wx_path, merge_path: str, real_time_exe_path: st
         from pywxdump import get_core_db
     except ImportError:
         return False, "未找到模块 pywxdump"
-
-    db_paths = get_core_db(wx_path, ["MediaMSG", "MSG", "MicroMsg"])
+    db_paths = get_core_db(wx_path, DB_TYPE_CORE)
     if not db_paths[0]:
         return False, db_paths[1]
     db_paths = db_paths[1]
