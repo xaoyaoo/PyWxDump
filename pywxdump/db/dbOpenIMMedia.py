@@ -13,13 +13,9 @@ class OpenIMMediaHandler(DatabaseBase):
     _class_name = "OpenIMMedia"
     OpenIMMedia_required_tables = ["OpenIMMedia"]
 
-    def OpenIMMedia_tables_exist(self):
-        """
-        判断该类所需要的表是否存在
-        """
-        return self.check_tables_exist(self.OpenIMMedia_required_tables)
-
     def get_im_audio(self, MsgSvrID, is_play=False, is_wave=False, save_path=None, rate=24000):
+        if not self.tables_exist("OpenIMMedia"):
+            return False
         sql = "select Buf from OpenIMMedia where Reserved0=? "
         DBdata = self.execute(sql, (MsgSvrID,))
         if not DBdata:

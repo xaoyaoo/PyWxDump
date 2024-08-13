@@ -13,12 +13,6 @@ class OpenIMContactHandler(DatabaseBase):
     _class_name = "OpenIMContact"
     OpenIMContact_required_tables = ["OpenIMContact"]
 
-    def OpenIMContact_tables_exist(self):
-        """
-        判断该类所需要的表是否存在
-        """
-        return self.check_tables_exist(self.OpenIMContact_required_tables)
-
     def get_im_user_list(self, word=None, wxids=None):
         """
         获取联系人列表
@@ -27,8 +21,10 @@ class OpenIMContactHandler(DatabaseBase):
         :param wxids: 微信id列表
         :return: 联系人字典
         """
+        if not self.tables_exist("OpenIMContact"):
+            return []
         if not wxids:
-            wxids = []
+            wxids = {}
         if isinstance(wxids, str):
             wxids = [wxids]
         sql = ("SELECT UserName,NickName,Type,Remark,BigHeadImgUrl,CustomInfoDetail,CustomInfoDetailVisible,"
@@ -49,7 +45,7 @@ class OpenIMContactHandler(DatabaseBase):
 
         result = self.execute(sql)
         if not result:
-            return []
+            return {}
 
         users = {}
         for row in result:

@@ -79,7 +79,7 @@ class DatabaseSingletonBase:
 
 class DatabaseBase(DatabaseSingletonBase):
     _class_name = "DatabaseBase"
-    table_exist = {}
+    existed_tables = []
 
     def __init__(self, db_config):
         """
@@ -91,6 +91,28 @@ class DatabaseBase(DatabaseSingletonBase):
         """
         self.config = db_config
         self.pool = self.connect(self.config)
+        self.__get_existed_tables()
+
+    def __get_existed_tables(self):
+        sql = "SELECT tbl_name FROM sqlite_master WHERE type = 'table' and tbl_name!='sqlite_sequence';"
+        existing_tables = self.execute(sql)
+        self.existed_tables = [row[0].lower() for row in existing_tables]
+        return self.existed_tables
+
+    def tables_exist(self, required_tables: str or list):
+        """
+        判断该类所需要的表是否存在
+        Check if all required tables exist in the database.
+        Args:
+            required_tables (list or str): A list of table names or a single table name string.
+        Returns:
+            bool: True if all required tables exist, False otherwise.
+        """
+        if isinstance(required_tables, str):
+            required_tables = [required_tables]
+        rbool = all(table.lower() in self.existed_tables for table in (required_tables or []))
+        if not rbool: db_loger.warning(f"{required_tables=}\n{self.existed_tables=}\n{rbool=}\n")
+        return rbool
 
     def execute(self, sql, params=None):
         """
@@ -124,20 +146,6 @@ class DatabaseBase(DatabaseSingletonBase):
                 return None
         finally:
             connection.close()
-
-    def check_tables_exist(self, required_tables):
-        """
-        判断该类所需要的表是否存在
-        """
-        required_tables = required_tables or []
-        required_tables_str = "'" + "','".join(required_tables) + "'"
-        sql = (f"SELECT tbl_name FROM sqlite_master "
-               f"WHERE type='table' AND tbl_name in ({required_tables_str});")
-        existing_tables = self.execute(sql)
-        existing_tables = [row[0] for row in existing_tables]  # 将查询结果转换为列表
-        self.table_exist = {table: table in existing_tables for table in required_tables}
-        # 检查所有必需的表是否都在现有表中
-        return all(table in existing_tables for table in required_tables)
 
     def close(self):
         self.pool.close()

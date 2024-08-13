@@ -13,13 +13,10 @@ class MediaHandler(DatabaseBase):
     _class_name = "MediaMSG"
     Media_required_tables = ["Media"]
 
-    def Media_tables_exist(self):
-        """
-        判断该类所需要的表是否存在
-        """
-        return self.check_tables_exist(self.Media_required_tables)
-
     def get_audio(self, MsgSvrID, is_play=False, is_wave=False, save_path=None, rate=24000):
+        if not self.tables_exist("Media"):
+            return False
+
         sql = "select Buf from Media where Reserved0=? "
         DBdata = self.execute(sql, (MsgSvrID,))
         if not DBdata:

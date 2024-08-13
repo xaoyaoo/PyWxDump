@@ -23,23 +23,16 @@ class MsgHandler(DatabaseBase):
     _class_name = "MSG"
     MSG_required_tables = ["MSG"]
 
-    def Msg_tables_exist(self):
-        """
-        判断该类所需要的表是否存在
-        """
-        return self.check_tables_exist(self.MSG_required_tables)
-
     def Msg_add_index(self):
         """
         添加索引,加快查询速度
         """
         # 检查是否存在索引
-        sql = "CREATE INDEX IF NOT EXISTS idx_MSG_StrTalker ON MSG(StrTalker);"
-        self.execute(sql)
-        sql = "CREATE INDEX IF NOT EXISTS idx_MSG_CreateTime ON MSG(CreateTime);"
-        self.execute(sql)
-        sql = "CREATE INDEX IF NOT EXISTS idx_MSG_StrTalker_CreateTime ON MSG(StrTalker, CreateTime);"
-        self.execute(sql)
+        if not self.tables_exist("MSG"):
+            return
+        self.execute("CREATE INDEX IF NOT EXISTS idx_MSG_StrTalker ON MSG(StrTalker);")
+        self.execute("CREATE INDEX IF NOT EXISTS idx_MSG_CreateTime ON MSG(CreateTime);")
+        self.execute("CREATE INDEX IF NOT EXISTS idx_MSG_StrTalker_CreateTime ON MSG(StrTalker, CreateTime);")
 
     @db_error
     def get_msg_count(self, wxids: list = ""):
@@ -57,6 +50,8 @@ class MsgHandler(DatabaseBase):
             sql = f"SELECT StrTalker, COUNT(*) FROM MSG GROUP BY StrTalker ORDER BY COUNT(*) DESC;"
         sql_total = f"SELECT COUNT(*) FROM MSG;"
 
+        if not self.tables_exist("MSG"):
+            return {}
         result = self.execute(sql)
         total_ret = self.execute(sql_total)
 
@@ -271,11 +266,8 @@ class MsgHandler(DatabaseBase):
                     "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": {},
                     "CreateTime": CreateTime, }
         """
-        sql_base = ("SELECT localId,TalkerId,MsgSvrID,Type,SubType,CreateTime,IsSender,Sequence,StatusEx,FlagEx,Status,"
-                    "MsgSequence,StrContent,MsgServerSeq,StrTalker,DisplayContent,Reserved0,Reserved1,Reserved3,"
-                    "Reserved4,Reserved5,Reserved6,CompressContent,BytesExtra,BytesTrans,Reserved2,"
-                    "ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
-                    "FROM MSG ")
+        if not self.tables_exist("MSG"):
+            return [], []
 
         param = ()
         sql_wxid, param = ("AND StrTalker=? ", param + (wxid,)) if wxid else ("", param)
@@ -286,7 +278,11 @@ class MsgHandler(DatabaseBase):
         sql_end_createtime, param = ("AND CreateTime<=? ", param + (end_createtime,)) if end_createtime else ("", param)
 
         sql = (
-            f"{sql_base} WHERE 1=1 "
+            "SELECT localId,TalkerId,MsgSvrID,Type,SubType,CreateTime,IsSender,Sequence,StatusEx,FlagEx,Status,"
+            "MsgSequence,StrContent,MsgServerSeq,StrTalker,DisplayContent,Reserved0,Reserved1,Reserved3,"
+            "Reserved4,Reserved5,Reserved6,CompressContent,BytesExtra,BytesTrans,Reserved2,"
+            "ROW_NUMBER() OVER (ORDER BY CreateTime ASC) AS id "
+            "FROM MSG WHERE 1=1 "
             f"{sql_wxid}"
             f"{sql_type}"
             f"{sql_sub_type}"
@@ -310,6 +306,8 @@ class MsgHandler(DatabaseBase):
         """
         获取每日聊天记录数量，包括发送者数量、接收者数量和总数。
         """
+        if not self.tables_exist("MSG"):
+            return {}
         if isinstance(start_time, str) and start_time.isdigit():
             start_time = int(start_time)
         if isinstance(end_time, str) and end_time.isdigit():
@@ -355,6 +353,8 @@ class MsgHandler(DatabaseBase):
         """
         获取聊天记录数量最多的联系人,他们聊天记录数量
         """
+        if not self.tables_exist("MSG"):
+            return {}
         if isinstance(start_time, str) and start_time.isdigit():
             start_time = int(start_time)
         if isinstance(end_time, str) and end_time.isdigit():

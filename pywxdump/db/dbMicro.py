@@ -18,39 +18,41 @@ class MicroHandler(DatabaseBase):
     Micro_required_tables = ["ContactLabel", "Contact", "ContactHeadImgUrl", "Session", "ChatInfo", "ChatRoom",
                              "ChatRoomInfo"]
 
-    def Micro_tables_exist(self):
-        """
-        判断该类所需要的表是否存在
-        """
-        return self.check_tables_exist(self.Micro_required_tables)
-
     def Micro_add_index(self):
         """
         添加索引, 加快查询速度
         """
         # 为 Session 表添加索引
-        self.execute("CREATE INDEX IF NOT EXISTS idx_Session_strUsrName_nTime ON Session(strUsrName, nTime);")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nOrder ON Session(nOrder);")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nTime ON Session(nTime);")
+        if self.tables_exist("Session"):
+            self.execute("CREATE INDEX IF NOT EXISTS idx_Session_strUsrName_nTime ON Session(strUsrName, nTime);")
+            self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nOrder ON Session(nOrder);")
+            self.execute("CREATE INDEX IF NOT EXISTS idx_Session_nTime ON Session(nTime);")
 
         # 为 Contact 表添加索引
-        self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_UserName ON Contact(UserName);")
+
+        if self.tables_exist("Contact"):
+            self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_UserName ON Contact(UserName);")
 
         # 为 ContactHeadImgUrl 表添加索引
-        self.execute("CREATE INDEX IF NOT EXISTS idx_ContactHeadImgUrl_usrName ON ContactHeadImgUrl(usrName);")
+        if self.tables_exist('ContactHeadImgUrl'):
+            self.execute("CREATE INDEX IF NOT EXISTS idx_ContactHeadImgUrl_usrName ON ContactHeadImgUrl(usrName);")
 
         # 为 ChatInfo 表添加索引
-        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatInfo_Username_LastReadedCreateTime "
-                     "ON ChatInfo(Username, LastReadedCreateTime);")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatInfo_LastReadedCreateTime ON ChatInfo(LastReadedCreateTime);")
+        if self.tables_exist('ChatInfo'):
+            self.execute("CREATE INDEX IF NOT EXISTS idx_ChatInfo_Username_LastReadedCreateTime "
+                         "ON ChatInfo(Username, LastReadedCreateTime);")
+            self.execute(
+                "CREATE INDEX IF NOT EXISTS idx_ChatInfo_LastReadedCreateTime ON ChatInfo(LastReadedCreateTime);")
 
         # 为 Contact 表添加复合索引
-        self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_search "
-                     "ON Contact(UserName, NickName, Remark, Alias, QuanPin, PYInitial, RemarkQuanPin, RemarkPYInitial);")
+        if self.tables_exist('Contact'):
+            self.execute("CREATE INDEX IF NOT EXISTS idx_Contact_search "
+                         "ON Contact(UserName, NickName, Remark, Alias, QuanPin, PYInitial, RemarkQuanPin, RemarkPYInitial);")
 
         # 为 ChatRoom 和 ChatRoomInfo 表添加索引
-        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatRoom_ChatRoomName ON ChatRoom(ChatRoomName);")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_ChatRoomInfo_ChatRoomName ON ChatRoomInfo(ChatRoomName);")
+        if self.tables_exist(['ChatRoomInfo', "ChatRoom"]):
+            self.execute("CREATE INDEX IF NOT EXISTS idx_ChatRoom_ChatRoomName ON ChatRoom(ChatRoomName);")
+            self.execute("CREATE INDEX IF NOT EXISTS idx_ChatRoomInfo_ChatRoomName ON ChatRoomInfo(ChatRoomName);")
 
     @db_error
     def get_labels(self, id_is_key=True):
@@ -59,12 +61,13 @@ class MicroHandler(DatabaseBase):
         :param id_is_key: id_is_key: True: id作为key，False: name作为key
         :return:
         """
-        if not self.table_exist.get("ContactLabel", False):
-            return {}
+        labels = {}
+        if not self.tables_exist("ContactLabel"):
+            return labels
         sql = "SELECT LabelId, LabelName FROM ContactLabel ORDER BY LabelName ASC;"
         result = self.execute(sql)
         if not result:
-            return []
+            return labels
         if id_is_key:
             labels = {row[0]: row[1] for row in result}
         else:
@@ -78,6 +81,8 @@ class MicroHandler(DatabaseBase):
         :return: 会话列表
         """
         sessions = {}
+        if not self.tables_exist(["Session", "Contact", "ContactHeadImgUrl"]):
+            return sessions
         sql = (
             "SELECT S.strUsrName,S.nOrder,S.nUnReadCount, S.strNickName, S.nStatus, S.nIsSend, S.strContent, "
             "S.nMsgLocalID, S.nMsgStatus, S.nTime, S.nMsgType, S.Reserved2 AS nMsgSubType, C.UserName, C.Alias, "
@@ -124,6 +129,8 @@ class MicroHandler(DatabaseBase):
         :return: 最近聊天的联系人
         """
         users = []
+        if not self.tables_exist(["ChatInfo"]):
+            return users
         sql = (
             "SELECT A.Username, LastReadedCreateTime, LastReadedSvrId "
             "FROM (   SELECT Username, MAX(LastReadedCreateTime) AS MaxLastReadedCreateTime  FROM ChatInfo "
@@ -159,7 +166,8 @@ class MicroHandler(DatabaseBase):
             label_ids = [label_ids]
 
         users = {}
-
+        if not self.tables_exist(["Contact", "ContactHeadImgUrl"]):
+            return users
         sql = (
             "SELECT A.UserName, A.Alias, A.DelFlag, A.Type, A.VerifyFlag, A.Reserved1, A.Reserved2,"
             "A.Remark, A.NickName, A.LabelIDList, A.ChatRoomType, A.ChatRoomNotify, A.Reserved5,"
@@ -220,6 +228,9 @@ class MicroHandler(DatabaseBase):
         if isinstance(roomwxids, str):
             roomwxids = [roomwxids]
 
+        rooms = {}
+        if not self.tables_exist(["ChatRoom", "ChatRoomInfo"]):
+            return rooms
         sql = (
             "SELECT A.ChatRoomName,A.UserNameList,A.DisplayNameList,A.ChatRoomFlag,A.IsShowName,"
             "A.SelfDisplayName,A.Reserved2,A.RoomData, "
@@ -232,7 +243,6 @@ class MicroHandler(DatabaseBase):
         if roomwxids:
             sql = sql.replace(";", f"AND A.UserName IN ('" + "','".join(roomwxids) + "') ;")
 
-        rooms = {}
         result = self.execute(sql)
         if not result:
             return rooms

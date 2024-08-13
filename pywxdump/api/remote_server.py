@@ -205,7 +205,7 @@ def msg_count():
     db_config = get_conf(g.caf, my_wxid, "db_config")
     db = DBHandler(db_config)
     chat_count = db.get_msg_count(wxid)
-    chat_count1 = db.get_plc_msg_count(wxid) if db.PublicMsg_exist else {}
+    chat_count1 = db.get_plc_msg_count(wxid)
     # 合并两个字典，相同key，则将value相加
     count = {k: chat_count.get(k, 0) + chat_count1.get(k, 0) for k in
              list(set(list(chat_count.keys()) + list(chat_count1.keys())))}
@@ -235,11 +235,9 @@ def get_msgs():
         return ReJson(1002, body=f"start or limit is not int {start} {limit}")
 
     db = DBHandler(db_config)
-    msgs, wxid_list = db.get_msg_list(wxid=wxid, start_index=start, page_size=limit)
-    if not msgs and db.PublicMsg_exist:
-        msgs, wxid_list = db.get_plc_msg_list(wxid=wxid, start_index=start, page_size=limit)
+    msgs, wxid_list = db.get_msgs(wxid=wxid, start_index=start, page_size=limit)
     wxid_list.append(my_wxid)
-    user = db.get_user_list(wxids=wxid_list)
+    user = db.get_user(wxids=wxid_list)
     return ReJson(0, {"msg_list": msgs, "user_list": user})
 
 

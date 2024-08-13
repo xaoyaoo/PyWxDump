@@ -22,16 +22,12 @@ class FavoriteHandler(DatabaseBase):
     _class_name = "Favorite"
     Favorite_required_tables = ["FavItems", "FavDataItem", "FavTagDatas", "FavBindTagDatas"]
 
-    def Favorite_tables_exist(self):
-        """
-        判断该类所需要的表是否存在
-        """
-        return self.check_tables_exist(self.Favorite_required_tables)
-
     def get_tags(self, LocalID):
         """
         return: {LocalID: TagName}
         """
+        if not self.tables_exist("FavTagDatas"):
+            return {}
         if LocalID is None:
             sql = "select LocalID, TagName from FavTagDatas order by ServerSeq"
         else:
@@ -107,6 +103,9 @@ class FavoriteHandler(DatabaseBase):
             "Rerserved6": "保留字段6",
             "Rerserved7": "保留字段7"
         }
+
+        if not self.tables_exist(["FavItems", "FavDataItem"]):
+            return False
 
         sql1 = "select " + ",".join(FavItemsFields.keys()) + " from FavItems order by UpdateTime desc"
         sql2 = "select " + ",".join(FavDataItemFields.keys()) + " from FavDataItem B order by B.RecId asc"
