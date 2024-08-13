@@ -25,37 +25,32 @@ class SnsHandler(DatabaseBase):
     def get_sns_feed(self):
         """
         获取朋友圈数据
+        http://shmmsns.qpic.cn/mmsns/uGxMq1C4wvppcjBbyweK796GtT1hH3LGISYajZ2v7C11XhHk5icyDUXcWNSPk2MooeIa8Es5hXP0/0?idx=1&token=WSEN6qDsKwV8A02w3onOGQYfxnkibdqSOkmHhZGNB4DFumlE9p1vp0e0xjHoXlbbXRzwnQia6X5t3Annc4oqTuDg
         """
-        sql = ("SELECT FeedId, CreateTime, FaultId, Type, UserName, Status, ExtFlag, PrivFlag, StringId, Content, "
-               "Reserved1, Reserved2, Reserved3, Reserved4, Reserved5, Reserved6, ExtraBuf, Reserved7 "
-               "FROM FeedsV20 "
-               "ORDER BY CreateTime DESC")
+        sql = (
+            "SELECT FeedId, CreateTime, FaultId, Type, UserName, Status, ExtFlag, PrivFlag, StringId, Content "
+            "FROM FeedsV20 "
+            "ORDER BY CreateTime DESC")
         FeedsV20 = self.execute(sql)
-        for row in FeedsV20[2:]:
-            (FeedId, CreateTime, FaultId, Type, UserName, Status, ExtFlag, PrivFlag, StringId, Content,
-             Reserved1, Reserved2, Reserved3, Reserved4, Reserved5, Reserved6, ExtraBuf, Reserved7) = row
+        for row in FeedsV20[0:]:
+            (FeedId, CreateTime, FaultId, Type, UserName, Status, ExtFlag, PrivFlag, StringId, Content) = row
 
             Content = xml2dict(Content) if Content and Content.startswith("<") else Content
             CreateTime = timestamp2str(CreateTime)
-            print(f""
-                  f"{FeedId=}\n"
-                  f"{CreateTime=}\n"
-                  f"{FaultId=}\n"
-                  f"{Type=}\n"
-                  f"{UserName=}\n"
-                  f"{Status=}\n"
-                  f"{ExtFlag=}\n"
-                  f"{PrivFlag=}\n"
-                  f"{StringId=}\n\n"
-                  f"{json.dumps(Content,indent=4,ensure_ascii=False)}\n\n"
-                  f"{ExtraBuf=}\n"
-                  f"{Reserved1=}\n"
-                  f"{Reserved2=}\n"
-                  f"{Reserved3=}\n"
-                  f"{Reserved4=}\n"
-                  f"{Reserved5=}\n"
-                  f"{Reserved6=}\n"
-                  f"{Reserved7=}\n"
-                  )
+            print(
+                f"{FeedId=}\n"
+                f"{CreateTime=}\n"
+                f"{FaultId=}\n"
+                f"{Type=}\n"
+                f"{UserName=}\n"
+                f"{Status=}\n"
+                f"{ExtFlag=}\n"
+                f"{PrivFlag=}\n"
+                f"{StringId=}\n\n"
+                f"{json.dumps(Content, indent=4, ensure_ascii=False)}\n\n"
+            )
 
             break
+
+    def get_sns_comment(self):
+        pass
