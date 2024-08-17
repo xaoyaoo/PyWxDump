@@ -13,11 +13,11 @@ from urllib.parse import quote
 from typing import List, Optional
 
 from pydantic import BaseModel
-from fastapi import APIRouter,Response
+from fastapi import APIRouter, Response, Body
 from starlette.responses import StreamingResponse, FileResponse
 
 import pywxdump
-from pywxdump import decrypt_merge,get_core_db
+from pywxdump import decrypt_merge, get_core_db
 from pywxdump.db import DBHandler
 from pywxdump.db.utils import download_file, dat2img
 
@@ -110,18 +110,13 @@ def user_list(word: str = "", wxids: List[str] = None, labels: List[str] = None)
 
 # start 以下为聊天记录相关api *********************************************************************************************
 
-class MsgCountRequest(BaseModel):
-    wxids: Optional[List[str]]
-
-
 @rs_api.post('/msg_count')
 @error9999
-def msg_count(request: MsgCountRequest):
+def msg_count(wxids: Optional[List[str]] = Body(..., embed=True)):
     """
     获取联系人的聊天记录数量
     :return:
     """
-    wxids = request.wxids
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_db_config()
@@ -130,22 +125,13 @@ def msg_count(request: MsgCountRequest):
     return ReJson(0, count)
 
 
-class MsgListRequest(BaseModel):
-    wxid: str
-    start: int
-    limit: int
-
-
 @rs_api.api_route('/msg_list', methods=["GET", 'POST'])
 @error9999
-def get_msgs(request: MsgListRequest):
+def get_msgs(wxid: str = Body(...), start: int = Body(...), limit: int = Body(...)):
     """
     获取联系人的聊天记录
     :return:
     """
-    wxid = request.wxid
-    start = request.start
-    limit = request.limit
 
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
@@ -292,13 +278,8 @@ def get_audio(src: str):
         return ReJson(4004, body=savePath)
 
 
-class FileInfoRequest(BaseModel):
-    file_path: str
-
-
 @rs_api.api_route('/file_info', methods=["GET", 'POST'])
-def get_file_info(request: FileInfoRequest):
-    file_path = request.file_path
+def get_file_info(file_path: str = Body(..., embed=True)):
     if not file_path:
         return ReJson(1002)
 
@@ -429,22 +410,16 @@ def get_export_dedb(request: ExportDedbRequest):
         return ReJson(2001, body=merge_save_path)
 
 
-class ExportCsvRequest(BaseModel):
-    wxid: str
-
-
 @rs_api.api_route('/export_csv', methods=["GET", 'POST'])
-def get_export_csv(request: ExportCsvRequest):
+def get_export_csv(wxid: str = Body(..., embed=True)):
     """
     导出csv
     :return:
     """
-
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_conf(my_wxid, "db_config")
 
-    wxid = request.wxid
     # st_ed_time = request.json.get("datetime", [0, 0])
     if not wxid:
         return ReJson(1002, body=f"username is required: {wxid}")
@@ -465,22 +440,16 @@ def get_export_csv(request: ExportCsvRequest):
         return ReJson(2001, body=ret)
 
 
-class ExportJsonRequest(BaseModel):
-    wxid: str
-
-
 @rs_api.api_route('/export_json', methods=["GET", 'POST'])
-def get_export_json(request: ExportJsonRequest):
+def get_export_json(wxid: str = Body(..., embed=True)):
     """
     导出json
     :return:
     """
-
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_conf(my_wxid, "db_config")
 
-    wxid = request.wxid
     if not wxid:
         return ReJson(1002, body=f"username is required: {wxid}")
 
@@ -500,17 +469,15 @@ class ExportHtmlRequest(BaseModel):
 
 
 @rs_api.api_route('/export_html', methods=["GET", 'POST'])
-def get_export_html(request: ExportHtmlRequest):
+def get_export_html(wxid: str = Body(..., embed=True)):
     """
     导出json
     :return:
     """
-
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_conf(my_wxid, "db_config")
 
-    wxid = request.wxid
     if not wxid:
         return ReJson(1002, body=f"username is required: {wxid}")
 
@@ -691,6 +658,5 @@ def get_readme():
         return ReJson(0, body=data)
     else:
         return ReJson(2001, body="status_code is not 200")
-
 
 # END 关于、帮助、设置 ***************************************************************************************************

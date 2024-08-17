@@ -11,7 +11,7 @@ import shutil
 import pythoncom
 
 from pydantic import BaseModel
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 from pywxdump import all_merge_real_time_db, get_wx_db
 from pywxdump import get_wx_info, batch_decrypt, BiasAddr, merge_db, decrypt_merge
@@ -38,9 +38,9 @@ def init_last_local_wxid():
     return ReJson(0, {"local_wxids": []})
 
 
-@ls_api.api_route('/init_last', methods=["GET", 'POST'])
+@ls_api.post('/init_last')
 @error9999
-def init_last(my_wxid: str):
+def init_last(my_wxid: str = Body(..., embed=True)):
     """
     是否初始化
     :return:
