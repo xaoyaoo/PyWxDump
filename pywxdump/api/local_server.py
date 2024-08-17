@@ -254,7 +254,7 @@ class BiasAddrRequest(BaseModel):
 
 @ls_api.post('/biasaddr')
 @error9999
-def biasaddr(request: BiasAddrRequest):
+def get_biasaddr(request: BiasAddrRequest):
     """
     BiasAddr
     :return:
@@ -273,7 +273,7 @@ def biasaddr(request: BiasAddrRequest):
 
 @ls_api.api_route('/decrypt', methods=["GET", 'POST'])
 @error9999
-def decrypt(key: str, wxdbPath: str, outPath: str = ""):
+def get_decrypt(key: str, wxdbPath: str, outPath: str = ""):
     """
     解密
     :return:
@@ -291,7 +291,7 @@ class MergeRequest(BaseModel):
 
 @ls_api.post('/merge')
 @error9999
-def merge(request: MergeRequest):
+def get_merge(request: MergeRequest):
     """
     合并
     :return:

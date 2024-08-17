@@ -5,8 +5,6 @@
 # Author:       xaoyaoo
 # Date:         2023/12/14
 # -------------------------------------------------------------------------------
-
-import logging
 import os
 import subprocess
 import sys
@@ -28,7 +26,7 @@ from pywxdump import __version__
 
 app = FastAPI(title="pywxdump", description="微信工具", version=__version__,
               terms_of_service="https://github.com/xaoyaoo/pywxdump",
-              contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump", "email": "<EMAIL>"},
+              contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
               license_info={"name": "MIT License", "url": "https://github.com/xaoyaoo/pywxdump/blob/main/LICENSE"})
 
 # 跨域
@@ -65,9 +63,10 @@ async def index():
 app.include_router(rs_api, prefix='/api/rs', tags=['远程api'])
 app.include_router(ls_api, prefix='/api/ls', tags=['本地api'])
 
-web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")
 # 静态文件挂载
-app.mount("/s", StaticFiles(directory=web_path), name="static")
+web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")
+if os.path.exists(os.path.join(web_path, "index.html")):
+    app.mount("/s", StaticFiles(directory=web_path), name="static")
 
 
 def start_server(port=5000, online=False, debug=False, isopenBrowser=True):
