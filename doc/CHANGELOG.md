@@ -1,6 +1,14 @@
-## v3.1.21.(待发布)
+## v3.1.22.(待发布)
 
-- 
+- fix 单用户使用上次数据报错问题
+
+## v3.1.21
+
+- fix
+- fix #123
+- fix 无限递归问题
+- update README.md
+- UPDATE CHANGELOG.md
 
 ## v3.1.20
 
