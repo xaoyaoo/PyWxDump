@@ -22,13 +22,18 @@ install_requires = [
     "requests",
     "pillow",
     "pyahocorasick",
-    "flask",
+    # "flask",
+    # "flask_cors",
     "lz4",
     "blackboxprotobuf",
     "lxml",
-    "flask_cors",
     "pandas",
-    "dbutils"
+    "dbutils",
+
+    "fastapi",
+    "uvicorn",
+    "python-dotenv",
+    "email-validator"
 ]
 
 setup(
