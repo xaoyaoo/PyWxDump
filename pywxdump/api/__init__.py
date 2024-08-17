@@ -29,7 +29,7 @@ def gen_fastapi_app():
     app = FastAPI(title="pywxdump", description="微信工具", version=__version__,
                   terms_of_service="https://github.com/xaoyaoo/pywxdump",
                   contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
-                  license_info={"name": "MIT License", "url": "https://github.com/xaoyaoo/pywxdump/blob/main/LICENSE"})
+                  license_info={"name": "MIT License", "url": "https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE"})
 
     # 跨域
     origins = [
