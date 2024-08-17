@@ -1,6 +1,14 @@
 ## v3.1.19.(待发布)
 
+- fix
+- 增加注释说明
+- add Sns
+- Media_add_index
+- add export html
 - UPDATE CHANGELOG.md
+- 增加注释，增加自定义实时合并数据库路径
+- 该flask为fastapi，速度更快
+- fix and add export html
 
 ## v3.1.18
 
