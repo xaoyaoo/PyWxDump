@@ -24,7 +24,7 @@ ls_api = APIRouter()
 
 # 以下为初始化相关 *******************************************************************************************************
 
-@ls_api.api_route('/init_last_local_wxid', methods=["GET", 'POST'])
+@ls_api.post('/init_last_local_wxid')
 @error9999
 def init_last_local_wxid():
     """
@@ -72,7 +72,7 @@ class InitKeyRequest(BaseModel):
     my_wxid: str
 
 
-@ls_api.api_route('/init_key', methods=["GET", 'POST'])
+@ls_api.post('/init_key')
 @error9999
 def init_key(request: InitKeyRequest):
     """
@@ -96,8 +96,6 @@ def init_key(request: InitKeyRequest):
     # if isinstance(db_config, dict) and db_config and os.path.exists(db_config.get("path")):
     #     pmsg = DBHandler(db_config)
     #     # pmsg.close_all_connection()
-    print(id(gc))
-    print(wx_path, "\n", key, "\n", my_wxid, "\n", gc.work_path)
 
     out_path = os.path.join(gc.work_path, "decrypted", my_wxid) if my_wxid else os.path.join(gc.work_path, "decrypted")
     # 检查文件夹中文件是否被占用
