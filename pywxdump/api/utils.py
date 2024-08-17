@@ -72,15 +72,16 @@ class ConfData(object):
         self._work_path = work_path
         self.conf_file = conf_file
         self.auto_setting = auto_setting
+        self.is_init = True
+        
         if not os.path.exists(self.conf_file):
             self.set_conf(self.auto_setting, "last", "")
-        self.is_init = True
         self.read_conf()
         return True
 
     def read_conf(self):
-        if not self.is_init:
-            self.init()
+        if not os.path.exists(self.conf_file):
+            return False
         try:
             with open(self.conf_file, 'r') as f:
                 conf = json.load(f)
