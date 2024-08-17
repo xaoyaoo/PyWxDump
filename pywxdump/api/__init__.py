@@ -24,49 +24,50 @@ from .local_server import ls_api
 
 from pywxdump import __version__
 
-app = FastAPI(title="pywxdump", description="微信工具", version=__version__,
-              terms_of_service="https://github.com/xaoyaoo/pywxdump",
-              contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
-              license_info={"name": "MIT License", "url": "https://github.com/xaoyaoo/pywxdump/blob/main/LICENSE"})
 
-# 跨域
-origins = [
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
-    "http://localhost:8080",  # 开发环境的客户端地址"
-    # "http://0.0.0.0:5000",
-    # "*"
-]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # 允许所有源
-    allow_credentials=True,
-    allow_methods=["*"],  # 允许所有方法
-    allow_headers=["*"],  # 允许所有头
-)
+def gen_fastapi_app():
+    app = FastAPI(title="pywxdump", description="微信工具", version=__version__,
+                  terms_of_service="https://github.com/xaoyaoo/pywxdump",
+                  contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
+                  license_info={"name": "MIT License", "url": "https://github.com/xaoyaoo/pywxdump/blob/main/LICENSE"})
 
+    # 跨域
+    origins = [
+        "http://localhost:5000",
+        "http://127.0.0.1:5000",
+        "http://localhost:8080",  # 开发环境的客户端地址"
+        # "http://0.0.0.0:5000",
+        # "*"
+    ]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,  # 允许所有源
+        allow_credentials=True,
+        allow_methods=["*"],  # 允许所有方法
+        allow_headers=["*"],  # 允许所有头
+    )
 
-@app.exception_handler(RequestValidationError)
-async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
-    # print(request.body)
-    return ReJson(1002, {"detail": exc.errors()})
+    @app.exception_handler(RequestValidationError)
+    async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
+        # print(request.body)
+        return ReJson(1002, {"detail": exc.errors()})
 
+    @app.get("/")
+    @app.get("/index.html")
+    async def index():
+        response = RedirectResponse(url="/s/index.html", status_code=307)
+        return response
 
-@app.get("/")
-@app.get("/index.html")
-async def index():
-    response = RedirectResponse(url="/s/index.html", status_code=307)
-    return response
+    # 路由挂载
+    app.include_router(rs_api, prefix='/api/rs', tags=['远程api'])
+    app.include_router(ls_api, prefix='/api/ls', tags=['本地api'])
 
+    # 静态文件挂载
+    web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")
+    if os.path.exists(os.path.join(web_path, "index.html")):
+        app.mount("/s", StaticFiles(directory=web_path), name="static")
 
-# 路由挂载
-app.include_router(rs_api, prefix='/api/rs', tags=['远程api'])
-app.include_router(ls_api, prefix='/api/ls', tags=['本地api'])
-
-# 静态文件挂载
-web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")
-if os.path.exists(os.path.join(web_path, "index.html")):
-    app.mount("/s", StaticFiles(directory=web_path), name="static")
+    return app
 
 
 def start_server(port=5000, online=False, debug=False, isopenBrowser=True):
@@ -128,8 +129,11 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True):
     time.sleep(1)
     server_loger.info(f"启动flask服务，host:port：{host}:{port}")
     print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
-
+    global app
+    app = gen_fastapi_app()
     uvicorn.run(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
 
 
-__all__ = ["start_server", "app"]
+app = None
+
+__all__ = ["start_server", "gen_fastapi_app"]
