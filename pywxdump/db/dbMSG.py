@@ -242,7 +242,7 @@ class MsgHandler(DatabaseBase):
                 voicelength = int(voicelength) / 1000
                 voicelength = f"{voicelength:.2f}"
             msg = f"语音时长：{voicelength}秒\n翻译结果：{transtext}" if transtext else f"语音时长：{voicelength}秒"
-            src = os.path.join("audio", f"{StrTalker}",
+            src = os.path.join(f"{StrTalker}",
                                f"{CreateTime.replace(':', '-').replace(' ', '_')}_{IsSender}_{MsgSvrID}.wav")
         elif type_id == (43, 0):  # 视频
             DictExtra = get_BytesExtra(BytesExtra)

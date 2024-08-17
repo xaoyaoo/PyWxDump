@@ -252,18 +252,19 @@ def xml2dict(xml_string):
     return parse_xml(root)
 
 
-def download_file(url, save_path=None):
+def download_file(url, save_path=None, proxies=None):
     """
     下载文件
     :param url: 文件下载地址
     :param save_path: 保存路径
+    :param proxies: requests 代理
     :return: 保存路径
     """
     headers = {
         "User-Agent": "Mozilla/5.0 (Linux; Android 10; Redmi K40 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Mobile Safari/537.36"
 
     }
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, proxies=proxies)
     if r.status_code != 200:
         return None
     data = r.content

@@ -15,3 +15,7 @@ lz4
 lxml
 flask_cors
 pandas
+
+fastapi
+uvicorn
+dotenv

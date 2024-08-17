@@ -5,58 +5,55 @@
 # Author:       xaoyaoo
 # Date:         2024/08/01
 # -------------------------------------------------------------------------------
-import base64
-import json
-import logging
 import os
-import re
 import time
 import shutil
 import pythoncom
-import pywxdump
 
-from flask import Flask, request, render_template, g, Blueprint, send_file, make_response, session
-from pywxdump import get_core_db, all_merge_real_time_db, get_wx_db
-from pywxdump.api.rjson import ReJson, RqJson
-from pywxdump.api.utils import get_conf, get_conf_wxids, set_conf, error9999, gen_base64, validate_title, \
-    get_conf_local_wxid, ls_loger, random_str
-from pywxdump import get_wx_info, WX_OFFS, batch_decrypt, BiasAddr, merge_db, decrypt_merge, merge_real_time_db
-ls_api = Blueprint('ls_api', __name__, template_folder='../ui/web', static_folder='../ui/web/assets/', )
-ls_api.debug = False
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+from pywxdump import all_merge_real_time_db, get_wx_db
+from pywxdump import get_wx_info, batch_decrypt, BiasAddr, merge_db, decrypt_merge
+
+from .rjson import ReJson, RqJson
+from .utils import error9999, ls_loger, random_str, gc
+
+ls_api = APIRouter()
 
 
 # 以下为初始化相关 *******************************************************************************************************
 
-@ls_api.route('/api/ls/init_last_local_wxid', methods=["GET", 'POST'])
+@ls_api.api_route('/init_last_local_wxid', methods=["GET", 'POST'])
 @error9999
 def init_last_local_wxid():
     """
     初始化，包括key
     :return:
     """
-    local_wxid = get_conf_local_wxid(g.caf)
-    local_wxid.remove(g.at)
+    local_wxid = gc.get_local_wxids()
+    local_wxid.remove(gc.at)
     if local_wxid:
         return ReJson(0, {"local_wxids": local_wxid})
     return ReJson(0, {"local_wxids": []})
 
 
-@ls_api.route('/api/ls/init_last', methods=["GET", 'POST'])
+@ls_api.api_route('/init_last', methods=["GET", 'POST'])
 @error9999
-def init_last():
+def init_last(my_wxid: str):
     """
     是否初始化
     :return:
     """
-    my_wxid = request.json.get("my_wxid", "")
     my_wxid = my_wxid.strip().strip("'").strip('"') if isinstance(my_wxid, str) else ""
     if not my_wxid:
-        my_wxid = get_conf(g.caf, "auto_setting", "last")
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
     if my_wxid:
-        set_conf(g.caf, "auto_setting", "last", my_wxid)
-        merge_path = get_conf(g.caf, my_wxid, "merge_path")
-        wx_path = get_conf(g.caf, my_wxid, "wx_path")
-        key = get_conf(g.caf, my_wxid, "key")
+        gc.set_conf(gc.at, "last", my_wxid)
+        merge_path = gc.get_conf(my_wxid, "merge_path")
+        wx_path = gc.get_conf(my_wxid, "wx_path")
+        key = gc.get_conf(my_wxid, "key")
         rdata = {
             "merge_path": merge_path,
             "wx_path": wx_path,
@@ -69,16 +66,23 @@ def init_last():
     return ReJson(0, {"is_init": False, "my_wxid": ""})
 
 
-@ls_api.route('/api/ls/init_key', methods=["GET", 'POST'])
+class InitKeyRequest(BaseModel):
+    wx_path: str
+    key: str
+    my_wxid: str
+
+
+@ls_api.api_route('/init_key', methods=["GET", 'POST'])
 @error9999
-def init_key():
+def init_key(request: InitKeyRequest):
     """
-    初始化，包括key
+    初始化key
+    :param request:
     :return:
     """
-    wx_path = request.json.get("wx_path", "").strip().strip("'").strip('"')
-    key = request.json.get("key", "").strip().strip("'").strip('"')
-    my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
+    wx_path = request.wx_path.strip().strip("'").strip('"')
+    key = request.key.strip().strip("'").strip('"')
+    my_wxid = request.my_wxid.strip().strip("'").strip('"')
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
     if not os.path.exists(wx_path):
@@ -92,8 +96,10 @@ def init_key():
     # if isinstance(db_config, dict) and db_config and os.path.exists(db_config.get("path")):
     #     pmsg = DBHandler(db_config)
     #     # pmsg.close_all_connection()
+    print(id(gc))
+    print(wx_path, "\n", key, "\n", my_wxid, "\n", gc.work_path)
 
-    out_path = os.path.join(g.work_path, "decrypted", my_wxid) if my_wxid else os.path.join(g.work_path, "decrypted")
+    out_path = os.path.join(gc.work_path, "decrypted", my_wxid) if my_wxid else os.path.join(gc.work_path, "decrypted")
     # 检查文件夹中文件是否被占用
     if os.path.exists(out_path):
         try:
@@ -107,9 +113,9 @@ def init_key():
     time.sleep(1)
     if code:
         # 移动merge_save_path到g.work_path/my_wxid
-        if not os.path.exists(os.path.join(g.work_path, my_wxid)):
-            os.makedirs(os.path.join(g.work_path, my_wxid))
-        merge_save_path_new = os.path.join(g.work_path, my_wxid, "merge_all.db")
+        if not os.path.exists(os.path.join(gc.work_path, my_wxid)):
+            os.makedirs(os.path.join(gc.work_path, my_wxid))
+        merge_save_path_new = os.path.join(gc.work_path, my_wxid, "merge_all.db")
         shutil.move(merge_save_path, str(merge_save_path_new))
 
         # 删除out_path
@@ -124,12 +130,13 @@ def init_key():
             "type": "sqlite",
             "path": merge_save_path_new
         }
-        set_conf(g.caf, my_wxid, "db_config", db_config)
-        set_conf(g.caf, my_wxid, "merge_path", merge_save_path_new)
-        set_conf(g.caf, my_wxid, "wx_path", wx_path)
-        set_conf(g.caf, my_wxid, "key", key)
-        set_conf(g.caf, my_wxid, "my_wxid", my_wxid)
-        set_conf(g.caf, "auto_setting", "last", my_wxid)
+        gc.set_conf(my_wxid, "db_config", db_config)
+        gc.set_conf(my_wxid, "db_config", db_config)
+        gc.set_conf(my_wxid, "merge_path", merge_save_path_new)
+        gc.set_conf(my_wxid, "wx_path", wx_path)
+        gc.set_conf(my_wxid, "key", key)
+        gc.set_conf(my_wxid, "my_wxid", my_wxid)
+        gc.set_conf(gc.at, "last", my_wxid)
         rdata = {
             "merge_path": merge_save_path_new,
             "wx_path": wx_path,
@@ -142,16 +149,22 @@ def init_key():
         return ReJson(2001, body=merge_save_path)
 
 
-@ls_api.route('/api/ls/init_nokey', methods=["GET", 'POST'])
+class InitNoKeyRequest(BaseModel):
+    merge_path: str
+    wx_path: str
+    my_wxid: str
+
+
+@ls_api.post('/init_nokey')
 @error9999
-def init_nokey():
+def init_nokey(request: InitNoKeyRequest):
     """
     初始化，包括key
     :return:
     """
-    merge_path = request.json.get("merge_path", "").strip().strip("'").strip('"')
-    wx_path = request.json.get("wx_path", "").strip().strip("'").strip('"')
-    my_wxid = request.json.get("my_wxid", "").strip().strip("'").strip('"')
+    merge_path = request.merge_path.strip().strip("'").strip('"')
+    wx_path = request.wx_path.strip().strip("'").strip('"')
+    my_wxid = request.my_wxid.strip().strip("'").strip('"')
 
     if not wx_path:
         return ReJson(1002, body=f"wx_path is required: {wx_path}")
@@ -162,18 +175,18 @@ def init_nokey():
     if not my_wxid:
         return ReJson(1002, body=f"my_wxid is required: {my_wxid}")
 
-    key = get_conf(g.caf, my_wxid, "key")
+    key = gc.get_conf(my_wxid, "key")
     db_config = {
         "key": random_str(16),
         "type": "sqlite",
         "path": merge_path
     }
-    set_conf(g.caf, my_wxid, "db_config", db_config)
-    set_conf(g.caf, my_wxid, "merge_path", merge_path)
-    set_conf(g.caf, my_wxid, "wx_path", wx_path)
-    set_conf(g.caf, my_wxid, "key", key)
-    set_conf(g.caf, my_wxid, "my_wxid", my_wxid)
-    set_conf(g.caf, g.at, "last", my_wxid)
+    gc.set_conf(my_wxid, "db_config", db_config)
+    gc.set_conf(my_wxid, "merge_path", merge_path)
+    gc.set_conf(my_wxid, "wx_path", wx_path)
+    gc.set_conf(my_wxid, "key", key)
+    gc.set_conf(my_wxid, "my_wxid", my_wxid)
+    gc.set_conf(gc.at, "last", my_wxid)
     rdata = {
         "merge_path": merge_path,
         "wx_path": wx_path,
@@ -187,24 +200,24 @@ def init_nokey():
 # END 以上为初始化相关 ***************************************************************************************************
 
 
-@ls_api.route('/api/ls/realtimemsg', methods=["GET", "POST"])
+@ls_api.api_route('/realtimemsg', methods=["GET", "POST"])
 @error9999
 def get_real_time_msg():
     """
     获取实时消息 使用 merge_real_time_db()函数
     :return:
     """
-    my_wxid = get_conf(g.caf, g.at, "last")
+    my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
 
-    merge_path = get_conf(g.caf, my_wxid, "merge_path")
-    key = get_conf(g.caf, my_wxid, "key")
-    wx_path = get_conf(g.caf, my_wxid, "wx_path")
+    merge_path = gc.get_conf(my_wxid, "merge_path")
+    key = gc.get_conf(my_wxid, "key")
+    wx_path = gc.get_conf(my_wxid, "wx_path")
 
     if not merge_path or not key or not wx_path or not wx_path:
         return ReJson(1002, body="msg_path or media_path or wx_path or key is required")
 
-    real_time_exe_path = get_conf(g.caf, g.at, "real_time_exe_path")
+    real_time_exe_path = gc.get_conf(gc.at, "real_time_exe_path")
 
     code, ret = all_merge_real_time_db(key=key, wx_path=wx_path, merge_path=merge_path,
                                        real_time_exe_path=real_time_exe_path)
@@ -216,7 +229,7 @@ def get_real_time_msg():
 
 # start 这部分为专业工具的api *********************************************************************************************
 
-@ls_api.route('/api/ls/wxinfo', methods=["GET", 'POST'])
+@ls_api.api_route('/wxinfo', methods=["GET", 'POST'])
 @error9999
 def get_wxinfo():
     """
@@ -224,24 +237,33 @@ def get_wxinfo():
     :return:
     """
     import pythoncom
-    pythoncom.CoInitialize()
+    from pywxdump import WX_OFFS
+    pythoncom.CoInitialize()  # 初始化COM库
     wxinfos = get_wx_info(WX_OFFS)
-    pythoncom.CoUninitialize()
+    pythoncom.CoUninitialize()  # 释放COM库
     return ReJson(0, wxinfos)
 
 
-@ls_api.route('/api/ls/biasaddr', methods=["GET", 'POST'])
+class BiasAddrRequest(BaseModel):
+    mobile: str
+    name: str
+    account: str
+    key: str = ""
+    wxdbPath: str = ""
+
+
+@ls_api.post('/biasaddr')
 @error9999
-def biasaddr():
+def biasaddr(request: BiasAddrRequest):
     """
     BiasAddr
     :return:
     """
-    mobile = request.json.get("mobile")
-    name = request.json.get("name")
-    account = request.json.get("account")
-    key = request.json.get("key", "")
-    wxdbPath = request.json.get("wxdbPath", "")
+    mobile = request.mobile
+    name = request.name
+    account = request.account
+    key = request.json.key
+    wxdbPath = request.wxdbPath
     if not mobile or not name or not account:
         return ReJson(1002)
     pythoncom.CoInitialize()
@@ -249,39 +271,33 @@ def biasaddr():
     return ReJson(0, str(rdata))
 
 
-@ls_api.route('/api/ls/decrypt', methods=["GET", 'POST'])
+@ls_api.api_route('/decrypt', methods=["GET", 'POST'])
 @error9999
-def decrypt():
+def decrypt(key: str, wxdbPath: str, outPath: str = ""):
     """
     解密
     :return:
     """
-    key = request.json.get("key")
-    if not key:
-        return ReJson(1002)
-    wxdb_path = request.json.get("wxdbPath")
-    if not wxdb_path:
-        return ReJson(1002)
-    out_path = request.json.get("outPath")
-    if not out_path:
-        out_path = g.tmp_path
-    wxinfos = batch_decrypt(key, wxdb_path, out_path=out_path)
+    if not outPath:
+        outPath = gc.work_path
+    wxinfos = batch_decrypt(key, wxdbPath, out_path=outPath)
     return ReJson(0, str(wxinfos))
 
 
-@ls_api.route('/api/ls/merge', methods=["GET", 'POST'])
+class MergeRequest(BaseModel):
+    dbPath: str
+    outPath: str
+
+
+@ls_api.post('/merge')
 @error9999
-def merge():
+def merge(request: MergeRequest):
     """
     合并
     :return:
     """
-    wxdb_path = request.json.get("dbPath")
-    if not wxdb_path:
-        return ReJson(1002)
-    out_path = request.json.get("outPath")
-    if not out_path:
-        return ReJson(1002)
+    wxdb_path = request.dbPath
+    out_path = request.outPath
     db_path = get_wx_db(wxdb_path)
     # for i in db_path:print(i)
     rdata = merge_db(db_path, out_path)

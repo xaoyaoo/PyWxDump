@@ -6,8 +6,8 @@
 # Date:         2023/10/14
 # -------------------------------------------------------------------------------
 import argparse
+import os
 import sys
-import time
 
 from pywxdump import *
 import pywxdump
@@ -289,7 +289,7 @@ class MainShowChatRecords(BaseSubMainClass):
             print("[-] 输入数据库路径不存在")
             return
 
-        start_falsk(merge_path=merge_path, wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
+        start_server(merge_path=merge_path, wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
 
 
 class MainExportChatRecords(BaseSubMainClass):
@@ -327,7 +327,7 @@ class MainUi(BaseSubMainClass):
         parser.add_argument("-p", '--port', metavar="", type=int, help="(可选)端口号", default=5000)
         parser.add_argument("--online", help="(可选)是否在线查看(局域网查看)", default=False, action='store_true')
         parser.add_argument("--debug", help="(可选)是否开启debug模式", default=False, action='store_true')
-        parser.add_argument("--noOpenBrowser", dest='isOpenBrowser', action='store_false', default=True,
+        parser.add_argument("--noOpenBrowser", dest='isOpenBrowser', default=True, action='store_false',
                             help="(可选)用于禁用自动打开浏览器")
         return parser
 
@@ -339,7 +339,7 @@ class MainUi(BaseSubMainClass):
         debug = args.debug
         isopenBrowser = args.isOpenBrowser
 
-        start_falsk(port=port, online=online, debug=debug, isopenBrowser=isopenBrowser)
+        start_server(port=port, online=online, debug=debug, isopenBrowser=isopenBrowser)
 
 
 class MainApi(BaseSubMainClass):
@@ -360,7 +360,7 @@ class MainApi(BaseSubMainClass):
         port = args.port
         debug = args.debug
 
-        start_falsk(port=port, online=online, debug=debug, isopenBrowser=False)
+        start_server(port=port, online=online, debug=debug, isopenBrowser=False)
 
 
 def console_run():

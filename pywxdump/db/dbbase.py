@@ -96,8 +96,11 @@ class DatabaseBase(DatabaseSingletonBase):
     def __get_existed_tables(self):
         sql = "SELECT tbl_name FROM sqlite_master WHERE type = 'table' and tbl_name!='sqlite_sequence';"
         existing_tables = self.execute(sql)
-        self.existed_tables = [row[0].lower() for row in existing_tables]
-        return self.existed_tables
+        if existing_tables:
+            self.existed_tables = [row[0].lower() for row in existing_tables]
+            return self.existed_tables
+        else:
+            return None
 
     def tables_exist(self, required_tables: str or list):
         """
