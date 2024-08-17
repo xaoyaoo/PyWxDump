@@ -56,7 +56,7 @@ async def request_validation_exception_handler(request: Request, exc: RequestVal
 
 @app.get("/")
 @app.get("/index.html")
-async def redirect():
+async def index():
     response = RedirectResponse(url="/s/index.html", status_code=307)
     return response
 
