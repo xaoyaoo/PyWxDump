@@ -1,4 +1,8 @@
-## v3.1.19.(待发布)
+## v3.1.21.(待发布)
+
+- 
+
+## v3.1.20
 
 - fix
 - 增加注释说明
@@ -6,9 +10,11 @@
 - Media_add_index
 - add export html
 - UPDATE CHANGELOG.md
+- fix build exe error
 - 增加注释，增加自定义实时合并数据库路径
 - 该flask为fastapi，速度更快
 - fix and add export html
+- 加快web页面加载数据，重置部分api，调整server为fastapi
 
 ## v3.1.18
 
