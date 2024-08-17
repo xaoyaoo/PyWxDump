@@ -71,12 +71,12 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 ## 3. Update plan
 
 * 1.Analyze chat logs of each person and generate word clouds.
-* 2.Analyze the number of chats per person per day and generate a line chart (day-number of chats)
-* 3.Analyze the monthly and annual chat volume of different people and generate a line chart
-* 4.Generate annual visualization reports
+* ~~2.Analyze the number of chats per person per day and generate a line chart (day-number of chats)~~
+* ~~3.Analyze the monthly and annual chat volume of different people and generate a line chart~~
+* ~~4.Generate annual visualization reports~~
 * 8.Increase support for enterprise WeChat
 * 12.Viewing and backing up of the circle of friends
-* 13.Clean up WeChat storage space and reduce the space occupied by WeChat (hopefully by selecting a person or group and finding out the media files involved in the chat logs of this group, such as pictures, videos, files, voice recordings, etc., and selectively (such as time periods) or batch-wise clearing them from the computer's cache by group conversation.)
+* ~~13.Clean up WeChat storage space and reduce the space occupied by WeChat (hopefully by selecting a person or group and finding out the media files involved in the chat logs of this group, such as pictures, videos, files, voice recordings, etc., and selectively (such as time periods) or batch-wise clearing them from the computer's cache by group conversation.)~~
 * 14.Automatically send messages to specified people through UI control
 
 ## 4. Other
