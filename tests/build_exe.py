@@ -16,6 +16,7 @@ ma_version = __version__.split(".")[0]
 mi_version = __version__.split(".")[1]
 pa_version = __version__.split(".")[2]
 
+
 def image_to_base64(image_path):
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
@@ -38,7 +39,7 @@ spec_content = '''
 
 block_cipher = None
 
-a = Analysis(['tmp.py'],
+a = Analysis(['wxdump.py'],
              pathex=[],
              binaries=[],
              datas=[(r'{root_path}\\WX_OFFS.json', 'pywxdump'),
@@ -129,11 +130,10 @@ VSVersionInfo(
 )
 """
 
-
 # 创建文件夹
 os.makedirs("dist", exist_ok=True)
 # 将代码写入文件
-with open("dist/tmp.py", "w", encoding="utf-8") as f:
+with open("dist/wxdump.py", "w", encoding="utf-8") as f:
     f.write(code.strip())
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -141,7 +141,6 @@ shutil.copy(os.path.join(current_path, "favicon.ico"), "dist/icon.ico")  # 复�
 # base64_to_image(ico_base64, "dist/icon.png")  # 将 base64 转换为图片
 with open("dist/wxdump_version_info.txt", "w", encoding="utf-8") as f:
     f.write(wxdump_version_info.strip())
-
 
 # 获取安装包的路径
 package_path = site.getsitepackages()
@@ -152,27 +151,31 @@ if package_path:
     require_path = os.path.join(os.path.dirname(current_path), "requirements.txt")  # requirements.txt 路径
     with open(require_path, "r", encoding="utf-8") as f:
         hidden_imports = f.read().splitlines()
-    hidden_imports = [i.replace('-','_') for i in hidden_imports if i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
+    hidden_imports = [i.replace('-', '_') for i in hidden_imports if
+                      i and i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
+    hidden_imports += ["pywxdump", "pywxdump.db","pywxdump.db.__init__.utils"]
 
     # 获取 ui 文件夹下的所有文件 用于打包
     root_path = os.path.join(package_path, 'pywxdump')
     datas_741258 = []
-    for root, dirs, files in os.walk(os.path.join(root_path, "ui")):
+    for root, dirs, files in os.walk(root_path):
         for file in files:
             file_path = os.path.join(root, file)
-            datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )''')
+            if "__pycache__" in file_path:
+                continue
+            datas_741258.append(f'''(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}')''')
     datas_741258 = ",\n".join(datas_741258)
 
-    # 获取 wx_core/tools 文件夹下的所有文件 用于打包
-    for root, dirs, files in os.walk(os.path.join(root_path, "wx_core", "tools")):
-        for file in files:
-            file_path = os.path.join(root, file)
-            datas_741258 += f''',\n(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )'''
-
+    # # 获取 wx_core/tools 文件夹下的所有文件 用于打包
+    # for root, dirs, files in os.walk(os.path.join(root_path, "wx_core", "tools")):
+    #     for file in files:
+    #         file_path = os.path.join(root, file)
+    #         datas_741258 += f''',\n(r'{file_path}', r'{os.path.dirname(file_path.replace(package_path, "")[1:])}' )'''
 
     # print(datas_741258)
     # 生成 spec 文件
-    spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports, datas_741258=datas_741258, version=__version__)
+    spec_content = spec_content.format(root_path=root_path, hidden_imports=hidden_imports, datas_741258=datas_741258,
+                                       version=__version__)
     spec_file = os.path.join("dist", "pywxdump.spec")
     with open(spec_file, 'w', encoding="utf-8") as f:
         f.write(spec_content.strip())

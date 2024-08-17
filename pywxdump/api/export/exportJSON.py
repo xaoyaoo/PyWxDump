@@ -7,10 +7,10 @@
 # -------------------------------------------------------------------------------
 import json
 import os
-from ..__init__ import DBHandler
+from pywxdump.db import DBHandler
 
 
-def export_html(wxid, outpath, db_config, my_wxid="我"):
+def export_json(wxid, outpath, db_config, my_wxid="我", indent=4):
     if not os.path.exists(outpath):
         outpath = os.path.join(os.getcwd(), "export" + os.sep + wxid)
         if not os.path.exists(outpath):
@@ -22,23 +22,20 @@ def export_html(wxid, outpath, db_config, my_wxid="我"):
     chatCount = count.get(wxid, 0)
     if chatCount == 0:
         return False, "没有聊天记录"
+    users = {}
+    page_size = chatCount + 1
+    for i in range(0, chatCount, page_size):
+        start_index = i
+        data, users_t = db.get_msgs(wxid, start_index, page_size)
+        users.update(users_t)
+        if len(data) == 0:
+            return False, "没有聊天记录"
 
-    msgs, users = db.get_msgs(wxid, 0, chatCount + 1)
-    if len(msgs) == 0:
-        return False, "没有聊天记录"
-
-    data_js = (
-        "localStorage.setItem('isUseLocalData', 't')  //  't' : 'f' \n"
-        f"const local_msg_count = {chatCount}\n"
-        f"const local_mywxid = '{my_wxid}' \n"
-        f"const local_user_list = {json.dumps(users, ensure_ascii=False, indent=None )} \n"
-        f"const local_msg_list = {json.dumps(msgs, ensure_ascii=False, indent=None )} \n"
-    )
-
-    save_path = os.path.join(outpath, f"data.js")
-    with open(save_path, "w", encoding="utf-8") as f:
-        f.write(data_js)
-
+        save_path = os.path.join(outpath, f"{wxid}_{i}_{i + page_size}.json")
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=indent)
+    with open(os.path.join(outpath, "users.json"), "w", encoding="utf-8") as f:
+        json.dump(users, f, ensure_ascii=False, indent=indent)
     return True, f"导出成功: {outpath}"
 
 

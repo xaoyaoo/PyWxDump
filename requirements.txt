@@ -4,17 +4,16 @@ pycryptodomex
 pywin32
 silk-python
 pyaudio
-pymem
-psutil
 requests
-pillow
 pyahocorasick
-blackboxprotobuf
 lz4
+blackboxprotobuf
 lxml
 pandas
+dbutils
+psutil
+pymem
 
 fastapi
 uvicorn
 python-dotenv
-email-validator

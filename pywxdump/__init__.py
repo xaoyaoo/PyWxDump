@@ -22,7 +22,6 @@ from .wx_core import merge_db, decrypt_merge, merge_real_time_db, all_merge_real
 from .db import DBHandler, MsgHandler, MicroHandler, MediaHandler, OpenIMContactHandler, FavoriteHandler, \
     PublicMsgHandler
 from .api import start_server, app
-from .analyzer import DBPool
 
 # PYWXDUMP_ROOT_PATH = os.path.dirname(__file__)
 # db_init = DBPool("DBPOOL_INIT")
@@ -30,5 +29,6 @@ from .analyzer import DBPool
 
 __all__ = ["BiasAddr", "get_wx_info", "get_wx_db", "batch_decrypt", "decrypt", "get_core_db",
            "merge_db", "decrypt_merge", "merge_real_time_db", "all_merge_real_time_db",
-           "MsgHandler", "MicroHandler", "MediaHandler", "OpenIMContactHandler", "FavoriteHandler", "PublicMsgHandler",
-           "DBHandler", "start_server", "WX_OFFS", "WX_OFFS_PATH", "__version__", "app"]
+           "DBHandler", "MsgHandler", "MicroHandler", "MediaHandler", "OpenIMContactHandler", "FavoriteHandler",
+           "PublicMsgHandler",
+           "start_server", "WX_OFFS", "WX_OFFS_PATH", "__version__", "app"]
