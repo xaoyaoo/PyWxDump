@@ -44,11 +44,11 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
         users.update(self.get_im_user_list(word=word, wxids=wxids))
         return users
 
-    def get_msgs(self, wxid="", start_index=0, page_size=500, msg_type: str = "", msg_sub_type: str = "",
-                 start_createtime=None, end_createtime=None):
+    def get_msgs(self, wxids: list or str = "", start_index=0, page_size=500, msg_type: str = "",
+                 msg_sub_type: str = "", start_createtime=None, end_createtime=None):
         """
         获取聊天记录列表
-        :param wxid: wxid
+        :param wxids:[ wxid]
         :param start_index: 起始索引
         :param page_size: 页大小
         :param msg_type: 消息类型
@@ -59,11 +59,11 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
                     "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": {},
                     "CreateTime": CreateTime, }
         """
-        msgs0, wxid_list0 = self.get_msg_list(wxid=wxid, start_index=start_index, page_size=page_size,
+        msgs0, wxid_list0 = self.get_msg_list(wxids=wxids, start_index=start_index, page_size=page_size,
                                               msg_type=msg_type,
                                               msg_sub_type=msg_sub_type, start_createtime=start_createtime,
                                               end_createtime=end_createtime, my_talker=self.my_wxid)
-        msgs1, wxid_list1 = self.get_plc_msg_list(wxid=wxid, start_index=start_index, page_size=page_size,
+        msgs1, wxid_list1 = self.get_plc_msg_list(wxids=wxids, start_index=start_index, page_size=page_size,
                                                   msg_type=msg_type,
                                                   msg_sub_type=msg_sub_type, start_createtime=start_createtime,
                                                   end_createtime=end_createtime, my_talker=self.my_wxid)

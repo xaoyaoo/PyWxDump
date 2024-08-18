@@ -59,11 +59,11 @@ class PublicMsgHandler(MsgHandler):
         return msg_count
 
     @db_error
-    def get_plc_msg_list(self, wxid="", start_index=0, page_size=500, msg_type: str = "", msg_sub_type: str = "",
-                         start_createtime=None, end_createtime=None, my_talker="我"):
+    def get_plc_msg_list(self, wxids: list or str = "", start_index=0, page_size=500, msg_type: str = "",
+                         msg_sub_type: str = "", start_createtime=None, end_createtime=None, my_talker="我"):
         """
         获取聊天记录列表
-        :param wxid: wxid
+        :param wxids: [wxid]
         :param start_index: 起始索引
         :param page_size: 页大小
         :param msg_type: 消息类型
@@ -77,8 +77,11 @@ class PublicMsgHandler(MsgHandler):
         if not self.tables_exist("PublicMsg"):
             return [], []
 
+        if isinstance(wxids, str) and wxids:
+            wxids = [wxids]
         param = ()
-        sql_wxid, param = ("AND StrTalker=? ", param + (wxid,)) if wxid else ("", param)
+        sql_wxid, param = (f"AND StrTalker in ({', '.join('?' for _ in wxids)}) ",
+                           param + tuple(wxids)) if wxids else ("", param)
         sql_type, param = ("AND Type=? ", param + (msg_type,)) if msg_type else ("", param)
         sql_sub_type, param = ("AND SubType=? ", param + (msg_sub_type,)) if msg_type and msg_sub_type else ("", param)
         sql_start_createtime, param = ("AND CreateTime>=? ", param + (start_createtime,)) if start_createtime else (
