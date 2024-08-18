@@ -138,7 +138,7 @@ def get_msgs(wxid: str = Body(...), start: int = Body(...), limit: int = Body(..
     db_config = gc.get_conf(my_wxid, "db_config")
 
     db = DBHandler(db_config, my_wxid=my_wxid)
-    msgs, users = db.get_msgs(wxid=wxid, start_index=start, page_size=limit)
+    msgs, users = db.get_msgs(wxids=wxid, start_index=start, page_size=limit)
     return ReJson(0, {"msg_list": msgs, "user_list": users})
 
 
