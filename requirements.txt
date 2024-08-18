@@ -9,7 +9,6 @@ pyahocorasick
 lz4
 blackboxprotobuf
 lxml
-pandas
 dbutils
 psutil
 pymem

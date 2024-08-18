@@ -8,15 +8,11 @@
 import json
 import os
 import re
-# import time
-
-# import pandas as pd
-
-from .dbbase import DatabaseBase
-from .utils import db_error, timestamp2str, xml2dict, match_BytesExtra, type_converter, \
-    get_md5, name2typeid, db_loger
 import lz4.block
 import blackboxprotobuf
+
+from .dbbase import DatabaseBase
+from .utils import db_error, timestamp2str, xml2dict, match_BytesExtra, type_converter
 
 
 class MsgHandler(DatabaseBase):

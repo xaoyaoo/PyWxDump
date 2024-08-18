@@ -24,7 +24,6 @@ install_requires = [
     "lz4",
     "blackboxprotobuf",
     "lxml",
-    "pandas",
     "dbutils",
 
     "fastapi",

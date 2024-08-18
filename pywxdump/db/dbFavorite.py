@@ -5,8 +5,6 @@
 # Author:       xaoyaoo
 # Date:         2024/05/18
 # -------------------------------------------------------------------------------
-import pandas as pd
-
 from .dbbase import DatabaseBase
 from .utils import timestamp2str, xml2dict
 
@@ -127,7 +125,10 @@ class FavoriteHandler(DatabaseBase):
         FavTagsDict = {}
         for FavLocalID, TagName in FavTags:
             FavTagsDict[FavLocalID] = FavTagsDict.get(FavLocalID, []) + [TagName]
-
+        try:
+            import pandas as pd
+        except ImportError:
+            return False
         pf = pd.DataFrame(FavItemsList)
         pf.columns = FavItemsFields.keys()  # set column names
         pf["UpdateTime"] = pf["UpdateTime"].apply(timestamp2str)  # 处理时间
