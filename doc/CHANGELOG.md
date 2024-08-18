@@ -1,6 +1,18 @@
-## v3.1.22.(待发布)
+## v3.1.24.(待发布)
+
+- 
+
+## v3.1.23
+
+- fix
+- import 优化
+- rename core_db_type
+- fix import时候无法自动处理data
+
+## v3.1.22
 
 - fix 单用户使用上次数据报错问题
+- UPDATE CHANGELOG.md
 
 ## v3.1.21
 
