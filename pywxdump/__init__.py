@@ -21,7 +21,8 @@ from .wx_core import BiasAddr, get_wx_info, get_wx_db, batch_decrypt, decrypt, g
 from .wx_core import merge_db, decrypt_merge, merge_real_time_db, all_merge_real_time_db
 from .db import DBHandler, MsgHandler, MicroHandler, MediaHandler, OpenIMContactHandler, FavoriteHandler, \
     PublicMsgHandler
-from .api import start_server, app
+from .api import start_server, gen_fastapi_app
+from .api.export import export_html, export_csv, export_json
 
 # PYWXDUMP_ROOT_PATH = os.path.dirname(__file__)
 # db_init = DBPool("DBPOOL_INIT")
