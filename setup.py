@@ -59,9 +59,8 @@ setup(
                  },
     # include_package_data=True,
     package_data={
-        'pywxdump': ['WX_OFFS.json'],
-        'pywxdump.ui': ['ui/web/*', 'ui/web/assets/*'],
-        "pywxdump.wx_core": ['wx_core/tools/*']
+        'pywxdump': ['WX_OFFS.json', 'ui/web/*', 'ui/web/assets/*', 'wx_core/tools/*',
+                     ]
     },
     classifiers=[
         "Programming Language :: Python :: 3",
