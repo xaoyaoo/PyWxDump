@@ -14,7 +14,7 @@ from typing import List, Union
 from .utils import verify_key, get_exe_bit, wx_core_error
 from .utils import get_process_list, get_memory_maps, get_process_exe_path, get_file_version_info
 from .utils import search_memory
-from .utils import wx_core_loger, DB_TYPE_CORE
+from .utils import wx_core_loger, CORE_DB_TYPE
 import ctypes.wintypes as wintypes
 
 # 定义常量
@@ -415,15 +415,15 @@ def get_core_db(wx_path: str, db_types: list = None) -> [dict]:
     """
     获取聊天消息核心数据库路径
     :param wx_path: 微信文件夹路径 eg：C:\*****\WeChat Files\wxid*******
-    :param db_types: 数据库类型 eg: DB_TYPE_CORE，中选择一个或多个
+    :param db_types: 数据库类型 eg: CORE_DB_TYPE，中选择一个或多个
     :return: 返回数据库路径 eg: [{"wxid": wxid, "db_type": db_type, "db_path": db_path, "wxid_dir": wxid_dir}, ...]
     """
     if not os.path.exists(wx_path):
         return False, f"[-] 目录不存在: {wx_path}"
 
     if not db_types:
-        db_types = DB_TYPE_CORE
-    db_types = [dt for dt in db_types if dt in DB_TYPE_CORE]
+        db_types = CORE_DB_TYPE
+    db_types = [dt for dt in db_types if dt in CORE_DB_TYPE]
     msg_dir = os.path.dirname(wx_path)
     my_wxid = os.path.basename(wx_path)
     wxdbpaths = get_wx_db(msg_dir=msg_dir, db_types=db_types, wxids=my_wxid)
