@@ -5,7 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2023/10/14
 # -------------------------------------------------------------------------------
-__version__ = "3.1.22"
+__version__ = "3.1.23"
 
 import os, json
 
@@ -32,4 +32,4 @@ __all__ = ["BiasAddr", "get_wx_info", "get_wx_db", "batch_decrypt", "decrypt", "
            "merge_db", "decrypt_merge", "merge_real_time_db", "all_merge_real_time_db",
            "DBHandler", "MsgHandler", "MicroHandler", "MediaHandler", "OpenIMContactHandler", "FavoriteHandler",
            "PublicMsgHandler",
-           "start_server", "WX_OFFS", "WX_OFFS_PATH", "__version__", "app"]
+           "start_server", "WX_OFFS", "WX_OFFS_PATH", "__version__"]

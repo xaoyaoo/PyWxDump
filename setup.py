@@ -45,6 +45,7 @@ setup(
     url="https://github.com/xaoyaoo/PyWxDump",
     license='MIT',
 
+    # packages=find_packages(exclude=[]),
     packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_core', 'pywxdump.wx_core.utils', 'pywxdump.analyzer',
               'pywxdump.api', 'pywxdump.api.export', 'pywxdump.db', 'pywxdump.db.utils'],
     package_dir={'pywxdump': 'pywxdump',
@@ -58,6 +59,11 @@ setup(
                  'pywxdump.db.utils': 'pywxdump/db/utils'
                  },
     include_package_data=True,
+    package_data={
+        'pywxdump': ['WX_OFFS.json'],
+        'pywxdump.ui': ['ui/web/*', 'ui/web/assets/*'],
+        "pywxdump.wx_core": ['wx_core/tools/*']
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
