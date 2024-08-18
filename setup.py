@@ -58,7 +58,7 @@ setup(
                  'pywxdump.db': 'pywxdump/db',
                  'pywxdump.db.utils': 'pywxdump/db/utils'
                  },
-    include_package_data=True,
+    # include_package_data=True,
     package_data={
         'pywxdump': ['WX_OFFS.json'],
         'pywxdump.ui': ['ui/web/*', 'ui/web/assets/*'],

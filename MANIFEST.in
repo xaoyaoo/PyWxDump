@@ -1,5 +1,0 @@
-include README.md
-recursive-include pywxdump ui/web/*
-recursive-include pywxdump ui/web/assets/*
-recursive-include pywxdump wx_core tools/*
-include pywxdump WX_OFFS.json
