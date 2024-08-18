@@ -9,11 +9,11 @@ import os
 import time
 import shutil
 from collections import Counter
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 from typing import List, Optional
 
 from pydantic import BaseModel
-from fastapi import APIRouter, Response, Body
+from fastapi import APIRouter, Response, Body, Query, Request
 from starlette.responses import StreamingResponse, FileResponse
 
 import pywxdump
@@ -23,7 +23,7 @@ from pywxdump.db.utils import download_file, dat2img
 
 from .export import export_csv, export_json, export_html
 from .rjson import ReJson, RqJson
-from .utils import error9999, gc, asyncError9999
+from .utils import error9999, gc, asyncError9999, rs_loger
 
 rs_api = APIRouter()
 
@@ -144,14 +144,14 @@ def get_msgs(wxid: str = Body(...), start: int = Body(...), limit: int = Body(..
 
 @rs_api.get('/imgsrc')
 @asyncError9999
-async def get_imgsrc(src: str):
+async def get_imgsrc(request: Request):
     """
     获取图片,
     1. 从网络获取图片，主要功能只是下载图片，缓存到本地
     2. 读取本地图片
     :return:
     """
-    imgsrc = src
+    imgsrc = unquote(str(request.query_params).replace("src=", "", 1))
     if not imgsrc:
         return ReJson(1002)
     if imgsrc.startswith("FileStorage"):  # 如果是本地图片文件则调用get_img
@@ -211,12 +211,12 @@ async def get_imgsrc(src: str):
 
 
 @rs_api.api_route('/video', methods=["GET", 'POST'])
-def get_video(src: str):
+def get_video(request: Request):
     """
     获取视频
     :return:
     """
-    videoPath = src
+    videoPath = unquote(str(request.query_params).replace("src=", "", 1))
     if not videoPath:
         return ReJson(1002)
     my_wxid = gc.get_conf(gc.at, "last")
@@ -241,12 +241,12 @@ def get_video(src: str):
 
 
 @rs_api.api_route('/audio', methods=["GET", 'POST'])
-def get_audio(src: str):
+def get_audio(request: Request):
     """
     获取语音
     :return:
     """
-    savePath = src.replace("audio\\", "")
+    savePath = unquote(str(request.query_params).replace("src=", "", 1)).replace("audio\\", "", 1)
     if not savePath:
         return ReJson(1002)
     my_wxid = gc.get_conf(gc.at, "last")
@@ -296,12 +296,12 @@ def get_file_info(file_path: str = Body(..., embed=True)):
 
 
 @rs_api.get('/file')
-def get_file(src: str):
+def get_file(request: Request):
     """
     获取文件
     :return:
     """
-    file_path = src
+    file_path = unquote(str(request.query_params).replace("src=", "", 1))
     if not file_path:
         return ReJson(1002)
     my_wxid = gc.get_conf(gc.at, "last")
