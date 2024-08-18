@@ -57,16 +57,12 @@ setup(
                  'pywxdump.db': 'pywxdump/db',
                  'pywxdump.db.utils': 'pywxdump/db/utils'
                  },
-
-    package_data={
-        'pywxdump': ['WX_OFFS.json', 'ui/web/*', 'ui/web/assets/*', 'wx_core/tools/*',
-                     ]
-    },
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6, <4',
+    python_requires='>=3.8, <4',
     install_requires=install_requires,
     entry_points={
         'console_scripts': [
