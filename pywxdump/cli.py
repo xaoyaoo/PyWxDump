@@ -290,7 +290,7 @@ class MainShowChatRecords(BaseSubMainClass):
             print("[-] 输入数据库路径不存在")
             return
 
-        start_server(merge_path=merge_path, wx_path=args.wx_path, key="", my_wxid=args.my_wxid, online=online)
+        start_server(merge_path=merge_path, wx_path=args.wx_path, my_wxid=args.my_wxid, online=online)
 
 
 class MainExportChatRecords(BaseSubMainClass):

@@ -29,7 +29,8 @@ def gen_fastapi_app():
     app = FastAPI(title="pywxdump", description="微信工具", version=__version__,
                   terms_of_service="https://github.com/xaoyaoo/pywxdump",
                   contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
-                  license_info={"name": "MIT License", "url": "https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE"})
+                  license_info={"name": "MIT License",
+                                "url": "https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE"})
 
     # 跨域
     origins = [
@@ -70,7 +71,8 @@ def gen_fastapi_app():
     return app
 
 
-def start_server(port=5000, online=False, debug=False, isopenBrowser=True):
+def start_server(port=5000, online=False, debug=False, isopenBrowser=True,
+                 merge_path="", wx_path="", my_wxid="", ):
     """
     启动flask
     :param port:  端口号
@@ -97,6 +99,15 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True):
         f.write(f"PYWXDUMP_WORK_PATH = '{work_path}'\n")
         f.write(f"PYWXDUMP_CONF_FILE = '{conf_file}'\n")
         f.write(f"PYWXDUMP_AUTO_SETTING = '{auto_setting}'\n")
+
+    if merge_path and os.path.exists(merge_path):
+        my_wxid = my_wxid if my_wxid else "wxid_dbshow"
+        gc.set_conf(my_wxid, "wxid", my_wxid)  # 初始化wxid
+        gc.set_conf(my_wxid, "merge_path", merge_path)  # 初始化merge_path
+        gc.set_conf(my_wxid, "wx_path", wx_path)  # 初始化wx_path
+        db_config = {"key": my_wxid, "type": "sqlite", "path": merge_path}
+        gc.set_conf(my_wxid, "db_config", db_config)  # 初始化db_config
+        gc.set_conf(auto_setting, "last", my_wxid)  # 初始化last
 
     # 检查端口是否被占用
     if online:
