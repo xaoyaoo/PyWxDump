@@ -5,8 +5,6 @@
 # Author:       xaoyaoo
 # Date:         2023/11/15
 # -------------------------------------------------------------------------------
-
-from pywxdump import WX_OFFS_PATH, WX_OFFS
 from pywxdump import batch_decrypt
 
 key = "xxxxxx"  # 解密密钥
