@@ -1,6 +1,13 @@
-## v3.1.27.(待发布)
+## v3.1.28.(待发布)
 
 - 
+
+## v3.1.27
+
+- fix
+- update test
+- UPDATE CHANGELOG.md
+- fix DIl load failed while importing pydantic_core:
 
 ## v3.1.26
 
