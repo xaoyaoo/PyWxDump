@@ -151,7 +151,7 @@ if package_path:
     require_path = os.path.join(os.path.dirname(current_path), "requirements.txt")  # requirements.txt 路径
     with open(require_path, "r", encoding="utf-8") as f:
         hidden_imports = f.read().splitlines()
-    hidden_imports = [i.replace('-', '_') for i in hidden_imports if
+    hidden_imports = [i.replace('-', '_').split("=")[0] for i in hidden_imports if
                       i and i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
     hidden_imports += ["pywxdump", "pywxdump.db","pywxdump.db.__init__.utils"]
 

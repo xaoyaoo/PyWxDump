@@ -12,7 +12,7 @@ lxml
 dbutils
 psutil
 pymem
-
+pydantic==2.6.0
 fastapi
 uvicorn
 python-dotenv
