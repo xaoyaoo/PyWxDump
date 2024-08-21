@@ -10,12 +10,13 @@ import subprocess
 import sys
 import time
 import uvicorn
+import mimetypes
 
 from fastapi import FastAPI, Request, Path, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, FileResponse
 
 from .utils import gc, is_port_in_use, server_loger
 from .rjson import ReJson
@@ -31,6 +32,8 @@ def gen_fastapi_app():
                   contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
                   license_info={"name": "MIT License",
                                 "url": "https://github.com/xaoyaoo/PyWxDump/blob/master/LICENSE"})
+
+    web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")  # web文件夹路径
 
     # 跨域
     origins = [
@@ -48,11 +51,13 @@ def gen_fastapi_app():
         allow_headers=["*"],  # 允许所有头
     )
 
+    # 错误处理
     @app.exception_handler(RequestValidationError)
     async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
         # print(request.body)
         return ReJson(1002, {"detail": exc.errors()})
 
+    # 首页
     @app.get("/")
     @app.get("/index.html")
     async def index():
@@ -63,10 +68,29 @@ def gen_fastapi_app():
     app.include_router(rs_api, prefix='/api/rs', tags=['远程api'])
     app.include_router(ls_api, prefix='/api/ls', tags=['本地api'])
 
+    # 根据文件类型，设置mime_type，返回文件
+    @app.get("/s/{filename:path}")
+    async def serve_file(filename: str):
+        # 构建完整的文件路径
+        file_path = os.path.join(web_path, filename)
+
+        # 检查文件是否存在
+        if os.path.isfile(file_path):
+            # 获取文件 MIME 类型
+            mime_type, _ = mimetypes.guess_type(file_path)
+            # 如果 MIME 类型为空，则默认为 application/octet-stream
+            if mime_type is None:
+                mime_type = "application/octet-stream"
+
+            # 返回文件
+            return FileResponse(file_path, media_type=mime_type)
+
+        # 如果文件不存在，返回 404
+        return {"detail": "Not Found"}, 404
+
     # 静态文件挂载
-    web_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "web")
-    if os.path.exists(os.path.join(web_path, "index.html")):
-        app.mount("/s", StaticFiles(directory=web_path), name="static")
+    # if os.path.exists(os.path.join(web_path, "index.html")):
+    #     app.mount("/s", StaticFiles(directory=web_path), name="static")
 
     return app
 
