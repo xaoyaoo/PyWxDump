@@ -56,7 +56,7 @@ class OpenIMContactHandler(DatabaseBase):
             users[UserName] = {
                 "wxid": UserName, "nickname": NickName, "remark": Remark, "account": UserName,
                 "describe": '', "headImgUrl": BigHeadImgUrl if BigHeadImgUrl else "",
-                "ExtraBuf": None, "LabelIDList": tuple()}
+                "ExtraBuf": None, "LabelIDList": tuple(), "extra": None}
         return users
 
 

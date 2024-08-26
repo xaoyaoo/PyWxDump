@@ -213,7 +213,8 @@ class MicroHandler(DatabaseBase):
             users[UserName] = {
                 "wxid": UserName, "nickname": NickName, "remark": Remark, "account": Alias,
                 "describe": describe, "headImgUrl": bigHeadImgUrl if bigHeadImgUrl else "",
-                "ExtraBuf": ExtraBuf, "LabelIDList": tuple(LabelIDList)}
+                "ExtraBuf": ExtraBuf, "LabelIDList": tuple(LabelIDList),
+                "extra": self.get_room_list(roomwxids=[UserName]).get(UserName, None)}
         return users
 
     @db_error
@@ -241,7 +242,7 @@ class MicroHandler(DatabaseBase):
             sql = sql.replace(";",
                               f"AND A.ChatRoomName LIKE '%{word}%' ;")
         if roomwxids:
-            sql = sql.replace(";", f"AND A.UserName IN ('" + "','".join(roomwxids) + "') ;")
+            sql = sql.replace(";", f"AND A.ChatRoomName IN ('" + "','".join(roomwxids) + "') ;")
 
         result = self.execute(sql)
         if not result:
