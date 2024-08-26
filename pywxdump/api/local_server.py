@@ -207,12 +207,10 @@ def get_real_time_msg():
     """
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
-
     merge_path = gc.get_conf(my_wxid, "merge_path")
     key = gc.get_conf(my_wxid, "key")
     wx_path = gc.get_conf(my_wxid, "wx_path")
-
-    if not merge_path or not key or not wx_path or not wx_path:
+    if not merge_path or not key or not wx_path:
         return ReJson(1002, body="msg_path or media_path or wx_path or key is required")
 
     real_time_exe_path = gc.get_conf(gc.at, "real_time_exe_path")
