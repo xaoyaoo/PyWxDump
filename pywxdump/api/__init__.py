@@ -73,6 +73,7 @@ def gen_fastapi_app():
     async def serve_file(filename: str):
         # 构建完整的文件路径
         file_path = os.path.join(web_path, filename)
+        file_path = os.path.abspath(file_path)
 
         # 检查文件是否存在
         if os.path.isfile(file_path):
@@ -81,6 +82,7 @@ def gen_fastapi_app():
             # 如果 MIME 类型为空，则默认为 application/octet-stream
             if mime_type is None:
                 mime_type = "application/octet-stream"
+                server_loger.info(f"[+] 无法获取文件 MIME 类型，使用默认值：{mime_type}")
 
             # 返回文件
             return FileResponse(file_path, media_type=mime_type)
