@@ -83,7 +83,7 @@ def gen_fastapi_app():
             if mime_type is None:
                 mime_type = "application/octet-stream"
                 server_loger.info(f"[+] 无法获取文件 MIME 类型，使用默认值：{mime_type}")
-
+            server_loger.info(f"[+] 文件 {file_path} MIME 类型：{mime_type}")
             # 返回文件
             return FileResponse(file_path, media_type=mime_type)
 
