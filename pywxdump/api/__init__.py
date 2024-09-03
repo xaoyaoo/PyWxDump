@@ -11,6 +11,8 @@ import sys
 import time
 import uvicorn
 import mimetypes
+import logging
+from logging.handlers import RotatingFileHandler
 
 from fastapi import FastAPI, Request, Path, Query
 from fastapi.staticfiles import StaticFiles
@@ -26,8 +28,8 @@ from .local_server import ls_api
 from pywxdump import __version__
 
 
-def gen_fastapi_app():
-    app = FastAPI(title="pywxdump", description="微信工具", version=__version__,
+def gen_fastapi_app(handler):
+    app = FastAPI(title="wxdump", description="微信工具", version=__version__,
                   terms_of_service="https://github.com/xaoyaoo/pywxdump",
                   contact={"name": "xaoyaoo", "url": "https://github.com/xaoyaoo/pywxdump"},
                   license_info={"name": "MIT License",
@@ -50,6 +52,11 @@ def gen_fastapi_app():
         allow_methods=["*"],  # 允许所有方法
         allow_headers=["*"],  # 允许所有头
     )
+
+    @app.on_event("startup")
+    async def startup_event():
+        logger = logging.getLogger("uvicorn")
+        logger.addHandler(handler)
 
     # 错误处理
     @app.exception_handler(RequestValidationError)
@@ -82,7 +89,7 @@ def gen_fastapi_app():
             # 如果 MIME 类型为空，则默认为 application/octet-stream
             if mime_type is None:
                 mime_type = "application/octet-stream"
-                server_loger.info(f"[+] 无法获取文件 MIME 类型，使用默认值：{mime_type}")
+                server_loger.warning(f"[+] 无法获取文件 MIME 类型，使用默认值：{mime_type}")
             if file_path.endswith(".js"):
                 mime_type = "text/javascript"
             server_loger.info(f"[+] 文件 {file_path} MIME 类型：{mime_type}")
@@ -109,12 +116,28 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True,
     :param isopenBrowser:  是否自动打开浏览器
     :return:
     """
-    # 全局变量
-    work_path = os.path.join(os.getcwd(), "wxdump_work")  # 临时文件夹,用于存放图片等
+    work_path = os.path.join(os.getcwd(), "wxdump_work")  # 临时文件夹,用于存放图片等    # 全局变量
     if not os.path.exists(work_path):
-        os.makedirs(work_path)
+        os.makedirs(work_path, exist_ok=True)
         server_loger.info(f"[+] 创建临时文件夹：{work_path}")
         print(f"[+] 创建临时文件夹：{work_path}")
+
+    # 日志处理，写入到文件
+    log_format = '[{levelname[0]}] {asctime} [{name}:{levelno}] {pathname}:{lineno} {message}'
+    log_datefmt = '%Y-%m-%d %H:%M:%S'
+    log_file_path = os.path.join(work_path, "wxdump.log")
+    file_handler = RotatingFileHandler(log_file_path, mode="a", maxBytes=10 * 1024 * 1024, backupCount=3)
+    formatter = logging.Formatter(fmt=log_format, datefmt=log_datefmt, style='{')
+    file_handler.setFormatter(formatter)
+
+    wx_core_logger = logging.getLogger("wx_core")
+    db_prepare = logging.getLogger("db_prepare")
+
+    # 这几个日志处理器为本项目的日志处理器
+    server_loger.addHandler(file_handler)
+    wx_core_logger.addHandler(file_handler)
+    db_prepare.addHandler(file_handler)
+
     conf_file = os.path.join(work_path, "conf_auto.json")  # 用于存放各种基础信息
     auto_setting = "auto_setting"
     env_file = os.path.join(work_path, ".env")  # 用于存放环境变量
@@ -169,7 +192,7 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True,
     server_loger.info(f"启动flask服务，host:port：{host}:{port}")
     print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
     global app
-    app = gen_fastapi_app()
+    app = gen_fastapi_app(file_handler)
     uvicorn.run(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
 
 

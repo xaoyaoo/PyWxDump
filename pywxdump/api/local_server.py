@@ -46,6 +46,7 @@ def init_last(my_wxid: str = Body(..., embed=True)):
     :return:
     """
     my_wxid = my_wxid.strip().strip("'").strip('"') if isinstance(my_wxid, str) else ""
+    ls_loger.info(f"[+] init_last: {my_wxid}")
     if not my_wxid:
         my_wxid = gc.get_conf(gc.at, "last")
         if not my_wxid: return ReJson(1001, body="my_wxid is required")
