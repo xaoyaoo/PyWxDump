@@ -1,6 +1,25 @@
-## v3.1.28.(待发布)
+## v3.1.32.(待发布)
 
 - 
+
+## v3.1.31
+
+- fix 联系人搜索bug
+
+## v3.1.30
+
+- fix
+- add log to file
+
+## v3.1.29
+
+- fix
+- fix 群聊list
+
+## v3.1.28
+
+- fix #125
+- UPDATE CHANGELOG.md
 
 ## v3.1.27
 
