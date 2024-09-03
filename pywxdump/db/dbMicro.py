@@ -198,7 +198,7 @@ class MicroHandler(DatabaseBase):
             sql_label = " OR ".join(sql_label)
             sql = sql.replace(";", f"AND ({sql_label}) ;")
 
-        db_loger.info(f"get_user_list word: {word} sql: {sql}")
+        db_loger.info(f"get_user_list sql: {sql}")
         result = self.execute(sql)
         if not result:
             return users
