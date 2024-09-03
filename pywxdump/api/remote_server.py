@@ -90,7 +90,7 @@ def user_labels_dict():
 
 @rs_api.post('/user_list')
 @error9999
-def user_list(word: str = "", wxids: List[str] = None, labels: List[str] = None):
+def user_list(word: str = Body("", embed=True), wxids: List[str] = Body(None), labels: List[str] = Body(None)):
     """
     获取联系人列表，可用于搜索
     :return:
@@ -102,7 +102,7 @@ def user_list(word: str = "", wxids: List[str] = None, labels: List[str] = None)
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_conf(my_wxid, "db_config")
     db = DBHandler(db_config, my_wxid=my_wxid)
-    users = db.get_user(word, wxids, labels)
+    users = db.get_user(word=word, wxids=wxids, labels=labels)
     return ReJson(0, users)
 
 

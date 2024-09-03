@@ -114,7 +114,7 @@ class DatabaseBase(DatabaseSingletonBase):
         if isinstance(required_tables, str):
             required_tables = [required_tables]
         rbool = all(table.lower() in self.existed_tables for table in (required_tables or []))
-        if not rbool: db_loger.warning(f"{required_tables=}\n{self.existed_tables=}\n{rbool=}\n")
+        if not rbool: db_loger.warning(f"{required_tables=}\n{self.existed_tables=}\n{rbool=}")
         return rbool
 
     def execute(self, sql, params=None):

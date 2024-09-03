@@ -95,6 +95,8 @@ class MicroHandler(DatabaseBase):
             "WHERE S.strUsrName!='@publicUser' "
             "ORDER BY S.nTime DESC;"
         )
+
+        db_loger.info(f"get_session_list sql: {sql}")
         ret = self.execute(sql)
         if not ret:
             return sessions
@@ -139,6 +141,8 @@ class MicroHandler(DatabaseBase):
             "ON A.Username = SubQuery.Username AND LastReadedCreateTime = SubQuery.MaxLastReadedCreateTime "
             "ORDER BY A.LastReadedCreateTime DESC;"
         )
+
+        db_loger.info(f"get_recent_chat_wxid sql: {sql}")
         result = self.execute(sql)
         if not result:
             return []
@@ -194,6 +198,7 @@ class MicroHandler(DatabaseBase):
             sql_label = " OR ".join(sql_label)
             sql = sql.replace(";", f"AND ({sql_label}) ;")
 
+        db_loger.info(f"get_user_list word: {word} sql: {sql}")
         result = self.execute(sql)
         if not result:
             return users
@@ -214,7 +219,10 @@ class MicroHandler(DatabaseBase):
                 "wxid": UserName, "nickname": NickName, "remark": Remark, "account": Alias,
                 "describe": describe, "headImgUrl": bigHeadImgUrl if bigHeadImgUrl else "",
                 "ExtraBuf": ExtraBuf, "LabelIDList": tuple(LabelIDList),
-                "extra": self.get_room_list(roomwxids=[UserName]).get(UserName, None)}
+                "extra": None}
+        extras = self.get_room_list(roomwxids=filter(lambda x: "@" in x, users.keys()))
+        for UserName in users:
+            users[UserName]["extra"] = extras.get(UserName, None)
         return users
 
     @db_error
@@ -244,6 +252,7 @@ class MicroHandler(DatabaseBase):
         if roomwxids:
             sql = sql.replace(";", f"AND A.ChatRoomName IN ('" + "','".join(roomwxids) + "') ;")
 
+        db_loger.info(f"get_room_list sql: {sql}")
         result = self.execute(sql)
         if not result:
             return rooms
