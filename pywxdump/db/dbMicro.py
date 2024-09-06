@@ -267,7 +267,7 @@ class MicroHandler(DatabaseBase):
             DisplayNameList = DisplayNameList.split("^G")
 
             RoomData = ChatRoom_RoomData(RoomData)
-            wxid2remark = {}
+            wxid2roomNickname = {}
             if RoomData:
                 rd = []
                 for k, v in RoomData.items():
@@ -276,13 +276,20 @@ class MicroHandler(DatabaseBase):
                 for i in rd:
                     try:
                         if isinstance(i, dict) and isinstance(i.get('1'), str) and i.get('2'):
-                            wxid2remark[i['1']] = i["2"]
+                            wxid2roomNickname[i['1']] = i["2"]
                     except Exception as e:
                         db_loger.error(f"wxid2remark: ChatRoomName:{ChatRoomName}, {i} error:{e}", exc_info=True)
+
+            wxid2userinfo = self.get_user_list(wxids=UserNameList)
+            for i in wxid2userinfo:
+                wxid2userinfo[i]["roomNickname"] = wxid2roomNickname.get(i, "")
+
+            owner = wxid2userinfo.get(Reserved2, Reserved2)
+
             rooms[ChatRoomName] = {
-                "wxid": ChatRoomName, "UserNameList": UserNameList, "DisplayNameList": DisplayNameList,
-                "ChatRoomFlag": ChatRoomFlag, "IsShowName": IsShowName, "SelfDisplayName": SelfDisplayName,
-                "owner": Reserved2, "wxid2remark": wxid2remark,
+                "wxid": ChatRoomName, "roomWxids": UserNameList, "IsShowName": IsShowName,
+                "ChatRoomFlag": ChatRoomFlag, "SelfDisplayName": SelfDisplayName,
+                "owner": owner, "wxid2userinfo": wxid2userinfo,
                 "Announcement": Announcement, "AnnouncementEditor": AnnouncementEditor,
                 "AnnouncementPublishTime": AnnouncementPublishTime}
         return rooms
