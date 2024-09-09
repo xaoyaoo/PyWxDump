@@ -29,7 +29,7 @@ pip install -U pywxdump
 #### 1.2 从源码安装(安装最新版)
 
 ```shell script
-pip install -U git+git://github.com/xaoyaoo/PyWxDump.git # 该方法无法安装网页图形界面
+pip install -U git+git://github.com/xaoyaoo/PyWxDump.git # 该方法无法安装网页图形界面，会导致浏览器显示页面无法打开，显示404
 ```
 
 或
