@@ -1,5 +1,6 @@
 ## v3.1.33.(待发布)
 
+- fix
 - 群聊增加群成员显示
 - 计划增加自动推送到gitee
 - UPDATE CHANGELOG.md
