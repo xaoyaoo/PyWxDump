@@ -1,8 +1,8 @@
 ## v3.1.33.(待发布)
 
 - 群聊增加群成员显示
+- 计划增加自动推送到gitee
 - UPDATE CHANGELOG.md
-- (backup/master) 计划增加自动推送到gitee
 
 ## v3.1.32
 
