@@ -10,13 +10,30 @@ import json
 import os
 import re
 import sys
+from ctypes import wintypes
+
 import psutil
 import pymem
 
 from .utils import get_exe_version, get_exe_bit, verify_key
+from .utils import get_process_list, get_memory_maps, get_process_exe_path, get_file_version_info
+from .utils import search_memory
 
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory if sys.platform == "win32" else None
 void_p = ctypes.c_void_p
+
+# 定义常量
+PROCESS_QUERY_INFORMATION = 0x0400
+PROCESS_VM_READ = 0x0010
+
+kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
+OpenProcess = kernel32.OpenProcess
+OpenProcess.restype = wintypes.HANDLE
+OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+
+CloseHandle = kernel32.CloseHandle
+CloseHandle.restype = wintypes.BOOL
+CloseHandle.argtypes = [wintypes.HANDLE]
 
 
 class BiasAddr:
@@ -61,10 +78,25 @@ class BiasAddr:
             return False, "[-] WeChat No Run"
 
     def search_memory_value(self, value: bytes, module_name="WeChatWin.dll"):
-        # 创建 Pymem 对象
-        module = pymem.process.module_from_name(self.pm.process_handle, module_name)
-        ret = self.pm.pattern_scan_module(value, module, return_multiple=True)
-        ret = ret[-1] - module.lpBaseOfDll if len(ret) > 0 else 0
+        start_adress = 0x7FFFFFFFFFFFFFFF
+        end_adress = 0
+
+        memory_maps = get_memory_maps(self.pid)
+        for module in memory_maps:
+            if module.FileName and module_name in module.FileName:
+                s = module.BaseAddress
+                e = module.BaseAddress + module.RegionSize
+                start_adress = s if s < start_adress else start_adress
+                end_adress = e if e > end_adress else end_adress
+        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, False, self.pid)
+        ret = search_memory(hProcess, value, max_num=3, start_address=start_adress,
+                                    end_address=end_adress)
+        ret = ret[-1] - start_adress if len(ret) > 0 else 0
+
+        # # 创建 Pymem 对象
+        # module = pymem.process.module_from_name(self.pm.process_handle, module_name)
+        # ret = self.pm.pattern_scan_module(value, module, return_multiple=True)
+        # ret = ret[-1] - module.lpBaseOfDll if len(ret) > 0 else 0
         return ret
 
     def get_key_bias1(self):
@@ -81,7 +113,6 @@ class BiasAddr:
             module = pymem.process.module_from_name(self.process_handle, self.module_name)
             keyBytes = b'-----BEGIN PUBLIC KEY-----\n...'
             publicKeyList = pymem.pattern.pattern_scan_all(self.process_handle, keyBytes, return_multiple=True)
-
             keyaddrs = []
             for addr in publicKeyList:
                 keyBytes = addr.to_bytes(byteLen, byteorder="little", signed=True)  # 低位在前

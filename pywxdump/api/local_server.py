@@ -259,7 +259,7 @@ def get_biasaddr(request: BiasAddrRequest):
     mobile = request.mobile
     name = request.name
     account = request.account
-    key = request.json.key
+    key = request.key
     wxdbPath = request.wxdbPath
     if not mobile or not name or not account:
         return ReJson(1002)
