@@ -1,9 +1,15 @@
-## v3.1.33.(待发布)
+## v3.1.34.(待发布)
+
+- 
+
+## v3.1.33
 
 - fix
 - 群聊增加群成员显示
 - 计划增加自动推送到gitee
+- add wx 3.9.12.15
 - UPDATE CHANGELOG.md
+- update UserGuide.md
 
 ## v3.1.32
 
