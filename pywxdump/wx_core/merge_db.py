@@ -456,7 +456,7 @@ def all_merge_real_time_db(key, wx_path, merge_path: str, real_time_exe_path: st
     合并所有实时数据库
     注：这是全量合并，会有可能产生重复数据，需要自行去重
     :param key:  解密密钥
-    :param wx_path:  微信路径
+    :param wx_path:  微信文件夹路径 eg：C:\*****\WeChat Files\wxid*******
     :param merge_path:  合并后的数据库路径 eg: C:\\*******\\WeChat Files\\wxid_*********\\merge.db
     :param real_time_exe_path:  实时数据库合并工具路径
     :return:
