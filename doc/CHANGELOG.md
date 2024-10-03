@@ -1,6 +1,13 @@
-## v3.1.34.(待发布)
+## v3.1.35.(待发布)
 
 - 
+
+## v3.1.34
+
+- add 注释
+- fix CE获取基址.md
+- UPDATE CHANGELOG.md
+- UPDATE WXOFFS 3.9.12.17
 
 ## v3.1.33
 
