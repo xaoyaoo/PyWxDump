@@ -192,6 +192,7 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True,
     server_loger.info(f"启动flask服务，host:port：{host}:{port}")
     print("[+] 请使用浏览器访问 http://127.0.0.1:5000/ 查看聊天记录")
     global app
+    print("[+] 如需查看api文档，请访问 http://127.0.0.1:5000/docs ")
     app = gen_fastapi_app(file_handler)
     uvicorn.run(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
 
