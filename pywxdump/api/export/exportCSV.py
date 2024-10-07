@@ -30,7 +30,8 @@ def export_csv(wxid, outpath, db_config, my_wxid="我", page_size=5000):
     users = {}
     for i in range(0, chatCount, page_size):
         start_index = i
-        data, users_t = db.get_msg_list(wxid, start_index, page_size)
+        data, users_t = db.get_msgs(wxid, start_index, page_size)
+        print(users, users_t)
         users.update(users_t)
 
         if len(data) == 0:
