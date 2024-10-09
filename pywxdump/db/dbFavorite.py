@@ -41,7 +41,8 @@ class FavoriteHandler(DatabaseBase):
         """
         return: [(FavLocalID, TagName)]
         """
-        sql = "select A.FavLocalID, B.TagName from FavBindTagDatas A, FavTagDatas B where A.TagLocalID = B.LocalID"
+        sql = ("select DISTINCT  A.FavLocalID, B.TagName "
+               "from FavBindTagDatas A, FavTagDatas B where A.TagLocalID = B.LocalID")
         FavBindTags = self.execute(sql)
         return FavBindTags
 
@@ -127,6 +128,18 @@ class FavoriteHandler(DatabaseBase):
         FavTagsDict = {}
         for FavLocalID, TagName in FavTags:
             FavTagsDict[FavLocalID] = FavTagsDict.get(FavLocalID, []) + [TagName]
+
+        rdata = []
+        for item in FavItemsList:
+            processed_item = {
+                key: item[i] for i, key in enumerate(FavItemsFields.keys())
+            }
+            processed_item['UpdateTime'] = timestamp2str(processed_item['UpdateTime'])
+            processed_item['XmlBuf'] = xml2dict(processed_item['XmlBuf'])
+            processed_item['TypeName'] = Favorite_type_converter(processed_item['Type'])
+            processed_item['FavData'] = FavDataDict.get(processed_item['FavLocalID'], [])
+            processed_item['Tags'] = FavTagsDict.get(processed_item['FavLocalID'], [])
+            rdata.append(processed_item)
         try:
             import pandas as pd
         except ImportError:
