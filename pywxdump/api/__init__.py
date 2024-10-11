@@ -14,6 +14,7 @@ import mimetypes
 import logging
 from logging.handlers import RotatingFileHandler
 
+from uvicorn.config import LOGGING_CONFIG
 from fastapi import FastAPI, Request, Path, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
@@ -194,6 +195,11 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True,
     global app
     print("[+] 如需查看api文档，请访问 http://127.0.0.1:5000/docs ")
     app = gen_fastapi_app(file_handler)
+
+    LOGGING_CONFIG["formatters"]["default"]["fmt"] = "[%(asctime)s] %(levelprefix)s %(message)s"
+    LOGGING_CONFIG["formatters"]["access"][
+        "fmt"] = '[%(asctime)s] %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
+
     uvicorn.run(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
 
 
