@@ -199,8 +199,10 @@ def start_server(port=5000, online=False, debug=False, isopenBrowser=True,
     LOGGING_CONFIG["formatters"]["default"]["fmt"] = "[%(asctime)s] %(levelprefix)s %(message)s"
     LOGGING_CONFIG["formatters"]["access"][
         "fmt"] = '[%(asctime)s] %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
-
-    uvicorn.run(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
+    config = uvicorn.Config(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
+    server = uvicorn.Server(config)
+    server.run()
+    # uvicorn.run(app=app, host=host, port=port, reload=debug, log_level="info", workers=1, env_file=env_file)
 
 
 app = None
