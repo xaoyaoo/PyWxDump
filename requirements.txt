@@ -7,7 +7,7 @@ pyaudio
 requests
 pyahocorasick
 lz4
-blackboxprotobuf
+git+https://github.com/ydkhatri/blackboxprotobuf.git
 lxml
 dbutils
 psutil
