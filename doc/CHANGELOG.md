@@ -1,6 +1,29 @@
-## v3.1.39.(待发布)
+## v3.1.45.(待发布)
 
 - 
+
+## v3.1.44
+
+- fix #176
+- fix #178
+- update #178
+
+## v3.1.43
+
+- add 3.9.12.45
+- add wx 3.9.12.37
+
+## v3.1.42
+
+- add wx 3.9.12.37
+
+## v3.1.41, tag: v3.1.40, tag: v3.1.39
+
+- 新增消息分类 (#162)
+- fix 修改flask启动方式
+- add wx 3.9.12.31
+- UPDATE CHANGELOG.md
+- Merge remote-tracking branch 'origin'
 
 ## v3.1.38
 
