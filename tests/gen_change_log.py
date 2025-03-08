@@ -11,6 +11,7 @@ import time
 
 
 def custom_sort_key(tag):
+    tag = tag.split(',')[0]
     if tag == 'python':
         return "000.000.000"
     elif tag == 'HEAD':
