@@ -161,8 +161,23 @@ def merge_db(db_paths: List[dict], save_path: str = "merge.db", is_merge_data: b
             # 创建包含 NULL 值比较的 UNIQUE 索引
             index_name = f"{table}_unique_index"
             coalesce_columns = ','.join(f"COALESCE({column}, '')" for column in columns)
-            sql = f"CREATE UNIQUE INDEX IF NOT EXISTS {index_name} ON {table} ({coalesce_columns})"
-            out_cursor.execute(sql)
+            sql = f"CREATE UNIQUE INDEX IF NOT EXISTS {index_name} ON {table} ({coalesce_columns})"  # 创建索引
+
+            # ****** 该部分代码来源于 https://github.com/xaoyaoo/PyWxDump/issues/176
+            # 防止数据重复导致索引创建失败
+            sql_if_exists_index = f"SELECT 1 FROM sqlite_master WHERE type='index' AND name='{index_name}' AND tbl_name='{table}';"
+            out_cursor.execute(sql_if_exists_index)
+            ret_if_exists_index = out_cursor.fetchone()
+            if ret_if_exists_index is None:
+                # 之前没创建过索引 先执行删除删除相同数据
+                # DELETE FROM employees WHERE ROWID NOT IN ( SELECT MIN(ROWID) FROM employees GROUP BY name, position);
+                str_columns = ','.join(columns)
+                # sql_clear_same = f"DELETE FROM {table} WHERE ROWID NOT IN (SELECT MIN(ROWID) FROM {table} GROUP BY {str_columns});"
+                sql_clear_same = f'''WITH Ranked AS (SELECT ROWID, ROW_NUMBER() OVER (PARTITION BY {str_columns} ORDER BY ROWID) AS rn FROM {table}) 
+            					DELETE FROM {table} WHERE ROWID IN (SELECT ROWID FROM Ranked WHERE rn > 1);'''
+                out_cursor.execute(sql_clear_same)
+
+            out_cursor.execute(sql)  # 执行创建索引
 
             # 插入sync_log
             sql_query_sync_log = f"SELECT src_count FROM sync_log WHERE db_path=? AND tbl_name=?"
