@@ -1,6 +1,12 @@
-## v3.1.45.(待发布)
+## v3.1.46.(待发布)
 
 - 
+
+## v3.1.45
+
+- add wx 3.9.12.51
+- UPDATE CHANGELOG.md
+- fix gen_change_log.py
 
 ## v3.1.44
 
