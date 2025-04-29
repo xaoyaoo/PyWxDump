@@ -117,9 +117,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 ### 1. Purpose of use
 
-* This project is only for learning and communication purposes, **please do not use it for illegal purposes**, **please
-  do not use it for illegal purposes**, **please do not use it for illegal purposes
-  **, otherwise the consequences will be borne by yourself.
+* This project is only for learning and communication purposes, **please do not use it for illegal purposes**, **please do not use it for illegal purposes**, **please do not use it for illegal purposes**, otherwise the consequences will be borne by yourself.
 * Users understand and agree that any violation of laws and regulations, infringement of the legitimate rights and interests of others, is unrelated to this project and its developers, and the consequences are borne by the user themselves.
 
 ### 2. Usage Period
@@ -151,47 +149,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 * Users are requested to carefully read and understand all contents of this disclaimer, and ensure that they strictly comply with relevant regulations when using this project.
 
-# Ⅳ. Disclaimer (非常重要！very important ！！！！！！！)  
-
-### 1. purpose of use
-
-This program is just for learning and communication purposes only，**Do not use for illegal purposes!**，**Do not use for illegal purposes!**，**Do not use for illegal purposes!**，Otherwise, you will be responsible for the consequences.
-
-The User understands and agrees that，Any violation of laws and regulations, infringement of the legitimate rights and interests of others，The user is solely responsible for the consequences.
-
-### 2. Term of Use
-
-You should delete the source code and (compiled) program within 24 hours of downloading, saving, compiling and using the project; any use beyond this period is not the responsibility of the project or its developers.
-
-### 3. operational specification
-
-This project only allows the database to be backed up and viewed under authorized circumstances, and it is strictly prohibited to use it for illegal purposes, or else you will bear all the related responsibilities; any legal responsibilities arising from violation of this provision will be borne by the users themselves, and have nothing to do with this project and its developers.  
-
-It is strictly prohibited to use it to steal other people's privacy, and it is strictly prohibited to use it to steal other people's privacy, and it is strictly prohibited to use it to steal other people's privacy, and it is strictly prohibited to use it to steal other people's privacy, or else you will bear all the related responsibilities.  
-
-It is strictly prohibited to carry out secondary development, or bear all the related responsibilities by yourself.
-
-### 4. Disclaimer accepted
-
-By downloading, saving, further viewing the source code or downloading, installing, compiling and using this program, you agree to this warning and undertake to comply with it.
-
-### 5. Prohibited for illegal testing or penetration
-
-It is prohibited to use the relevant technology of this project to engage in illegal testing or infiltration, and prohibited to use the relevant code or relevant technology of this project to engage in any illegal work, and if all the adverse consequences arising therefrom have nothing to do with this project and its developers.
-
-Any resulting adverse consequences, including but not limited to data leakage, system paralysis, invasion of privacy, etc., have nothing to do with this project and its developers, and the responsibility is borne by the user.
-
-### 6. Modification of disclaimer
-
-This disclaimer may be modified and adjusted in accordance with the operation of the Program and changes in laws and regulations. Users should periodically check this page for the latest version of the disclaimer and comply with the latest version of the disclaimer when using the program.
-
-### 7. other
-
-In addition to the provisions of this disclaimer, the user shall comply with relevant laws and regulations and ethical norms in the course of using this project. The Project and its developers shall not be responsible for any disputes or losses arising from the user's violation of the relevant provisions. 
-
-Users are requested to read and understand all the contents of this disclaimer carefully and ensure strict compliance with the relevant regulations when using the program.
-
-# Ⅴ. Acknowledgments
+# Ⅳ. Acknowledgments
 
 [![PyWxDump CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)  
 
