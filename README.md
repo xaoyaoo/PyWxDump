@@ -38,8 +38,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 #### 2.1 Core
 
-* (1) Get the **base address offset
-  ** of WeChat nickname, WeChat account, WeChat phone number, WeChat email, and WeChat KEY
+* (1) Get the **base address offset** of WeChat nickname, WeChat account, WeChat phone number, WeChat email, and WeChat KEY
 * (2) Get the WeChat nickname, WeChat account, WeChat phone number, WeChat email, WeChat KEY, WeChat original ID (wxid_******), and WeChat folder path of the currently logged-in WeChat
 * (3) Decrypt WeChat database based on key
 * (4) Combine multiple types of databases for unified viewing
@@ -108,7 +107,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 * If you want to modify the UI, clone the [wx_dump_web](https://github.com/xaoyaoo/wxdump_web) and modify it as needed (the UI is developed using VUE+ElementUI)
 
-【注】:
+【note】:
 
 * For obtaining the base address using cheat engine, refer to [CE obtaining base address.md](https://github.com/xaoyaoo/PyWxDump/tree/master/doc/CE获取基址.md)
   (This method can be replaced by the `wxdump bias` command, and is only used for learning principles.)
@@ -152,45 +151,53 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 * Users are requested to carefully read and understand all contents of this disclaimer, and ensure that they strictly comply with relevant regulations when using this project.
 
-# Ⅳ. 免责声明（非常重要！！！！！！！）
+# Ⅳ. Disclaimer (非常重要！very important ！！！！！！！)  
 
-### 1. 使用目的
+### 1. purpose of use
 
-* 本项目仅供学习交流使用，**请勿用于非法用途**，**请勿用于非法用途**，**请勿用于非法用途**，否则后果自负。
-* 用户理解并同意，任何违反法律法规、侵犯他人合法权益的行为，均与本项目及其开发者无关，后果由用户自行承担。
+This program is just for learning and communication purposes only，**Do not use for illegal purposes!**，**Do not use for illegal purposes!**，**Do not use for illegal purposes!**，Otherwise, you will be responsible for the consequences.
 
-### 2. 使用期限
+The User understands and agrees that，Any violation of laws and regulations, infringement of the legitimate rights and interests of others，The user is solely responsible for the consequences.
 
-* 您应该在下载保存，编译使用本项目的24小时内，删除本项目的源代码和（编译出的）程序；超出此期限的任何使用行为，一概与本项目及其开发者无关。
+### 2. Term of Use
 
-### 3. 操作规范
+You should delete the source code and (compiled) program within 24 hours of downloading, saving, compiling and using the project; any use beyond this period is not the responsibility of the project or its developers.
 
-* 本项目仅允许在授权情况下对数据库进行备份与查看，严禁用于非法目的，否则自行承担所有相关责任；用户如因违反此规定而引发的任何法律责任，将由用户自行承担，与本项目及其开发者无关。
-* 严禁用于窃取他人隐私，严禁用于窃取他人隐私，严禁用于窃取他人隐私，否则自行承担所有相关责任。
-* 严禁进行二次开发，严禁进行二次开发，严禁进行二次开发，否则自行承担所有相关责任。
+### 3. operational specification
 
-### 4. 免责声明接受
+This project only allows the database to be backed up and viewed under authorized circumstances, and it is strictly prohibited to use it for illegal purposes, or else you will bear all the related responsibilities; any legal responsibilities arising from violation of this provision will be borne by the users themselves, and have nothing to do with this project and its developers.  
 
-* 下载、保存、进一步浏览源代码或者下载安装、编译使用本程序，表示你同意本警告，并承诺遵守它;
+It is strictly prohibited to use it to steal other people's privacy, and it is strictly prohibited to use it to steal other people's privacy, and it is strictly prohibited to use it to steal other people's privacy, and it is strictly prohibited to use it to steal other people's privacy, or else you will bear all the related responsibilities.  
 
-### 5. 禁止用于非法测试或渗透
+It is strictly prohibited to carry out secondary development, or bear all the related responsibilities by yourself.
 
-* 禁止利用本项目的相关技术从事非法测试或渗透，禁止利用本项目的相关代码或相关技术从事任何非法工作，如因此产生的一切不良后果与本项目及其开发者无关。
-* 任何因此产生的不良后果，包括但不限于数据泄露、系统瘫痪、侵犯隐私等，均与本项目及其开发者无关，责任由用户自行承担。
+### 4. Disclaimer accepted
 
-### 6. 免责声明修改
+By downloading, saving, further viewing the source code or downloading, installing, compiling and using this program, you agree to this warning and undertake to comply with it.
 
-* 本免责声明可能根据项目运行情况和法律法规的变化进行修改和调整。用户应定期查阅本页面以获取最新版本的免责声明，使用本项目时应遵守最新版本的免责声明。
+### 5. Prohibited for illegal testing or penetration
 
-### 7. 其他
+It is prohibited to use the relevant technology of this project to engage in illegal testing or infiltration, and prohibited to use the relevant code or relevant technology of this project to engage in any illegal work, and if all the adverse consequences arising therefrom have nothing to do with this project and its developers.
 
-* 除本免责声明规定外，用户在使用本项目过程中应遵守相关的法律法规和道德规范。对于因用户违反相关规定而引发的任何纠纷或损失，本项目及其开发者不承担任何责任。
+Any resulting adverse consequences, including but not limited to data leakage, system paralysis, invasion of privacy, etc., have nothing to do with this project and its developers, and the responsibility is borne by the user.
 
-* 请用户慎重阅读并理解本免责声明的所有内容，确保在使用本项目时严格遵守相关规定。
+### 6. Modification of disclaimer
+
+This disclaimer may be modified and adjusted in accordance with the operation of the Program and changes in laws and regulations. Users should periodically check this page for the latest version of the disclaimer and comply with the latest version of the disclaimer when using the program.
+
+### 7. other
+
+In addition to the provisions of this disclaimer, the user shall comply with relevant laws and regulations and ethical norms in the course of using this project. The Project and its developers shall not be responsible for any disputes or losses arising from the user's violation of the relevant provisions. 
+
+Users are requested to read and understand all the contents of this disclaimer carefully and ensure strict compliance with the relevant regulations when using the program.
 
 # Ⅴ. Acknowledgments
 
-[![PyWxDump CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)[![UI CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
+[![PyWxDump CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/PyWxDump)](https://github.com/xaoyaoo/PyWxDump/graphs/contributors)  
+
+UI CONTRIBUTORS:    
+
+[![UI CONTRIBUTORS](https://contrib.rocks/image?repo=xaoyaoo/wxdump_web)](https://github.com/xaoyaoo/wxdump_web/graphs/contributors)
 
 otherContributors:
 
