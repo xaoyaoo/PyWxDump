@@ -117,9 +117,7 @@ QQ GROUP：[276392799](https://s.xaoyo.top/gOLUDl) or [276392799](https://s.xaoy
 
 ### 1. Purpose of use
 
-* This project is only for learning and communication purposes, **please do not use it for illegal purposes**, **please
-  do not use it for illegal purposes**, **please do not use it for illegal purposes
-  **, otherwise the consequences will be borne by yourself.
+* This project is only for learning and communication purposes, **please do not use it for illegal purposes**, **please do not use it for illegal purposes**, **please do not use it for illegal purposes**, otherwise the consequences will be borne by yourself.
 * Users understand and agree that any violation of laws and regulations, infringement of the legitimate rights and interests of others, is unrelated to this project and its developers, and the consequences are borne by the user themselves.
 
 ### 2. Usage Period
