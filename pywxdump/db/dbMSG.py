@@ -103,9 +103,16 @@ class MsgHandler(DatabaseBase):
             f"{sql_sub_type}"
             f"{sql_start_createtime}"
             f"{sql_end_createtime}"
-            f"ORDER BY CreateTime ASC LIMIT ?,?"
+            f"ORDER BY CreateTime ASC LIMIT ? OFFSET ?"
         )
-        param = param + (start_index, page_size)
+
+        param = param + ( page_size,start_index)
+        # # 测试
+        # print(sql + "\n" + " ".join([str(i) for i in param]))
+        # print(sql + "\n" +  " ".join([str(i) for i in param]))
+        # print(sql + "\n" + " ".join([str(i) for i in param]))
+
+
         result = self.execute(sql, param)
         if not result:
             return [], []
