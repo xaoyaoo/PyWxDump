@@ -29,3 +29,4 @@ dist-ssr
 *.local
 /pywxdump/ui/web/*
 /pywxdump/ui/web/assets/*
+/pywxdump/wxdump_work

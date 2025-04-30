@@ -367,7 +367,7 @@ class MainApi(BaseSubMainClass):
 def console_run():
     # 检查是否需要显示帮助信息
     if len(sys.argv) == 1:
-        sys.argv.append(MainUi.mode)
+        sys.argv.append(MainApi.mode)
     elif len(sys.argv) == 2 and sys.argv[1] not in models.keys():
         sys.argv.append('-h')
         main_parser.print_help()

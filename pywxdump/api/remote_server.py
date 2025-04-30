@@ -5,6 +5,7 @@
 # Author:       xaoyaoo
 # Date:         2024/01/02
 # -------------------------------------------------------------------------------
+import datetime
 import os
 import time
 import shutil
@@ -22,6 +23,7 @@ from pywxdump.db import DBHandler
 from pywxdump.db.utils import download_file, dat2img
 
 from .export import export_csv, export_json, export_html
+from .export.exportJSON import export_json_mini, export_json_mini_time_limit
 from .rjson import ReJson, RqJson
 from .utils import error9999, gc, asyncError9999, rs_loger
 
@@ -134,11 +136,18 @@ def get_msgs(wxid: str = Body(...), start: int = Body(...), limit: int = Body(..
     """
 
     my_wxid = gc.get_conf(gc.at, "last")
+
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_conf(my_wxid, "db_config")
 
     db = DBHandler(db_config, my_wxid=my_wxid)
-    msgs, users = db.get_msgs(wxids=wxid, start_index=start, page_size=limit)
+
+    start_createtime = datetime.datetime.strptime("2025-04-28 00:54:33",
+                                                  "%Y-%m-%d %H:%M:%S").timestamp()
+    end_createtime = datetime.datetime.now().timestamp()
+    msgs, users = db.get_msgs(wxids=wxid, start_index=start, page_size=limit,) #
+
+
     return ReJson(0, {"msg_list": msgs, "user_list": users})
 
 
@@ -457,11 +466,14 @@ def get_export_json(wxid: str = Body(..., embed=True)):
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    code, ret = export_json(wxid, outpath, db_config, my_wxid=my_wxid)
+    code, ret = export_json_mini_time_limit(wxid, outpath, db_config, my_wxid=my_wxid,start_createtime="2025-4-29 00:00:00", end_createtime="2025-4-30 00:00:00")
     if code:
         return ReJson(0, ret)
     else:
         return ReJson(2001, body=ret)
+
+
+
 
 
 class ExportHtmlRequest(BaseModel):
