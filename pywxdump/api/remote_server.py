@@ -13,6 +13,7 @@ from collections import Counter
 from urllib.parse import quote, unquote
 from typing import List, Optional
 
+import fastapi.requests
 from pydantic import BaseModel
 from fastapi import APIRouter, Response, Body, Query, Request
 from starlette.responses import StreamingResponse, FileResponse
@@ -21,11 +22,14 @@ import pywxdump
 from pywxdump import decrypt_merge, get_core_db
 from pywxdump.db import DBHandler
 from pywxdump.db.utils import download_file, dat2img
+from .api_utils.html import HtmlController
 
 from .export import export_csv, export_json, export_html
 from .export.exportJSON import export_json_mini, export_json_mini_time_limit
 from .rjson import ReJson, RqJson
 from .utils import error9999, gc, asyncError9999, rs_loger
+
+
 
 rs_api = APIRouter()
 
@@ -466,13 +470,49 @@ def get_export_json(wxid: str = Body(..., embed=True)):
     if not os.path.exists(outpath):
         os.makedirs(outpath)
 
-    code, ret = export_json_mini_time_limit(wxid, outpath, db_config, my_wxid=my_wxid,start_createtime="2025-4-29 00:00:00", end_createtime="2025-4-30 00:00:00")
+    code, ret = export_json(wxid, outpath, db_config, my_wxid=my_wxid)
     if code:
         return ReJson(0, ret)
     else:
         return ReJson(2001, body=ret)
 
 
+class ExportJsonMiniRequest(BaseModel):
+    start_createtime: str
+    end_createtime: str
+
+@rs_api.api_route('/export_json_mini_select_time', methods=["GET", 'POST'])
+def get_export_json(wxid: str = Body(..., embed=True),time: ExportJsonMiniRequest = Body(..., embed=True)):
+    """
+    导出json,选择时间，迷你版本
+    :return:
+    """
+    my_wxid = gc.get_conf(gc.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    db_config = gc.get_conf(my_wxid, "db_config")
+
+    if not wxid:
+        return ReJson(1002, body=f"username is required: {wxid}")
+
+    outpath = os.path.join(gc.work_path, "export", my_wxid, "json", wxid)
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    start_createtime = time.start_createtime # 格式为 "2025-05-01 18:06:00"
+    end_createtime = time.end_createtime
+
+    code, ret,filename = export_json_mini_time_limit(wxid, outpath, db_config, my_wxid=my_wxid,start_createtime=start_createtime, end_createtime=end_createtime)
+    if code:
+        # 成功创建，执行生成可视化页面的逻辑
+        # with open(os.path.join(gc.work_path, "export", my_wxid, "html", wxid, filename), "w", encoding="utf-8") as f:
+        #     f.write(
+        #         #现在是fake
+        #         HtmlController().create_html(json_data=None)
+        #     )
+        return ReJson(0, ret)
+
+    else:
+        return ReJson(2001, body=ret)
 
 
 
@@ -670,5 +710,62 @@ def get_readme():
         return ReJson(0, body=data)
     else:
         return ReJson(2001, body="status_code is not 200")
+
+
+class DifyApiModel(BaseModel):
+    api_key:str
+    base_url:str
+
+
+@rs_api.api_route('/dify_setting', methods=["GET", 'POST'])
+@error9999
+def dify_setting(request: Request = None, dify: DifyApiModel = Body(None, embed=True)):
+    """
+    dify设置
+    """
+
+    if request.method == "GET":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        gc.get_conf(my_wxid, "dify_setting")
+
+        return ReJson(0, body=gc.get_conf(my_wxid, "dify_setting"))
+
+    elif request.method == "POST":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        if not dify.api_key and not dify.base_url:
+            return ReJson(1002, body="dify_setting is required")
+
+        gc.set_conf(my_wxid, "dify_setting", {"API_KEY": dify.api_key, "BASE_URL": dify.base_url})
+        return ReJson(0, body=gc.get_conf(my_wxid, "dify_setting"))
+    return ReJson(2001, body="status_code is not 200")
+
+class DeepSeekApiModel(BaseModel):
+    api_key:str
+
+
+@rs_api.api_route('/deepseek_setting', methods=["GET", 'POST'])
+@error9999
+def deepseek_setting(request: Request = None, deepseek: DeepSeekApiModel = Body(None, embed=True)):
+    """
+    deepseek设置
+    """
+    if request.method == "GET":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        gc.get_conf(my_wxid, "deepseek_setting")
+
+        return ReJson(0, body=gc.get_conf(my_wxid, "deepseek_setting"))
+
+    elif request.method == "POST":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        if not deepseek or not deepseek.api_key:
+            return ReJson(1002, body="deepseek_setting is required")
+
+        gc.set_conf(my_wxid, "deepseek_setting", {"API_KEY": deepseek.api_key})
+        return ReJson(0, body=gc.get_conf(my_wxid, "deepseek_setting"))
+    return ReJson(2001, body="status_code is not 200")
 
 # END 关于、帮助、设置 ***************************************************************************************************

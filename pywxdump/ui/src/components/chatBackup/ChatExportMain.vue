@@ -11,6 +11,7 @@ import ExportJSON from "@/components/chatBackup/ExportJSON.vue";
 import ExportHTML from "@/components/chatBackup/ExportHTML.vue";
 import ExportPDF from "@/components/chatBackup/ExportPDF.vue";
 import ExportDOCX from "@/components/chatBackup/ExportDOCX.vue";
+import ExportJSONMini from './ExportJSONMini.vue';
 
 const props = defineProps({
   wxid: {
@@ -43,6 +44,10 @@ const setting = {
   'json': {
     brief: 'json',
     detail: "只包含文本，可用于数据分析，情感分析等方面。",
+  },
+  'json-mini': {
+    brief: 'json-mini',
+    detail: "只包含文本，只有最小化的json格式。支持选择时间，注意不要选择太多时间，会导致导出数据过大影响AI分析。",
   },
   'html': {
     brief: 'html-测试中',
@@ -91,6 +96,7 @@ const setting = {
           <ExportDEDB v-if="exportType=='dedb'" :wxid="props.wxid"/>
           <ExportCSV v-if="exportType=='csv'" :wxid="props.wxid"/>
           <ExportJSON v-if="exportType=='json'" :wxid="props.wxid"/>
+          <ExportJSONMini v-if="exportType=='json-mini'" :wxid="props.wxid"/>
           <ExportHTML v-if="exportType=='html'" :wxid="props.wxid"/>
           <ExportPDF v-if="exportType=='pdf'" :wxid="props.wxid"/>
           <ExportDOCX v-if="exportType=='docx'" :wxid="props.wxid"/>

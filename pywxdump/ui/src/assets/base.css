@@ -35,6 +35,20 @@
 
   --section-gap: 160px;
 }
+/* 可视化页面的css*/
+:root {
+  --bg-ui-s-primary: #0f0e17;
+  --bg-ui-s-secondary: #1a1925;
+  --bg-ui-s-tertiary: #252336;
+  --text-ui-s-primary: #fffffe;
+  --text-ui-s-secondary: #a7a9be;
+  --accent-ui-s-primary: #ff8906;
+  --accent-ui-s-secondary: #f25f4c;
+  --accent-ui-s-tertiary: #e53170;
+  --accent-ui-s-blue: #3da9fc;
+  --accent-ui-s-purple: #7209b7;
+  --accent-ui-s-cyan: #00b4d8;
+}
 
 /* @media (prefers-color-scheme: dark) {
   :root {

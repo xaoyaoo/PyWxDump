@@ -153,7 +153,7 @@ if package_path:
         hidden_imports = f.read().splitlines()
     hidden_imports = [i.replace('-', '_').split("=")[0].split("~")[0] for i in hidden_imports if
                       i and i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
-    hidden_imports += ["pywxdump", "pywxdump.db", "pywxdump.db.__init__.utils"]
+    hidden_imports += ["pywxdump", "pywxdump.db", "pywxdump.db.__init__.api_utils"]
 
     # 获取 ui 文件夹下的所有文件 用于打包
     root_path = os.path.join(package_path, 'pywxdump')

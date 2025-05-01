@@ -161,12 +161,12 @@ def export_json_mini_time_limit(wxid, outpath, db_config, my_wxid="我",
         start_part = start_createtime.replace(" ", "_").replace(":", "-") if start_createtime else "all"
         end_part = end_createtime.replace(" ", "_").replace(":", "-") if end_createtime else "now"
         time_suffix = f"_{start_part}_to_{end_part}"
-
-    save_path = os.path.join(outpath, f"{wxid}_mini{time_suffix}.json")
+    filename = f"{wxid}_mini{time_suffix}.json"
+    save_path = os.path.join(outpath, filename)
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(mini_data, f, ensure_ascii=False, indent=indent)
 
-    return True, f"导出成功: {save_path}"
+    return True, f"导出成功: {save_path}", filename
 
 
 
