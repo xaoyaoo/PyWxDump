@@ -722,6 +722,38 @@ def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
 
 
 
+# 获取可视化界面json文件
+@rs_api.api_route('/get_ui_json', methods=["GET", 'POST'])
+def get_ui_json(file_name: FileNameRequest = Body(..., embed=True)):
+    """
+    获取可视化界面json文件
+    """
+    start_time = file_name.start_time /1000.0
+    end_time = file_name.end_time /1000.0
+    wxid = file_name.wxid
+    start_time = datetime.datetime.fromtimestamp(float(start_time)).strftime("%Y-%m-%d %H:%M:%S")  #转换成日期格式
+    end_time = datetime.datetime.fromtimestamp(float(end_time)).strftime("%Y-%m-%d %H:%M:%S")
+
+    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_' + end_time.replace(' ', '_').replace(':', '-')
+    file_name = file_name + '.json'
+
+
+    my_wxid = gc.get_conf(gc.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+    result = get_file_path(os.path.join(gc.work_path, "export", my_wxid, "json"), file_name)
+
+    if result is None:
+        return ReJson(1002, body=f"file not found: {file_name}")
+
+    # 获取文件内容
+    with open(result, "r", encoding="utf-8") as f:
+        json_data = json.load(f)
+        if not json_data:
+            return ReJson(1002, body=f"json_data is empty: {file_name}")
+
+    return ReJson(0, body=json_data)
+
 
 
 
