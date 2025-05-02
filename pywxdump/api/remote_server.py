@@ -577,6 +577,22 @@ def recursive_listdir(path,list:List):
 
 
 
+def de_weight(l1:List,l2:List):
+    """
+    列表去重，针对特定对象
+    """
+    len1 = min(len(l1), len(l2))
+    len1 = len1-1 if len1 > 0 else 0
+    for i in range(len1):
+        if l1[i]["wxid"] == l2[i]["wxid"] and l1[i]["start_time"] == l2[i]["start_time"] and l1[i]["end_time"] == l2[i][
+            "end_time"]:
+            l1[i]["flag"] = True
+            l2.pop(i)
+
+    return l1+l2
+
+
+
 
 
 
@@ -592,7 +608,7 @@ def get_ai_ui_json_list():
     # 遍历json文件夹，查找最后带_ai的文件
     work_path = os.path.join(gc.work_path, "export", my_wxid, "json")
     if not os.path.exists(work_path):
-        return ReJson(0,body={"ui_dict_list":[],"ai_dict_list":[]})
+        os.makedirs(work_path)
     file_list:List[str]=[]
     recursive_listdir(work_path,list=file_list)
 
@@ -602,22 +618,25 @@ def get_ai_ui_json_list():
         if file.split('.')[0].split('_')[-1] == 'ai':
             # 可进行ai可视化的文件
             ui_list.append(file)
+    # print(ui_list)
 
     # 构造字典对象
     ui_dict_list = []
     for s in ui_list:
-        wxid = s.split('.')[0].split('_')[0]  # wxid
-        time_start = " ".join(s.split('.')[0].split('_')[2:4])  # time start
-        time_end = " ".join(s.split('.')[0].split('_')[5:7])  # time end
-        flag = s.split('.')[0].split('_')[-1]  # flag
-        ui_dict_list.append({"wxid": wxid, "time_start": time_start, "time_end": time_end, "flag": flag})
+        wxid = s.split('\\')[-1].split('.')[0].split('_')[0] if "@" in s.split('\\')[-1] else \
+        s.split('\\')[-1].split('.')[0].split('_')[1]  # wxid
+        time_start = " ".join(s.split('\\')[-1].split('.')[0].split('_')[2:4]) if "@" in s.split('\\')[
+            -1] else " ".join(s.split('\\')[-1].split('.')[0].split('_')[3:5])  # time start
+        time_end = " ".join(s.split('\\')[-1].split('.')[0].split('_')[5:7]) if "@" in s.split('\\')[-1] else " ".join(
+            s.split('\\')[-1].split('.')[0].split('_')[6:8])  # time end
+        ui_dict_list.append({"wxid": wxid, "start_time": time_start, "end_time": time_end, "flag": False})
 
 
 
     # 遍历ai_json文件夹,获取所有文件名
     work_path = os.path.join(gc.work_path, "export", my_wxid, "ai_json")
     if not os.path.exists(work_path):
-        return ReJson(0,body={"ui_dict_list":ui_dict_list,"ai_dict_list":[]})
+        os.makedirs(work_path)
     file_list:List[str]=[]
     recursive_listdir(work_path,list=file_list)
 
@@ -630,14 +649,23 @@ def get_ai_ui_json_list():
 
     # 构造字典对象
     for s in ai_list:
-        wxid = s.split('.')[0].split('_')[0]  # wxid
-        time_start = " ".join(s.split('.')[0].split('_')[2:4])  # time start
-        time_end = " ".join(s.split('.')[0].split('_')[5:7])  # time end
-        ai_dict_list.append({"wxid": wxid, "time_start": time_start, "time_end": time_end})
+        wxid = s.split('\\')[-1].split('.')[0].split('_')[0] if "@" in s.split('\\')[-1] else \
+        s.split('\\')[-1].split('.')[0].split('_')[1]  # wxid
+        time_start = " ".join(s.split('\\')[-1].split('.')[0].split('_')[2:4]) if "@" in s.split('\\')[
+            -1] else " ".join(s.split('\\')[-1].split('.')[0].split('_')[3:5])  # time start
+        time_end = " ".join(s.split('\\')[-1].split('.')[0].split('_')[5:7]) if "@" in s.split('\\')[-1] else " ".join(
+            s.split('\\')[-1].split('.')[0].split('_')[6:8])  # time end
+        ai_dict_list.append({"wxid": wxid, "start_time": time_start, "end_time": time_end, "flag": True})
 
+    # # 合并两个字典列表
+    # dict_list = ui_dict_list + ai_dict_list
+    # print(ui_dict_list)
+    # print(ai_dict_list)
 
+    # 去重
+    dict_list = de_weight(ui_dict_list,ai_dict_list)
 
-    return ReJson(0,body={"ui_dict_list":ui_dict_list,"ai_dict_list":ai_dict_list})
+    return ReJson(0,body={"items":dict_list})
 
 
 
@@ -646,6 +674,9 @@ def get_file_path(work_path: str, file_name: str) -> str | None:
     """
     获取ai_json文件路径
     """
+    # 遍历文件夹内的所有文件，找到对应文件名的文件路径
+
+
     path_list = os.listdir(work_path)
     for path in path_list:
         full_path = os.path.join(work_path, path)
@@ -659,21 +690,20 @@ def get_file_path(work_path: str, file_name: str) -> str | None:
 
 class FileNameRequest(BaseModel):
     wxid: str
-    start_time: int
-    end_time: int
+    start_time: str
+    end_time: str
 
 @rs_api.api_route('/db_to_ai_json', methods=["GET", 'POST'])
 def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
     """
     导出聊天记录到ai_json
     """
-    start_time = file_name.start_time /1000.0
-    end_time = file_name.end_time /1000.0
+    start_time = file_name.start_time
+    end_time = file_name.end_time
     wxid = file_name.wxid
-    start_time = datetime.datetime.fromtimestamp(float(start_time)).strftime("%Y-%m-%d %H:%M:%S")  #转换成日期格式
-    end_time = datetime.datetime.fromtimestamp(float(end_time)).strftime("%Y-%m-%d %H:%M:%S")
 
-    file_name = wxid + '_mini_' + start_time.replace(' ', '_').replace(':', '-') + '_' + end_time.replace(' ', '_').replace(':', '-') + '_ai'
+
+    file_name = wxid + '_mini_' + start_time.replace(' ', '_').replace(':', '-') + '_to_' + end_time.replace(' ', '_').replace(':', '-') + '_ai'
     # file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_' + end_time.replace(' ', '_').replace(':', '-')
     file_name = file_name + '.json'
 
@@ -682,7 +712,10 @@ def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
 
+
+
     result = get_file_path(os.path.join(gc.work_path, "export", my_wxid, "json"), file_name)
+
 
     if result is None:
         return ReJson(1002, body=f"file not found: {file_name}")
@@ -700,7 +733,7 @@ def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
     if not apikey:
         return ReJson(1002, body="deepseek_setting.API_KEY is required")
     llm_api = DeepSeekApi(api_key=apikey)
-    json_data = llm_api.send_msg(module=0,message=json_data)
+    json_data = llm_api.send_msg(module=0,message=json.dumps(json_data))
 
     # 保存到ai_json
     ai_json_path = os.path.join(gc.work_path, "export", my_wxid, "ai_json")
@@ -708,7 +741,7 @@ def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
         os.makedirs(ai_json_path)
 
     assert isinstance(ai_json_path, str)
-    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_' + end_time.replace(' ',
+    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_to_' + end_time.replace(' ',
                                                                                                            '_').replace(
         ':', '-')
     file_name = file_name + '.json'
@@ -720,28 +753,35 @@ def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
 
 
 
-
+class FileNameGetUiRequest(BaseModel):
+    wxid: str
+    start_time: str
+    end_time: str
 
 # 获取可视化界面json文件
 @rs_api.api_route('/get_ui_json', methods=["GET", 'POST'])
-def get_ui_json(file_name: FileNameRequest = Body(..., embed=True)):
+def get_ui_json(file_name: FileNameGetUiRequest = Body(..., embed=True)):
     """
     获取可视化界面json文件
     """
-    start_time = file_name.start_time /1000.0
-    end_time = file_name.end_time /1000.0
-    wxid = file_name.wxid
-    start_time = datetime.datetime.fromtimestamp(float(start_time)).strftime("%Y-%m-%d %H:%M:%S")  #转换成日期格式
-    end_time = datetime.datetime.fromtimestamp(float(end_time)).strftime("%Y-%m-%d %H:%M:%S")
+    # print(file_name.wxid)
 
-    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_' + end_time.replace(' ', '_').replace(':', '-')
+    start_time = file_name.start_time
+    end_time = file_name.end_time
+    wxid = file_name.wxid if "@" in file_name.wxid else "wxid_" + file_name.wxid
+
+
+    # start_time = datetime.datetime.fromtimestamp(float(start_time)).strftime("%Y-%m-%d %H:%M:%S")  #转换成日期格式
+    # end_time = datetime.datetime.fromtimestamp(float(end_time)).strftime("%Y-%m-%d %H:%M:%S")
+
+    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_to_' + end_time.replace(' ', '_').replace(':', '-')
     file_name = file_name + '.json'
 
 
     my_wxid = gc.get_conf(gc.at, "last")
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
 
-    result = get_file_path(os.path.join(gc.work_path, "export", my_wxid, "json"), file_name)
+    result = get_file_path(os.path.join(gc.work_path, "export", my_wxid, "ai_json"), file_name)
 
     if result is None:
         return ReJson(1002, body=f"file not found: {file_name}")

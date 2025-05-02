@@ -112,3 +112,50 @@ export const apiMsgs = (wxid: string, start: number, limit: number) => {
         return '';
     })
 }
+
+/**
+ * 获取ai可视化文件列表
+ */
+export const apiAiList = () =>{
+    return http.get('/api/rs/ai_ui_json_list' ).then((res: any) => {
+        return res;
+    }).catch((err: any) => {
+        console.log(err);
+        return '';
+    })
+}
+
+
+/**
+ * 获取ai可视化文件内容
+ */
+
+export interface AiUiJson {
+    
+    wxid: string,
+    start_time:string,
+    end_time:string,
+    
+}
+
+
+
+export const apiAiUiJson = (file_name: AiUiJson) =>{
+    return http.post('/api/rs/get_ui_json', {file_name}).then((res: any) => {
+        return res;
+    }).catch((err: any) => {
+        console.log(err);
+        return '';
+    })
+}
+
+
+export const apiAiUiCreateJson = (file_name: AiUiJson) =>{
+    return http.post('/api/rs/db_to_ai_json', {file_name}).then((res: any) => {
+        return res;
+    }).catch((err: any) => {
+        console.log(err);
+        return '';
+    })
+}
+

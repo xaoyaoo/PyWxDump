@@ -30,3 +30,4 @@ dist-ssr
 /pywxdump/ui/web/*
 /pywxdump/ui/web/assets/*
 /pywxdump/wxdump_work
+test2.py

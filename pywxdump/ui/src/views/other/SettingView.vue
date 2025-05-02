@@ -2,7 +2,7 @@
 import DbInitView from "@/views/DbInitView.vue";
 import {ref} from "vue";
 import DbInitComponent from "@/components/utils/DbInitComponent.vue";
-
+import deepseekSet from "@/components/utils/DeepSeekSet.vue";
 const setting_selected = ref("")
 
 const MeneSelect = (val: any) => {
@@ -34,14 +34,15 @@ const MeneSelect = (val: any) => {
             <el-menu-item index="db_init">
               <span>初始化设置</span>
             </el-menu-item>
-            <el-menu-item index="3">
-              <span></span>
+            <el-menu-item index="deepseek_set">
+              <span>DeepSeek设置</span>
             </el-menu-item>
           </el-menu>
         </el-aside>
 
         <el-main style="height: 100%;max-height: 100%;width: 100%;margin: 0;padding: 0;">
           <db-init-component v-if="setting_selected=='db_init'"></db-init-component>
+          <deepseek-set v-if="setting_selected=='deepseek_set'"></deepseek-set>
         </el-main>
       </el-container>
     </el-container>
