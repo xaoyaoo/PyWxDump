@@ -21,12 +21,13 @@ const Result = ref("");
 const requestExport = async () => {
   Result.value = "正在处理中...";
   try {
+    console.log(datetime.value); // 打印datetime.value的值，查看是否正确传递给后端
     Result.value = await http.post('/api/rs/export_json_mini_select_time', {
       'wxid': props.wxid,
       // 'datetime': datetime.value,
       "time":{
-        "start_time":datetime.value[0],
-        "end_time":datetime.value[1]
+        "start_createtime":datetime.value[0],
+        "end_createtime":datetime.value[1]
       }
     });
   } catch (error) {
@@ -38,6 +39,8 @@ const requestExport = async () => {
 
 // 处理时间选择器的数据
 const handDatetimeChildData = (val: any) => {
+  // 明确指定 timer 参数的类型为 Date，解决隐式 any 类型问题
+
   datetime.value = val;
 }
 
@@ -45,10 +48,10 @@ const handDatetimeChildData = (val: any) => {
 
 <template>
   <div>
-<!--    <div>-->
-<!--      <strong>时间(默认全部)：</strong>-->
-<!--      <DateTimeSelect @datetime="handDatetimeChildData"/>-->
-<!--    </div>-->
+   <div>
+     <strong>时间(默认全部)：</strong>
+     <DateTimeSelect @datetime="handDatetimeChildData"/>
+   </div>
 
     <div style="position: relative;">
       <el-button type="primary" @click="requestExport()">导出</el-button>

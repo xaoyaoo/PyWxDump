@@ -109,7 +109,7 @@ watch(() => datetime.value, (newVal: any, oldVal: any) => {
       start-placeholder="开始时间"
       end-placeholder="结束时间"
       :default-time="defaultTime"
-      format="YYYY-MM-DD HH:mm"
+      format="YYYY-MM-DD HH:mm:ss"
   />
   <!--  </div>-->
 </template>

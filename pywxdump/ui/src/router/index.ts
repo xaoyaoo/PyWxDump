@@ -24,6 +24,12 @@ const router = createRouter({
             component: () => import((`@/views/ChatView.vue`))
         },
         {
+            path: '/chat2ui_select',
+            name: 'chat2ui_select',
+            component: () => import((`@/views/Chat2UiSelectVue.vue`))
+        },
+
+        {
             path: '/chat2ui',
             name: 'chat2ui',
             component: () => import((`@/views/Chat2UiView.vue`))

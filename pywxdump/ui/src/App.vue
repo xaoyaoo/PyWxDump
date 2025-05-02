@@ -105,8 +105,15 @@ const handleClose = (key: string, keyPath: string[]) => {
               <el-menu-item index='/decrypt'>解密数据</el-menu-item>
               <el-menu-item index='/merge'>数据库合并</el-menu-item>
             </el-sub-menu>
+
+            <el-menu-item index='/chat2ui_select'>
+              <statistics-icon></statistics-icon>
+              <template #title>AI可视化</template>
+            </el-menu-item>
+
           </el-menu>
 
+         
           <el-menu default-active="1" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
                    @close="handleClose" :router='true'>
             <el-menu-item index='/about'>
