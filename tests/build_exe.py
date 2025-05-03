@@ -145,7 +145,8 @@ with open("dist/wxdump_version_info.txt", "w", encoding="utf-8") as f:
 # 获取安装包的路径
 package_path = site.getsitepackages()
 if package_path:
-    package_path = package_path[1]  # 假设取第一个安装包的路径
+    # package_path = site.getsitepackages()[0]  # 假设取第一个安装包的路径
+    package_path = r"E:\project\wx_db_ui\PyWxDump-master"
 
     current_path = os.path.dirname(os.path.abspath(__file__))  # 当前文件所在路径
     require_path = os.path.join(os.path.dirname(current_path), "requirements.txt")  # requirements.txt 路径
@@ -153,7 +154,7 @@ if package_path:
         hidden_imports = f.read().splitlines()
     hidden_imports = [i.replace('-', '_').split("=")[0].split("~")[0] for i in hidden_imports if
                       i and i not in ["setuptools", "wheel"]]  # 去掉setuptools、wheel
-    hidden_imports += ["pywxdump", "pywxdump.db", "pywxdump.db.__init__.api_utils"]
+    hidden_imports += ["win32com",'Crypto' ,"pywxdump", "pywxdump.db", "pywxdump.db.__init__.utils"]
 
     # 获取 ui 文件夹下的所有文件 用于打包
     root_path = os.path.join(package_path, 'pywxdump')

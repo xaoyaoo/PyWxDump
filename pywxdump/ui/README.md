@@ -1,1 +1,0 @@
-## 这是[PyWxDump](https://github.com/xaoyaoo/PyWxDump)的Web版，用于在浏览器中查看微信聊天记录。

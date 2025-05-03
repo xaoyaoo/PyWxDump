@@ -1,0 +1,134 @@
+name: Publish
+
+on:
+  # 当master分支有push时，触发action
+  push:
+    tags:
+      - 'v*'  # 以 'v' 开头的标签触发工作流程
+
+jobs:
+  publish:
+    name: Publish Pypi and Create Release
+    if: github.repository == 'xaoyaoo/PyWxDump' # 仅在指定仓库的 tag 触发工作流程
+    # 此作业在 Linux 上运行
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository # 检出仓库
+        uses: actions/checkout@v2 # 使用 GitHub 官方的 checkout action
+
+      - name: Set git fetch depth # 设置 git fetch 深度
+        run: |
+          git fetch --prune --unshallow  # 获取完整的 git 历史记录
+
+      - name: Set up Python # 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          cache: 'pip' # caching pip dependencies
+      - run: |
+          python -m pip install --upgrade pip
+          pip install build
+          python -m pip install --upgrade twine
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Set up Node.js # 设置 Node.js 环境
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Build Web UI # 构建 Web UI
+        run: |
+          cd ..
+          git clone https://github.com/xaoyaoo/wxdump_web.git
+          Compress-Archive -Path wxdump_web -DestinationPath wxdump_web.zip
+          Compress-Archive -Path PyWxDump -DestinationPath PyWxDump.zip
+          cd wxdump_web
+          npm list -g
+          npm install
+          npm run build
+
+      - name: copy web ui to pywxdump/ui/web
+        run: |
+          cd ..
+          ls -l wxdump_web/dist
+          cp -r wxdump_web/dist PyWxDump/pywxdump/ui/web
+          ls -l PyWxDump/pywxdump/ui/web
+          cd PyWxDump
+
+#      - name: Build Export UI # 构建导出的 Web UI
+#        run: |
+#          cd ..
+#          cd wxdump_web
+#          cp src/main.ts src/t.ts
+#          cp src/main.ts.export src/main.ts
+#          npm install
+#          npm run build
+#
+#      - name: copy Export UI and Export UI to pywxdump/ui/web and pywxdump/ui/export
+#        run: |
+#          cd ..
+#          ls -l wxdump_web/dist
+#          cp -r wxdump_web/dist PyWxDump/pywxdump/ui/export
+#          ls -l PyWxDump/pywxdump/ui/export
+#          cd PyWxDump
+
+      - name: Build package # 构建包
+        run: |
+          python -m build
+          pip install -U .
+
+      - name: Generate File pywxdump.spec # 生成 pywxdump.spec 文件
+        run: |
+          python tests/build_exe.py
+          ls 
+          ls dist
+          cat dist/pywxdump.spec
+
+      - name: Build Executable
+        run: |
+          pyinstaller --clean --distpath=dist dist/pywxdump.spec
+
+      - name: test
+        run: |
+          ls -l dist
+          ls -l "${{ github.workspace }}"
+
+      - name: Zip Executable
+        run: |
+          cd ..
+          ls
+          Compress-Archive -Path PyWxDump/dist/*.exe,PyWxDump/dist/*.whl -DestinationPath exe_whl.zip
+          Compress-Archive -Path PyWxDump.zip,wxdump_web.zip -DestinationPath Source.zip
+          ls
+          cp exe_whl.zip PyWxDump/dist/exe_whl.zip
+          cp Source.zip PyWxDump/dist/Source.zip
+          ls PyWxDump/dist
+          cd PyWxDump
+
+      - name: Publish package with Twine # 使用 Twine 发布到 PyPI
+        run: |
+          twine upload dist/*.whl dist/*.tar.gz
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref.tag }}
+          body: |
+            [Auto Release] Update PyWxDump to ${{ github.ref }}
+            详细更新日志请查看 [CHANGELOG.md](https://github.com/xaoyaoo/PyWxDump/blob/master/doc/CHANGELOG.md)
+          draft: false
+          prerelease: false
+          files: |
+            dist/*.exe
+            dist/*.whl
+            dist/exe_whl.zip
+            dist/Source.zip

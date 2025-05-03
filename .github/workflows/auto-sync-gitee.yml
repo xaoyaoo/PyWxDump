@@ -1,0 +1,42 @@
+#on:
+#  push:
+#    branches: [master]
+#name: Mirror GitHub Repos to Gitee
+#jobs:
+#  run:
+#    name: Sync-GitHub-to-Gitee
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: Mirror the Github repos to Gitee.
+#      uses: Yikun/hub-mirror-action@master
+#      with:
+#        src: github/xaoyaoo
+#        dst: gitee/xaoyaoo
+#        dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+#        dst_token: ${{ secrets.GITEE_TOKEN }}
+#        force_update: true
+#        src_account_type: org
+#        dst_account_type: user
+#        mappings: "dashboard=>dashboards"
+#        static_list: "trader"
+#        cache_path: /github/workspace/hub-mirror-cache
+
+name: Hello World Action
+
+on:
+  push:
+    branches: [ main ]  # 触发条件：当主分支有新的推送时
+
+jobs:
+  hello-job:
+    runs-on: ubuntu-latest  # 运行环境：最新的 Ubuntu 系统
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3  # 检出代码
+
+    - name: Print Hello Message
+      run: echo "Hello, world!"  # 执行命令，打印消息
+
+    - name: Print Date
+      run: date  # 执行命令，打印当前日期

@@ -458,11 +458,11 @@ class DeepSeekApi(BaseLLMApi):
 
 
 
-if __name__ == "__main__":
-    deepseek_api = DeepSeekApi("sk-2ed4377a895d4ce18e086258c254fc8e")
-
-    response = deepseek_api.send_msg(module=0,message="""""")
-    print(response)
+# if __name__ == "__main__":
+#     deepseek_api = DeepSeekApi("sk-2ed4377a895d4ce18e086258c254fc8e")
+#
+#     response = deepseek_api.send_msg(module=0,message="""""")
+#     print(response)
 
 
 

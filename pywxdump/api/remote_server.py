@@ -582,7 +582,7 @@ def de_weight(l1:List,l2:List):
     列表去重，针对特定对象
     """
     len1 = min(len(l1), len(l2))
-    len1 = len1-1 if len1 > 0 else 0
+    len1 = len1-1 if len1 > 1 else len1
     for i in range(len1):
         if l1[i]["wxid"] == l2[i]["wxid"] and l1[i]["start_time"] == l2[i]["start_time"] and l1[i]["end_time"] == l2[i][
             "end_time"]:

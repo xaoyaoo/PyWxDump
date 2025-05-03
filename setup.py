@@ -45,17 +45,17 @@ setup(
     license='MIT',
 
     # packages=find_packages(exclude=[]),
-    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_core', 'pywxdump.wx_core.api_utils', 'pywxdump.analyzer',
-              'pywxdump.api', 'pywxdump.api.export', 'pywxdump.db', 'pywxdump.db.api_utils'],
+    packages=['pywxdump', 'pywxdump.ui', 'pywxdump.wx_core', 'pywxdump.wx_core.utils', 'pywxdump.analyzer',
+              'pywxdump.api', 'pywxdump.api.export', 'pywxdump.db', 'pywxdump.db.utils'],
     package_dir={'pywxdump': 'pywxdump',
                  'pywxdump.wx_core': 'pywxdump/wx_core',
-                 'pywxdump.wx_core.api_utils': 'pywxdump/wx_core/api_utils',
+                 'pywxdump.wx_core.utils': 'pywxdump/wx_core/utils',
                  'pywxdump.analyzer': 'pywxdump/analyzer',
                  'pywxdump.ui': 'pywxdump/ui',
                  'pywxdump.api': 'pywxdump/api',
                  'pywxdump.api.export': 'pywxdump/api/export',
                  'pywxdump.db': 'pywxdump/db',
-                 'pywxdump.db.api_utils': 'pywxdump/db/api_utils'
+                 'pywxdump.db.utils': 'pywxdump/db/utils'
                  },
     # include_package_data=True,
     package_data={
