@@ -5,6 +5,8 @@
 # Author:       xaoyaoo
 # Date:         2024/01/02
 # -------------------------------------------------------------------------------
+import datetime
+import json
 import os
 import time
 import shutil
@@ -12,6 +14,7 @@ from collections import Counter
 from urllib.parse import quote, unquote
 from typing import List, Optional
 
+import fastapi.requests
 from pydantic import BaseModel
 from fastapi import APIRouter, Response, Body, Query, Request
 from starlette.responses import StreamingResponse, FileResponse
@@ -20,8 +23,10 @@ import pywxdump
 from pywxdump import decrypt_merge, get_core_db
 from pywxdump.db import DBHandler
 from pywxdump.db.utils import download_file, dat2img
+from .api_utils.html import HtmlController
 
 from .export import export_csv, export_json, export_html
+from .export.exportJSON import export_json_mini, export_json_mini_time_limit
 from .rjson import ReJson, RqJson
 from .utils import error9999, gc, asyncError9999, rs_loger
 
@@ -134,11 +139,17 @@ def get_msgs(wxid: str = Body(...), start: int = Body(...), limit: int = Body(..
     """
 
     my_wxid = gc.get_conf(gc.at, "last")
+
     if not my_wxid: return ReJson(1001, body="my_wxid is required")
     db_config = gc.get_conf(my_wxid, "db_config")
 
     db = DBHandler(db_config, my_wxid=my_wxid)
-    msgs, users = db.get_msgs(wxids=wxid, start_index=start, page_size=limit)
+
+    start_createtime = datetime.datetime.strptime("2025-04-28 00:54:33",
+                                                  "%Y-%m-%d %H:%M:%S").timestamp()
+    end_createtime = datetime.datetime.now().timestamp()
+    msgs, users = db.get_msgs(wxids=wxid, start_index=start, page_size=limit, )  #
+
     return ReJson(0, {"msg_list": msgs, "user_list": users})
 
 
@@ -464,6 +475,51 @@ def get_export_json(wxid: str = Body(..., embed=True)):
         return ReJson(2001, body=ret)
 
 
+class ExportJsonMiniRequest(BaseModel):
+    start_createtime: int
+    end_createtime: int
+
+
+@rs_api.api_route('/export_json_mini_select_time', methods=["GET", 'POST'])
+def get_export_json(wxid: str = Body(..., embed=True), time: ExportJsonMiniRequest = Body(..., embed=True)):
+    """
+    导出json,选择时间，迷你版本
+    :return:
+    """
+
+    my_wxid = gc.get_conf(gc.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+    db_config = gc.get_conf(my_wxid, "db_config")
+
+    if not wxid:
+        return ReJson(1002, body=f"username is required: {wxid}")
+
+    outpath = os.path.join(gc.work_path, "export", my_wxid, "json", wxid)
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    start_createtime = time.start_createtime / 1000.0  # 格式为 时间戳
+    end_createtime = time.end_createtime  / 1000.0
+
+
+    start_createtime = datetime.datetime.fromtimestamp(float(start_createtime)).strftime("%Y-%m-%d %H:%M:%S")  #转换成日期格式
+    end_createtime = datetime.datetime.fromtimestamp(float(end_createtime)).strftime("%Y-%m-%d %H:%M:%S")
+
+    code, ret, filename = export_json_mini_time_limit(wxid, outpath, db_config, my_wxid=my_wxid,
+                                                      start_createtime=start_createtime, end_createtime=end_createtime)
+    if code:
+        # 成功创建，执行生成可视化页面的逻辑
+        # with open(os.path.join(gc.work_path, "export", my_wxid, "html", wxid, filename), "w", encoding="utf-8") as f:
+        #     f.write(
+        #         #现在是fake
+        #         HtmlController().create_html(json_data=None)
+        #     )
+        return ReJson(0, ret)
+
+    else:
+        return ReJson(2001, body=ret)
+
+
 class ExportHtmlRequest(BaseModel):
     wxid: str
 
@@ -501,6 +557,251 @@ def get_export_html(wxid: str = Body(..., embed=True)):
 
 
 # end 导出聊天记录 *******************************************************************************************************
+
+
+# AI可视化生成 **********************************************
+#TODO:查询当前登录用户文件夹下是否有导出数据，是否已经存在ui界面
+
+def recursive_listdir(path,list:List):
+    """
+    遍历文件夹获取所有文件 包括子目录
+    """
+
+    files = os.listdir(path)
+    for file in files:
+        file_path = os.path.join(path, file)
+        if os.path.isdir(file_path):
+            recursive_listdir(file_path,list)
+        elif os.path.isfile(file_path):
+            list.append(file_path)
+
+
+
+def de_weight(l1:List,l2:List):
+    """
+    列表去重，针对特定对象
+    """
+    len1 = min(len(l1), len(l2))
+    len1 = len1-1 if len1 > 1 else len1
+    for i in range(len1):
+        if l1[i]["wxid"] == l2[i]["wxid"] and l1[i]["start_time"] == l2[i]["start_time"] and l1[i]["end_time"] == l2[i][
+            "end_time"]:
+            l1[i]["flag"] = True
+            l2.pop(i)
+
+    return l1+l2
+
+
+
+
+
+
+@rs_api.api_route('/ai_ui_json_list', methods=["GET", 'POST'])
+def get_ai_ui_json_list():
+    """
+    获取可视化json文件列表
+    """
+    my_wxid = gc.get_conf(gc.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+
+    # 遍历json文件夹，查找最后带_ai的文件
+    work_path = os.path.join(gc.work_path, "export", my_wxid, "json")
+    if not os.path.exists(work_path):
+        os.makedirs(work_path)
+    file_list:List[str]=[]
+    recursive_listdir(work_path,list=file_list)
+
+    # 解析文件名
+    ui_list = []
+    for file in file_list:
+        if file.split('.')[0].split('_')[-1] == 'ai':
+            # 可进行ai可视化的文件
+            ui_list.append(file)
+    # print(ui_list)
+
+    # 构造字典对象
+    ui_dict_list = []
+    for s in ui_list:
+        wxid = s.split('\\')[-1].split('.')[0].split('_')[0] if "@" in s.split('\\')[-1] else \
+        s.split('\\')[-1].split('.')[0].split('_')[1]  # wxid
+        time_start = " ".join(s.split('\\')[-1].split('.')[0].split('_')[2:4]) if "@" in s.split('\\')[
+            -1] else " ".join(s.split('\\')[-1].split('.')[0].split('_')[3:5])  # time start
+        time_end = " ".join(s.split('\\')[-1].split('.')[0].split('_')[5:7]) if "@" in s.split('\\')[-1] else " ".join(
+            s.split('\\')[-1].split('.')[0].split('_')[6:8])  # time end
+        ui_dict_list.append({"wxid": wxid, "start_time": time_start, "end_time": time_end, "flag": False})
+
+
+
+    # 遍历ai_json文件夹,获取所有文件名
+    work_path = os.path.join(gc.work_path, "export", my_wxid, "ai_json")
+    if not os.path.exists(work_path):
+        os.makedirs(work_path)
+    file_list:List[str]=[]
+    recursive_listdir(work_path,list=file_list)
+
+    # 解析文件名
+    ai_list = []
+    for file in file_list:
+        ai_list.append(file)
+
+    ai_dict_list = []
+
+    # 构造字典对象
+    for s in ai_list:
+        wxid = s.split('\\')[-1].split('.')[0].split('_')[0] if "@" in s.split('\\')[-1] else \
+        s.split('\\')[-1].split('.')[0].split('_')[1]  # wxid
+        time_start = " ".join(s.split('\\')[-1].split('.')[0].split('_')[2:4]) if "@" in s.split('\\')[
+            -1] else " ".join(s.split('\\')[-1].split('.')[0].split('_')[3:5])  # time start
+        time_end = " ".join(s.split('\\')[-1].split('.')[0].split('_')[5:7]) if "@" in s.split('\\')[-1] else " ".join(
+            s.split('\\')[-1].split('.')[0].split('_')[6:8])  # time end
+        ai_dict_list.append({"wxid": wxid, "start_time": time_start, "end_time": time_end, "flag": True})
+
+    # # 合并两个字典列表
+    # dict_list = ui_dict_list + ai_dict_list
+    # print(ui_dict_list)
+    # print(ai_dict_list)
+
+    # 去重
+    dict_list = de_weight(ui_dict_list,ai_dict_list)
+
+    return ReJson(0,body={"items":dict_list})
+
+
+
+
+def get_file_path(work_path: str, file_name: str) -> str | None:
+    """
+    获取ai_json文件路径
+    """
+    # 遍历文件夹内的所有文件，找到对应文件名的文件路径
+
+
+    path_list = os.listdir(work_path)
+    for path in path_list:
+        full_path = os.path.join(work_path, path)
+        if os.path.isfile(full_path) and path == file_name:
+            return full_path
+        elif os.path.isdir(full_path):
+            result = get_file_path(full_path, file_name)
+            if result is not None:
+                return result
+    return None
+
+class FileNameRequest(BaseModel):
+    wxid: str
+    start_time: str
+    end_time: str
+
+@rs_api.api_route('/db_to_ai_json', methods=["GET", 'POST'])
+def db_to_ai_json(file_name: FileNameRequest = Body(..., embed=True)):
+    """
+    导出聊天记录到ai_json
+    """
+    start_time = file_name.start_time
+    end_time = file_name.end_time
+    wxid = file_name.wxid
+
+
+    file_name = wxid + '_mini_' + start_time.replace(' ', '_').replace(':', '-') + '_to_' + end_time.replace(' ', '_').replace(':', '-') + '_ai'
+    # file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_' + end_time.replace(' ', '_').replace(':', '-')
+    file_name = file_name + '.json'
+
+
+
+    my_wxid = gc.get_conf(gc.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+
+
+    result = get_file_path(os.path.join(gc.work_path, "export", my_wxid, "json"), file_name)
+
+
+    if result is None:
+        return ReJson(1002, body=f"file not found: {file_name}")
+
+    # 获取文件内容
+    with open(result, "r", encoding="utf-8") as f:
+        json_data = json.load(f)
+        if not json_data:
+            return ReJson(1002, body=f"json_data is empty: {file_name}")
+
+    #通过llm处理，生成ai_json
+    from .api_utils.llm import DeepSeekApi
+    # 获取apikey
+    apikey = gc.get_conf(my_wxid, "deepseek_setting").get("API_KEY")
+    if not apikey:
+        return ReJson(1002, body="deepseek_setting.API_KEY is required")
+    llm_api = DeepSeekApi(api_key=apikey)
+    json_data = llm_api.send_msg(module=0,message=json.dumps(json_data))
+
+    # 保存到ai_json
+    ai_json_path = os.path.join(gc.work_path, "export", my_wxid, "ai_json")
+    if not os.path.exists(ai_json_path):
+        os.makedirs(ai_json_path)
+
+    assert isinstance(ai_json_path, str)
+    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_to_' + end_time.replace(' ',
+                                                                                                           '_').replace(
+        ':', '-')
+    file_name = file_name + '.json'
+    ai_json_file_path = os.path.join(ai_json_path, file_name)
+    with open(ai_json_file_path, "w", encoding="utf-8") as f:
+        json.dump(json_data, f, ensure_ascii=False)
+
+    return ReJson(0, body=f"save to {ai_json_file_path}")
+
+
+
+class FileNameGetUiRequest(BaseModel):
+    wxid: str
+    start_time: str
+    end_time: str
+
+# 获取可视化界面json文件
+@rs_api.api_route('/get_ui_json', methods=["GET", 'POST'])
+def get_ui_json(file_name: FileNameGetUiRequest = Body(..., embed=True)):
+    """
+    获取可视化界面json文件
+    """
+    # print(file_name.wxid)
+
+    start_time = file_name.start_time
+    end_time = file_name.end_time
+    wxid = file_name.wxid if "@" in file_name.wxid else "wxid_" + file_name.wxid
+
+
+    # start_time = datetime.datetime.fromtimestamp(float(start_time)).strftime("%Y-%m-%d %H:%M:%S")  #转换成日期格式
+    # end_time = datetime.datetime.fromtimestamp(float(end_time)).strftime("%Y-%m-%d %H:%M:%S")
+
+    file_name = wxid + '_aiyes_' + start_time.replace(' ', '_').replace(':', '-') + '_to_' + end_time.replace(' ', '_').replace(':', '-')
+    file_name = file_name + '.json'
+
+
+    my_wxid = gc.get_conf(gc.at, "last")
+    if not my_wxid: return ReJson(1001, body="my_wxid is required")
+
+    result = get_file_path(os.path.join(gc.work_path, "export", my_wxid, "ai_json"), file_name)
+
+    if result is None:
+        return ReJson(1002, body=f"file not found: {file_name}")
+
+    # 获取文件内容
+    with open(result, "r", encoding="utf-8") as f:
+        json_data = json.load(f)
+        if not json_data:
+            return ReJson(1002, body=f"json_data is empty: {file_name}")
+
+    return ReJson(0, body=json_data)
+
+
+
+
+
+
+# AI可视化生成 *******************************************************************************************************
+
+
 
 # start 聊天记录分析api **************************************************************************************************
 class DateCountRequest(BaseModel):
@@ -658,5 +959,63 @@ def get_readme():
         return ReJson(0, body=data)
     else:
         return ReJson(2001, body="status_code is not 200")
+
+
+class DifyApiModel(BaseModel):
+    api_key: str
+    base_url: str
+
+
+@rs_api.api_route('/dify_setting', methods=["GET", 'POST'])
+@error9999
+def dify_setting(request: Request = None, dify: DifyApiModel = Body(None, embed=True)):
+    """
+    dify设置
+    """
+
+    if request.method == "GET":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        gc.get_conf(my_wxid, "dify_setting")
+
+        return ReJson(0, body=gc.get_conf(my_wxid, "dify_setting"))
+
+    elif request.method == "POST":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        if not dify.api_key and not dify.base_url:
+            return ReJson(1002, body="dify_setting is required")
+
+        gc.set_conf(my_wxid, "dify_setting", {"API_KEY": dify.api_key, "BASE_URL": dify.base_url})
+        return ReJson(0, body=gc.get_conf(my_wxid, "dify_setting"))
+    return ReJson(2001, body="status_code is not 200")
+
+
+class DeepSeekApiModel(BaseModel):
+    api_key: str
+
+
+@rs_api.api_route('/deepseek_setting', methods=["GET", 'POST'])
+@error9999
+def deepseek_setting(request: Request = None, deepseek: DeepSeekApiModel = Body(None, embed=True)):
+    """
+    deepseek设置
+    """
+    if request.method == "GET":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        gc.get_conf(my_wxid, "deepseek_setting")
+
+        return ReJson(0, body=gc.get_conf(my_wxid, "deepseek_setting"))
+
+    elif request.method == "POST":
+        my_wxid = gc.get_conf(gc.at, "last")
+        if not my_wxid: return ReJson(1001, body="my_wxid is required")
+        if not deepseek or not deepseek.api_key:
+            return ReJson(1002, body="deepseek_setting is required")
+
+        gc.set_conf(my_wxid, "deepseek_setting", {"API_KEY": deepseek.api_key})
+        return ReJson(0, body=gc.get_conf(my_wxid, "deepseek_setting"))
+    return ReJson(2001, body="status_code is not 200")
 
 # END 关于、帮助、设置 ***************************************************************************************************
