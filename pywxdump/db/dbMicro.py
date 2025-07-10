@@ -281,6 +281,8 @@ class MicroHandler(DatabaseBase):
                         db_loger.error(f"wxid2remark: ChatRoomName:{ChatRoomName}, {i} error:{e}", exc_info=True)
 
             wxid2userinfo = self.get_user_list(wxids=UserNameList)
+            wxid2userinfo.update(self.get_im_user_list(wxids=UserNameList))
+            
             for i in wxid2userinfo:
                 wxid2userinfo[i]["roomNickname"] = wxid2roomNickname.get(i, "")
 
