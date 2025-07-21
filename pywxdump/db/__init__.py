@@ -59,6 +59,8 @@ class DBHandler(MicroHandler, MediaHandler, OpenIMContactHandler, PublicMsgHandl
                     "talker": talker, "room_name": StrTalker, "msg": msg, "src": src, "extra": {},
                     "CreateTime": CreateTime, }
         """
+
+
         msgs0, wxid_list0 = self.get_msg_list(wxids=wxids, start_index=start_index, page_size=page_size,
                                               msg_type=msg_type,
                                               msg_sub_type=msg_sub_type, start_createtime=start_createtime,
