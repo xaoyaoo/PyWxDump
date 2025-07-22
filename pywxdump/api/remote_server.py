@@ -9,7 +9,7 @@ import os
 import time
 import shutil
 from collections import Counter
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, unquote_plus
 from typing import List, Optional
 
 from pydantic import BaseModel
@@ -301,7 +301,7 @@ def get_file(request: Request):
     获取文件
     :return:
     """
-    file_path = unquote(str(request.query_params).replace("src=", "", 1))
+    file_path = unquote_plus(str(request.query_params).replace("src=", "", 1))
     if not file_path:
         return ReJson(1002)
     my_wxid = gc.get_conf(gc.at, "last")
