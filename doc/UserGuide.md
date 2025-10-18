@@ -1,188 +1,188 @@
-# 用户指南
+# User Guide
 
-## 小白教程（大佬请看下面）
+## Quick Tutorial (Beginners - Advanced users see below)
 
-### 1. 安装
+### 1. Installation
 
-下载[release](https://github.com/xaoyaoo/PyWxDump/releases)中的exe文件(选择最新版)
+Download the exe file from the [release](https://github.com/xaoyaoo/PyWxDump/releases) (select the latest version)
 
-### 2. 使用
+### 2. Usage
 
-* 1.打开微信电脑版，登录微信
-* 2.进入下载的exe文件所在目录
-* 3.双击wx_dump.exe运行
-* 4.打开浏览器，访问 http://127.0.0.1:5000/ 使用图形界面
-* 5.根据提示操作
+* 1. Open WeChat desktop version and log in
+* 2. Navigate to the directory where the downloaded exe file is located
+* 3. Double-click wx_dump.exe to run
+* 4. Open a browser and visit http://127.0.0.1:5000/ to use the GUI
+* 5. Follow the on-screen prompts
 
-【注】更多详细使用方法关注公众号：`逍遥之芯`，回复：`PyWxDump` 获取图文教程。
+【Note】For more detailed usage instructions, follow the official account: `逍遥之芯`, reply: `PyWxDump` to get illustrated tutorials.
 
-## 详细教程(小白请看上面)
+## Detailed Tutorial (Beginners see above)
 
-### 1. 安装
+### 1. Installation
 
-#### 1.1 从pypi安装(安装稳定版)
+#### 1.1 Install from PyPI (install stable version)
 
 ```shell script
 pip install -U pywxdump
 ```
 
-#### 1.2 从源码安装(安装最新版)
+#### 1.2 Install from source code (install latest version)
 
 ```shell script
-pip install -U git+git://github.com/xaoyaoo/PyWxDump.git # 该方法无法安装网页图形界面，会导致浏览器显示页面无法打开，显示404
+pip install -U git+git://github.com/xaoyaoo/PyWxDump.git # This method cannot install the web GUI, which will cause the browser to display page not found, showing 404
 ```
 
-或
+or
 
 ```shell script
-# 如果使用网页图形界面，需要执行以下命令
+# If you want to use the web GUI, execute the following commands
 git clone https://github.com/xaoyaoo/wxdump_web.git
 cd wxdump_web
 npm run build
 cd ..
-# 安装PyWxDump
+# Install PyWxDump
 git clone https://github.com/xaoyaoo/PyWxDump.git
-cp -r wxdump_web/dist PyWxDump/pywxdump/ui/web # 将网页图形界面文件复制到PyWxDump中，如果不需要网页图形界面，可以跳过这一步
+cp -r wxdump_web/dist PyWxDump/pywxdump/ui/web # Copy the web GUI files to PyWxDump. If you don't need the web GUI, you can skip this step
 cd PyWxDump
 python -m pip install -U .
 ```
 
-#### 1.3 打包可执行文件exe
+#### 1.3 Package executable exe file
 
-* 默认你已经安装好python环境，并且下载了源码，进入项目根目录，同时已经安装了pyinstaller
-* 并且完成了[1.2 从源码安装](#12-从源码安装安装最新版)
+* By default, you have already installed the Python environment, downloaded the source code, and entered the project root directory. You have also installed pyinstaller
+* And completed [1.2 Install from source code](#12-install-from-source-code-install-latest-version)
 
 ```shell
 cd tests
 python build_exe.py
-# 接着执行输出的打包脚本
+# Then execute the output packaging script
 pyinstaller --clean --distpath=dist dist/pywxdump.spec
 ```
 
-* 直接下载打包好的exe文件：[release](https://github.com/xaoyaoo/PyWxDump/releases)
+* Directly download the packaged exe file: [release](https://github.com/xaoyaoo/PyWxDump/releases)
 
-### 2. 使用
+### 2. Usage
 
-#### 2.1 命令行
+#### 2.1 Command Line
 
-激活虚拟环境后（如果有的话），在项目根目录下运行：
+After activating the virtual environment (if applicable), run in the project root directory:
 
 ```shell script
-wxdump -h  # 查看具体帮助
-# 用法: 
-# wxdump 模式 [参数]
-#  mode           运行模式:
-#    bias         获取微信基址偏移
-#    info         获取微信信息
-#    wx_path      获取微信文件夹路径
-#    decrypt      解密微信数据库
-#    merge        [测试功能]合并微信数据库(MSG.db or MediaMSG.db)
-#    all          【已废弃】获取微信信息，解密微信数据库，查看聊天记录
-#    ui           启动网页图形界面
-#    api          启动API服务, 默认端口5000,无图形界面
+wxdump -h  # View specific help
+# Usage: 
+# wxdump mode [parameters]
+#  mode           Running mode:
+#    bias         Get WeChat base address offset
+#    info         Get WeChat information
+#    wx_path      Get WeChat folder path
+#    decrypt      Decrypt WeChat database
+#    merge        [Test feature] Merge WeChat database (MSG.db or MediaMSG.db)
+#    all          【Deprecated】Get WeChat information, decrypt WeChat database, view chat history
+#    ui           Start web GUI
+#    api          Start API service, default port 5000, no GUI
 ```
 
-*示例*
+*Examples*
 
 <details>
-<summary>点击展开示例</summary>
+<summary>Click to expand examples</summary>
 
-以下是示例命令：
+The following are example commands:
 
-##### 获取微信基址偏移
+##### Get WeChat base address offset
 
 ```bash
-wxdump bias -h # 查看具体帮助
-wxdump bias --mobile <手机号> --name <微信昵称> --account <微信账号> [--key <密钥>] [--db_path <已登录账号的微信文件夹路径>] [--WX_OFFS_path <微信版本偏移文件路径>]
+wxdump bias -h # View specific help
+wxdump bias --mobile <phone number> --name <WeChat nickname> --account <WeChat account> [--key <key>] [--db_path <WeChat folder path of logged-in account>] [--WX_OFFS_path <WeChat version offset file path>]
 ```
 
-##### 获取微信信息
+##### Get WeChat information
 
 ```bash
-wxdump info -h # 查看具体帮助
-wxdump info [--WX_OFFS_path <微信版本偏移文件路径>]
+wxdump info -h # View specific help
+wxdump info [--WX_OFFS_path <WeChat version offset file path>]
 ```
 
-##### 获取微信文件夹路径
+##### Get WeChat folder path
 
 ```bash
-wxdump wx_path -h # 查看具体帮助
-wxdump wx_path [-r <需要的数据库名称>] [-wf <WeChat Files 路径>] [-id <wxid_>] 
+wxdump wx_path -h # View specific help
+wxdump wx_path [-r <required database name>] [-wf <WeChat Files path>] [-id <wxid_>] 
 ```
 
-##### 解密微信数据库
+##### Decrypt WeChat database
 
 ```bash
-wxdump decrypt -h # 查看具体帮助
-wxdump decrypt -k <密钥> -i <数据库路径(目录or文件)> [-o <输出路径>]
+wxdump decrypt -h # View specific help
+wxdump decrypt -k <key> -i <database path (directory or file)> [-o <output path>]
 ```
 
-##### 获取微信信息、解密数据库、查看聊天记录，一条命令搞定，开放端口5000，浏览器访问查看聊天记录（支持局域网其他机器访问）
+##### Get WeChat information, decrypt database, view chat history with one command, open port 5000, access via browser to view chat history (supports access from other machines on local network)
 
 ```bash
-wxdump all -h # 【已废弃】查看具体帮助
+wxdump all -h # 【Deprecated】View specific help
 wxdump all
 ```
 
-##### 启动网页图形界面（根据图形界面提示自行使用）
+##### Start web GUI (follow the GUI prompts for usage)
 
 ```bash
-wxdump ui -h # 查看具体帮助
+wxdump ui -h # View specific help
 wxdump ui
 ```
 
-##### 启动API服务
+##### Start API service
 
 ```bash
-wxdump api -h # 查看具体帮助
+wxdump api -h # View specific help
 wxdump api
 ```
 
 </details>
 
-#### 2.2 python API
+#### 2.2 Python API
 
-*import调用示例*
+*Import usage examples*
 
 <details>
-<summary>点击展开示例</summary>
+<summary>Click to expand examples</summary>
 
 ```python
-# 单独使用各模块，返回值一般为字典，参数参考命令行
+# Use individual modules separately, return values are generally dictionaries, parameters refer to command line
 from pywxdump import *
 
 # ************************************************************************************************ #
-# 获取微信基址偏移
+# Get WeChat base address offset
 args = {
     "mode": "bias",
-    "mobile": "13800138000",  # 手机号
-    "name": "微信昵称",  # 微信昵称
-    "account": "微信账号",  # 微信账号
-    "key": "密钥",  # 密钥（可选）
-    "db_path": "已登录账号的微信文件夹路径",  # 微信文件夹路径（可选）
-    "WX_OFFS_path": "微信版本偏移文件路径"  # 微信版本偏移文件路径（可选）
+    "mobile": "13800138000",  # Phone number
+    "name": "WeChat nickname",  # WeChat nickname
+    "account": "WeChat account",  # WeChat account
+    "key": "key",  # Key (optional)
+    "db_path": "WeChat folder path of logged-in account",  # WeChat folder path (optional)
+    "WX_OFFS_path": "WeChat version offset file path"  # WeChat version offset file path (optional)
 }
 bias_addr = BiasAddr(args["account"], args["mobile"], args["name"], args["key"], args["db_path"])
 result = bias_addr.run(True, args["WX_OFFS_path"])
 # ************************************************************************************************ #
-# 获取微信信息
+# Get WeChat information
 wx_info = read_info(WX_OFFS, True)
 
-# 获取微信文件夹路径
+# Get WeChat folder path
 args = {
     "mode": "db_path",
-    "require_list": "all",  # 需要的数据库名称（可选）
-    "wx_files": "WeChat Files",  # 'WeChat Files'路径（可选）
-    "wxid": "wxid_",  # wxid_，用于确认用户文件夹（可选）
+    "require_list": "all",  # Required database name (optional)
+    "wx_files": "WeChat Files",  # 'WeChat Files' path (optional)
+    "wxid": "wxid_",  # wxid_, used to confirm user folder (optional)
 }
 user_dirs = get_wechat_db(args["require_list"], args["wx_files"], args["wxid"], True)
 # ************************************************************************************************ #
-# 解密微信数据库
+# Decrypt WeChat database
 args = {
     "mode": "decrypt",
-    "key": "密钥",  # 密钥
-    "db_path": "数据库路径(目录or文件)",  # 数据库路径
-    "out_path": "/path/to/decrypted"  # 输出路径（必须是目录）[默认为当前路径下decrypted文件夹]
+    "key": "key",  # Key
+    "db_path": "database path (directory or file)",  # Database path
+    "out_path": "/path/to/decrypted"  # Output path (must be a directory) [default: decrypted folder in current path]
 }
 result = batch_decrypt(args["key"], args["db_path"], args["out_path"], True)
 # ************************************************************************************************ #
@@ -190,21 +190,21 @@ result = batch_decrypt(args["key"], args["db_path"], args["out_path"], True)
 
 </details>
 
-更多使用方法参考[tests](../tests)文件夹下的[test_*.py](../tests/)文件
+For more usage methods, refer to the [test_*.py](../tests/) files in the [tests](../tests) folder
 
-#### 2.3 可执行文件exe
+#### 2.3 Executable exe file
 
-进入exe文件所在目录，运行： `wxdump.exe 模式 [参数]`，方法同[命令行](#21-命令行)
+Navigate to the exe file directory and run: `wxdump.exe mode [parameters]`, method same as [command line](#21-command-line)
 
 ### 3. FAQ
 
-详见[FAQ](./FAQ.md)
+See [FAQ](./FAQ.md)
 
-### 4. 更新日志
+### 4. Changelog
 
-详见[更新日志](./CHANGELOG.md)
+See [Changelog](./CHANGELOG.md)
 
-### 5. 其他
+### 5. Other
 
-进群密码请查看[FAQ](./FAQ.md)
-关于系统支持版本：Windows 10 64位及以上、 python 3.8及以上，其他版本遇到错误需要自行解决
+For group password, please check [FAQ](./FAQ.md)
+System support versions: Windows 10 64-bit and above, Python 3.8 and above. For other versions, you need to solve errors yourself
